@@ -1,0 +1,76 @@
+{#
+ # Arguments:
+ # search_channel:str: Pre-populated channel field in form. Optional.
+ # search_usermask:str: Pre-populated usermask field in form. Optional.
+ # search_start:str: Pre-populated start time field in form. Optional.
+ # search_end:str: Pre-populated end time field in form. Optional.
+ # search_limit:int: Pre-populated maxlines in form. Optional.
+ # search_query:str: The search string
+ # search_query_wildcard:bool: Whether the "wildcard" checkbox is checked for the query.
+ #
+ # Blocks (non-inherited):
+ # content_after_form: after the <section> containing the form. Should have one or more <section> elements
+ #          as the only top-level elements.
+ #}{% extends "skel_main.html" %}
+{% block head %}{{ super() }}
+{% endblock %}
+{% block title %}Search{% endblock %}
+{% block content %}<section>
+    <h2>Search</h2>
+    <form action="/search" method="get">
+        <div class="search-query-container">
+            <input type="text" name="query" id="search-query" title="Search Query" placeholder="Search Query" {% if search_query is defined %}value="{{ search_query }}"{% endif %}>
+            <input type="checkbox" name="query_wildcard" id="search-query-wildcard" value="1" {% if search_query_wildcard is defined and search_query_wildcard %}checked="checked"{% endif %}>
+            <label for="search-query-wildcard">Wildcards</label>
+        </div>
+        <div>
+            <input type="text" name="channel" id="search-channel" placeholder="#channelName" {% if search_channel is defined %}value="{{ search_channel }}"{% endif %}>
+            <input type="text" name="usermask" id="search-usermask" placeholder="nick!username@hostmask" {% if search_usermask is defined %}value="{{ search_usermask }}"{% endif %}>
+        </div>
+        <div>
+            <label for="search-time-start">From</label>
+            <input type="text" name="start" id="search-time-start" placeholder="YYYY-MM-DD HH:MM:SS" {% if search_start is defined %}value="{{ search_start }}"{% endif %}>
+
+            <label for="search-time-end">until</label>
+            <input type="text" name="end" id="search-time-end" placeholder="YYYY-MM-DD HH:MM:SS" {% if search_end is defined %}value="{{ search_end }}"{% endif %}>
+        </div>
+        <div>
+            <label for="search-maxlines">Max lines</label>: <input type="number" max="{{ config.MAX_RESULTS }}" name="limit" id="search-maxlines" value="{{ search_limit|default(config.MAX_RESULTS_DEFAULT) }}">
+        </div>
+        <div id="buttons">
+            <button type="reset">Clear</button> <button type="submit">Submit</button>
+        </div>
+    </form>
+</section>
+{% block content_after_form %}{% endblock %}
+<section>
+    <h2>Help</h2>
+
+    <p>Channels may be a space-separated list of channels (OR). You may use wildcards (see help below).
+        Depending on your user permissions, you may be restricted only to specific channels.</p>
+
+    <p>Usermask may be a space-separated list (OR). You may use wildcards (see wildcard help below).</p>
+
+    <p>Dates and times must be in the ISO 8601 format shown. Use a 24-hour clock. You can omit parts of the date-time
+        off the rightmost end: for example, <code>2016-01-03 14</code> is valid. Timezone is the server's timezone.</p>
+
+    <p>The search query works in the following way:</p>
+    <ul>
+        <li><code>word1 word2 word3</code> in the same line searches for all words in the same message.</li>
+        <li><code>word1 AND word2 AND word3</code> is equivalent to <code>word1 word2 word3</code>.</li>
+        <li><code>word1 OR word2</code> will search for either or both words in the same message.</li>
+        <li><code>"words in quotation marks"</code> matches the exact expression. You can also use this to match the
+            words <code>"AND"</code> or <code>"OR"</code> or searches containing parentheses. If you want to search
+            for a quotation mark, use <code>\"</code>.</li>
+        <li>You can use parentheses to group search terms together when using AND and OR together: for example,
+            <code>(word1 AND word2) OR (word3 AND word4)</code> or <code>word1 AND (word2 OR word3) AND word4</code>,
+            which are both different searches. Without parentheses, AND and OR are equal-precedence
+            left-associative.</li>
+        <li>If the "Wildcards" box is checked, wildcards can be used used to search partial words or (within quotation
+            marks) partial expressions.</li>
+    </ul>
+
+    <p><strong>Wildcards</strong>: Wildcard <code>?</code> matches any one character; wildcard <code>*</code> matches
+    zero or more characters; <code>\</code> escapes wildcard characters. To use a literal question mark, asterisk or
+    backslash, use <code>\?</code>, <code>/*</code> or <code>\\</code>, respectively.</p>
+</section>{% endblock %}

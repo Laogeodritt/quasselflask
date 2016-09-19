@@ -26,8 +26,8 @@ html a, html a:active, html a:visited, .light a, .light a:active, .light a:visit
 html form input, .light form input {
   background-color: #fdf6e3;
 }
-html form #more-queries:disabled, html form #less-queries:disabled, .light form #more-queries:disabled, .light form #less-queries:disabled {
-  background-color: #93a1a1;
+html code, .light code {
+  background-color: #eee8d5;
 }
 html footer, .light footer {
   color: #93a1a1;
@@ -54,8 +54,8 @@ html footer, .light footer {
 .dark form input {
   background-color: #073642;
 }
-.dark form #more-queries:disabled, .dark form #less-queries:disabled {
-  background-color: #586e75;
+.dark code {
+  background-color: #002b36;
 }
 .dark footer {
   color: #586e75;
@@ -108,38 +108,19 @@ form label, form input[type="checkbox"], form input[type="radio"] {
   margin: 0 0.2em 0.6em;
   padding: 0;
 }
-form input[type="text"], form input[type="textarea"] {
+form input[type="text"], form input[type="number"], form input[type="textarea"] {
   flex-grow: 1;
   text-align: center;
 }
-form input[type="text"] {
+form input[type="text"], form input[type="number"] {
   text-align: center;
 }
-form input[type="text"].search-query {
+form #search-query {
   text-align: left;
 }
 form button {
   background-color: #268bd2;
   color: #fdf6e3;
-}
-form #moreless-queries {
-  justify-content: flex-end;
-}
-form #moreless-queries button {
-  font-weight: bold;
-  width: 1.4em;
-  text-align: center;
-  margin-left: 5px;
-  margin-right: 5px;
-  padding: 1px 0;
-  border: 1px solid;
-  border-radius: 10px;
-}
-form #more-queries {
-  background-color: #268bd2;
-}
-form #less-queries {
-  background-color: #6c71c4;
 }
 form button[type="reset"] {
   background-color: #6c71c4;

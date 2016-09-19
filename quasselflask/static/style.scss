@@ -38,10 +38,8 @@ $content-border-radius: 10px;
 
   form {
     input { background-color: $rebase03; }
-    #more-queries:disabled, #less-queries:disabled {
-      background-color: $rebase01;
-    }
   }
+  code { background-color: $rebase02; }
   footer { color: $rebase01; border-color: $rebase0; }
 }
 
@@ -111,43 +109,20 @@ form {
     padding: 0;
   }
 
-  input[type="text"], input[type="textarea"] {
+  input[type="text"], input[type="number"], input[type="textarea"] {
     flex-grow: 1;
     text-align: center;
   }
 
-  input[type="text"] { text-align: center; }
+  input[type="text"], input[type="number"] { text-align: center; }
 
-  input[type="text"].search-query {
+  #search-query {
     text-align: left;
   }
 
   button {
     background-color: $blue;
     color: $base3;
-  }
-
-  #moreless-queries {
-    justify-content: flex-end;
-
-    button {
-      font-weight: bold;
-      width: 1.4em;
-      text-align: center;
-      margin-left: 5px;
-      margin-right: 5px;
-      padding: 1px 0;
-      border: 1px solid;
-      border-radius: $content-border-radius;
-    }
-  }
-
-  #more-queries {
-    background-color: $blue;
-  }
-
-  #less-queries {
-    background-color: $violet;
   }
 
   button[type="reset"] {
