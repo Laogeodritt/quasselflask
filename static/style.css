@@ -1,0 +1,151 @@
+/******************************************************************************
+ * File: style.css - Main stylesheet
+ * QuasselFlask - Log Search Utility for Quassel Postgresql Database
+ * https://github.com/Laogeodritt/quasselflask
+ *
+ * Licensed under the GNU Public Licence, version 3
+ * <https://www.gnu.org/licenses/gpl-3.0.en.html>
+ *****************************************************************************/
+html, .light {
+  background-color: #eee8d5;
+  color: #657b83;
+  /* h1,h2,h3,h4,h5,h6 { color: $rebase1; border-color: $rebase0; } */
+}
+html section, html footer, html aside, html article, html article, html footer, html aside, .light section, .light footer, .light aside, .light article, .light article, .light footer, .light aside {
+  background-color: #fdf6e3;
+}
+html *, .light * {
+  color: #657b83;
+}
+html header h1, html h1, html h2, html h3, html h4, html h5, html h6, .light header h1, .light h1, .light h2, .light h3, .light h4, .light h5, .light h6 {
+  border-color: #657b83;
+}
+html a, html a:active, html a:visited, .light a, .light a:active, .light a:visited {
+  color: #586e75;
+}
+html form input, .light form input {
+  background-color: #fdf6e3;
+}
+html form #more-queries:disabled, html form #less-queries:disabled, .light form #more-queries:disabled, .light form #less-queries:disabled {
+  background-color: #93a1a1;
+}
+html footer, .light footer {
+  color: #93a1a1;
+  border-color: #657b83;
+}
+
+.dark {
+  background-color: #002b36;
+  color: #839496;
+  /* h1,h2,h3,h4,h5,h6 { color: $rebase1; border-color: $rebase0; } */
+}
+.dark section, .dark footer, .dark aside, .dark article, .dark article, .dark footer, .dark aside {
+  background-color: #073642;
+}
+.dark * {
+  color: #839496;
+}
+.dark header h1, .dark h1, .dark h2, .dark h3, .dark h4, .dark h5, .dark h6 {
+  border-color: #839496;
+}
+.dark a, .dark a:active, .dark a:visited {
+  color: #93a1a1;
+}
+.dark form input {
+  background-color: #073642;
+}
+.dark form #more-queries:disabled, .dark form #less-queries:disabled {
+  background-color: #586e75;
+}
+.dark footer {
+  color: #586e75;
+  border-color: #839496;
+}
+
+body {
+  max-width: 1156px;
+  padding: 3em 4em 6em;
+  margin-left: auto;
+  margin-right: auto;
+}
+
+header h1, h1, h2, h3, h4, h5, h6 {
+  color: #268bd2;
+  border-bottom: 1px solid;
+  margin-top: 0.4em;
+  margin-bottom: 0.8em;
+  padding: 0 0.5em;
+}
+
+section, footer, aside, article {
+  border: 1px solid;
+  border-radius: 10px;
+  margin-top: 0.8em;
+  margin-bottom: 1.5em;
+  padding: 0.7em 1.5em;
+}
+
+footer {
+  font-size: 80%;
+  font-style: italic;
+  text-align: center;
+}
+
+form > div {
+  width: 100%;
+  display: flex;
+  flex-direction: row;
+  justify-content: center;
+  align-items: baseline;
+}
+form input, form button {
+  border: 1px solid;
+  border-radius: 10px;
+  margin: 0 0.4em 0.6em;
+  padding: 0.3em 0.6em;
+}
+form label, form input[type="checkbox"], form input[type="radio"] {
+  margin: 0 0.2em 0.6em;
+  padding: 0;
+}
+form input[type="text"], form input[type="textarea"] {
+  flex-grow: 1;
+  text-align: center;
+}
+form input[type="text"] {
+  text-align: center;
+}
+form input[type="text"].search-query {
+  text-align: left;
+}
+form button {
+  background-color: #268bd2;
+  color: #fdf6e3;
+}
+form #moreless-queries {
+  justify-content: flex-end;
+}
+form #moreless-queries button {
+  font-weight: bold;
+  width: 1.4em;
+  text-align: center;
+  margin-left: 5px;
+  margin-right: 5px;
+  padding: 1px 0;
+  border: 1px solid;
+  border-radius: 10px;
+}
+form #more-queries {
+  background-color: #268bd2;
+}
+form #less-queries {
+  background-color: #6c71c4;
+}
+form button[type="reset"] {
+  background-color: #6c71c4;
+}
+form #search-maxlines {
+  max-width: 4em;
+}
+
+/*# sourceMappingURL=style.css.map */
