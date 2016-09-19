@@ -81,7 +81,7 @@ def search():
     plain_args = {'query'}
     glob_args = {'channel', 'usermask', 'wildcardquery'}
 
-    passed_args = query_args & request.args.keys()
+    passed_args = query_args & set(request.args.keys())
     sql_args = MultiDict()
 
     # if no params set, we can just show the main page
