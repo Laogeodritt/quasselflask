@@ -1,5 +1,5 @@
 """
-Query parsing tools
+Query parsing tools.
 
 Project: QuasselFlask
 """
@@ -10,10 +10,15 @@ from logging import Logger
 
 
 class Operator(Enum):
-    AND = 0
-    OR = 1
-    GROUP_OPEN = 2
-    GROUP_CLOSE = 3
+    AND = 0x0
+    OR = 0x1
+    GROUP_OPEN = 0x2
+    GROUP_CLOSE = 0x3
+    # Special types used for defining the grammar
+    START = 0x80
+    END = 0x81
+    REMOVE_FIRST = 0xc6
+    REMOVE_NEXT = 0xc7
 
 
 class Query(object):
@@ -32,6 +37,8 @@ class Query(object):
     Now the query is ready to be evaluated using eval() and your own callback functions to evaluate the results. You
     could alternatively get the raw postfix token array using get_parsed(), which is very simple to evaluate manually
     by iterating over the tokens and using a single stack - this can be useful for more complex evaluations.
+
+    I should probably replace this with a PLY implementation instead. But it was fun to make!
     """
     # See the property getters below for documentation on these maps
     _operator_map = {
@@ -45,6 +52,40 @@ class Query(object):
     _operator_precedence = {
         Operator.AND: 100,
         Operator.OR: 50,
+    }
+
+    # See the property getters below for documentation on these maps
+    _operator_rules = {
+        Operator.START: {
+            Operator.AND: Operator.REMOVE_NEXT,
+            Operator.OR: Operator.REMOVE_NEXT,
+            Operator.GROUP_CLOSE: Operator.REMOVE_NEXT,
+        },
+        str: {
+            str: Operator.AND,
+            Operator.GROUP_OPEN: Operator.AND,
+        },
+        Operator.AND: {
+            Operator.AND: Operator.REMOVE_FIRST,
+            Operator.OR: Operator.REMOVE_FIRST,
+            Operator.GROUP_CLOSE: Operator.REMOVE_FIRST,
+            Operator.END: Operator.REMOVE_FIRST,
+        },
+        Operator.OR: {
+            Operator.AND: Operator.REMOVE_NEXT,
+            Operator.OR: Operator.REMOVE_FIRST,
+            Operator.GROUP_CLOSE: Operator.REMOVE_FIRST,
+            Operator.END: Operator.REMOVE_FIRST,
+        },
+        Operator.GROUP_OPEN: {
+            Operator.AND: Operator.REMOVE_NEXT,
+            Operator.OR: Operator.REMOVE_NEXT,
+            # GROUP_CLOSE and END are OK given automatic handling of mismatched parentheses and the algorithm
+        },
+        Operator.GROUP_CLOSE: {
+            Operator.GROUP_OPEN: Operator.AND,
+            str: Operator.AND,
+        },
     }
 
     @property
@@ -62,6 +103,30 @@ class Query(object):
         A copy is returned.
         """
         return self._operator_precedence.copy()
+
+    @property
+    def operator_rules(self) -> {Operator: ([Operator], Operator)}:
+        """
+        Read-only property: two-layer dict of Operator `first_token` to: `{next_token: correction_token}`. Defines
+        pairs of tokens (first_token, next_token) that are NOT ALLOWED to be consecutive, and the correction that can
+        be made to implicitly fix the situation.
+
+        * next_token is a token or type of token which CANNOT immediately follow `first_token`.
+        * `correction_token` is the token that can be used to correct the situation. It is inserted between
+            `first_token` and `next_token`.
+
+        `first_token` and `next_token` can take on some special values:
+
+        * `str` (the object) represents a normal string token.
+        * Operator.BEGIN: For the beginning of a string. Can only be `first_token` (for obvious reasons).
+        * Operator.END: For the end of a strong. Can only be `next_token` (for obvious reasons).
+
+        Correction tokens are usually Operator enum values, but may take on special tokens:
+        *
+
+        A copy is returned.
+        """
+        return self._operator_rules.copy()
 
     def __init__(self, query_string: str, logger: Logger=None):
         self.string = query_string
@@ -213,8 +278,6 @@ class Query(object):
             * There are no functions
             * Only two operators, AND and OR, of different precedence and left-associative, are supported
 
-
-
         Requires self.tokens to be populated and operators to be elements of the Operator enum
         """
 
@@ -223,11 +286,29 @@ class Query(object):
         op_stack = []
         output = []
 
-        for token in self.tokens:
-            if isinstance(token, Operator):
-                self._parse_process_operator(token, op_stack, output)
-            else:  # non-operator token
-                output.append(token)
+        def rotate(queue: list, next_token):
+            queue.pop(0)
+            queue.append(next_token)
+
+        # this loop needs to be aware of the "current" token and the "next" token to interpret its grammar rules
+        # So we'll loop, but buffer it in a 2-long queue [current_token, next_token]
+        # At the end of the loop, we'll still have one token left to process (and no next token since it's the end)
+        # (In C I would just iterate on the index and use index+1 for next token... I *think* my solution here is
+        # easier to understand and pythonic.)
+
+        token_queue = [None, None]  # queue of [current_token, next_token]
+
+        for next_token in self.tokens:
+            if token_queue[0] is None:
+                rotate(token_queue, next_token)
+                continue
+            self._parse_process_token(token_queue, op_stack, output)
+            rotate(token_queue, next_token)  # prepare for next iteration
+
+        # finish up the queue (since the queue means we're two tokens behind the current loop iteration...)
+        while token_queue[0] is not None:
+            self._parse_process_token(token_queue, op_stack, output)
+            rotate(token_queue, None)
 
         # once all tokens processed, take care of remaining op_stack
         try:
@@ -243,6 +324,18 @@ class Query(object):
             pass  # empty op_stack - this is normal
 
         self.postfix = output
+
+    def _parse_process_token(self, token_queue: list, op_stack: [str], output: list):
+        """
+        :param token_queue: current token queue, [current_token, next_token]
+        :param op_stack: current operator stack - may be modified by this method
+        :param output: current output - may be modified by this method
+        :return: None
+        """
+        if isinstance(token_queue[0], Operator):
+            self._parse_process_operator(token_queue[0], op_stack, output)
+        else:  # non-operator token
+            output.append(token_queue[0])
 
     def _parse_process_operator(self, op: Operator, op_stack: [str], output: list):
         """
