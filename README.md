@@ -6,14 +6,20 @@ The features supported:
 
 (**WARNING**: This software is in early development, so only some of these features are functional. It's not ready for general use. Curious where things are? Feel free to contact me.)
 
-* Searching via network, channel, usermask, date/time range, keywords
-* Support for wildcards ? and \* for channel, usermask, keywords
-*
-* User management: protects logs from public access via username/password. Optionally, limit the channels that can be searched
+* Searching quassel logs via network, channel, usermask, date/time range, keywords (boolean search)
+* User management: protects logs from public access via username/password. Optionally, limit the channels that can be searched by each user (does not integrate with quassel's users)
+* Text and HTML export of results
+* Support for IRC formatting and colours and nickname colours
+* Context expansion of search results
+* Default CSS colour scheme available in your choice of [Solarized](http://ethanschoonover.com/solarized) Light or Dark =\] (I know some are less fond of it, but I personally love this colour palette!)
 
 A lot of its power is derived from a need, in medium to large IRC communities, for the ops to investigate reports of events happening in the past and to save records or distribute them to other ops. (Admittedly, a lot of it is just because I can and it's fun, too!)
 
-**Warning:** This application is meant for *personal* use. Please do not use it for the purpose of making your logs available to the public at large ("public logging").
+# A note on public logging
+
+**Important**:
+
+This application is meant for *personal* use. Please do not use it for the purpose of making your logs available to the public at large ("public logging").
 
 Many channels do not allow public logging. Even if it is not expressly disallowed, public logging is generally looked down upon, as it fails to respect user privacy (even for public channels&mdash;in the same way that you might not want your conversations in public to be recorded and made available to everyone).
 
