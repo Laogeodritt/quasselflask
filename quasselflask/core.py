@@ -26,10 +26,19 @@ __version__ = "0.1"
 
 
 class DefaultConfig:
-    # SQLALCHEMY_DATABASE_URI
+    """
+    These configuration variables can be copied into your quasselflask.cfg file and changed.
+    Only copy the lines you want to change. You don't need to copy all of them if the defaults are OK.
+    """
+    # SQLALCHEMY_DATABASE_URI = 'postgresql://sqluser:password@hostname-or-IP-address/databasename'
     SITE_NAME = 'SiteName'
     MAX_RESULTS_DEFAULT = 100  # Default maximum results set in the search form
     MAX_RESULTS = 1000  # Maximum number of results per query, regardless of search form settings.
+
+class LibraryConfig:
+    """
+    Configurations for the libraries. Do not change these unless you know what you're doing.
+    """
     SQLALCHEMY_TRACK_MODIFICATIONS = False
 
 
