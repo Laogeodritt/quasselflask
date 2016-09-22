@@ -19,6 +19,7 @@ class Operator(Enum):
     END = 0x81
     REMOVE_FIRST = 0xc6
     REMOVE_NEXT = 0xc7
+    REMOVE_BOTH = 0xc8
 
 
 class Query(object):
@@ -80,7 +81,8 @@ class Query(object):
         Operator.GROUP_OPEN: {
             Operator.AND: Operator.REMOVE_NEXT,
             Operator.OR: Operator.REMOVE_NEXT,
-            # GROUP_CLOSE and END are OK given automatic handling of mismatched parentheses and the algorithm
+            Operator.GROUP_CLOSE: Operator.REMOVE_BOTH,
+            Operator.END: Operator.REMOVE_FIRST
         },
         Operator.GROUP_CLOSE: {
             Operator.GROUP_OPEN: Operator.AND,
@@ -266,6 +268,87 @@ class Query(object):
         return token
 
     def parse(self):
+        self.parse_grammar()
+        self.parse_postfix()
+
+    def parse_grammar(self):
+        """
+        Checks the grammar of the tokenized strings, and applies certain corrections to allow graceful degradation of
+        malformed inputs, per the `self._operator_rules`.
+
+        I feel as if the fact that I'm massaging based on a two-token context means I'm in over my head and should
+        go grab a lex/yacc implementation. On the other hand, I'm not sure about the malformed input resilience with
+        that---I guess I can possibly define certain token combinations like '( AND' as valid expressions that evaluate
+        to their corrected value '('?
+
+        TODO: It might be possible to integrate this resilience, along the same lines as above, into the main parser
+        algorithm (parse_postfix) - need to think about these cases more and/or test against the test cases:
+
+        * Implicit 'AND' before a string: observation, when pushing strings to output, the total operators (except
+            parentheses) is one less than the total words [in both output and op_stack].
+            Does this always hold true? Thinking about 'word1 AND word2 AND word3' or 'word1 AND (word2 AND word3)'
+            right now and seems OK. If an AND is missing, this can be detected and an AND can be pushed to the op stack
+            before pushing the string to the output.
+        * Implicit 'AND' before an opening parenthesis: consider the open parenthesis like a string
+        * Double operators: Similar observation as above: when processing an operator (before pushing), total operators
+            (excluding parens) is one less than total words. If adding too many operators exceeds this, then either the
+            top operator of the stack should be replaced with the current operator, or the current operator discarded.
+        * Accidentally unary ANDs and ORs detects like double operators, current operator should be dropped?
+        * Empty parentheses '()' are fine: parse algorithm will drop them immediately. What about the case
+            'word1 () OR word2'? An implicit 'AND' is inserted before word1 because we haven't seen the OR yet...
+            (also consider the case 'word1 (AND AND AND) OR word2', where the ANDs in the parens should be dropped by
+            the above algorithm). Solution: re-implement "correction" detection? (Maybe easier to implement as
+            Operator.AND_IMPLICIT rather than storing a boolean for it.)
+        :return: None
+        """
+        new_tokens = [Operator.START]
+        new_tokens_corr = [False]
+        rules = self._operator_rules
+        for token in self.tokens:
+            self._parse_grammar_token(token, new_tokens, new_tokens_corr, rules)
+        self._parse_grammar_token(Operator.END, new_tokens, new_tokens_corr, rules)
+        self.tokens = new_tokens
+
+    def _parse_grammar_token(self, token, accumulator: list, accumulator_corrections: [bool],
+                             rules: {Operator: {Operator: Operator}}):
+        while True:  # loop allows continuous rechecking when REMOVE_FIRST rules modifies the sequence
+            try:
+                last_token = accumulator[-1] if isinstance(accumulator[-1], Operator) else str
+                next_token = token if isinstance(token, Operator) else str
+                corrector = rules[last_token][next_token]
+                # remove correctors that broke things as priority
+                if (corrector is Operator.REMOVE_FIRST or corrector is Operator.REMOVE_NEXT or corrector is Operator.REMOVE_BOTH)\
+                        and accumulator_corrections[-1]:
+                    accumulator.pop()
+                    accumulator_corrections.pop()
+                elif corrector is Operator.REMOVE_FIRST:
+                    accumulator.pop()
+                    accumulator_corrections.pop()
+                    continue  # new token sequence in the accumulator - let's check it
+                elif corrector is Operator.REMOVE_NEXT:
+                    return  # we drop the "next" token - move on to the one after that
+                elif corrector is Operator.REMOVE_BOTH:
+                    accumulator.pop()  # drop the "last" token
+                    accumulator_corrections.pop()
+                    return  # also drop the "next" token and move on
+                else:
+                    accumulator.append(corrector)
+                    accumulator_corrections.append(True)
+                    accumulator.append(token)
+                    accumulator_corrections.append(False)
+                    return  # after corrective insertion, we're done with this token
+            except KeyError:  # this means it's an acceptable combination (no corrective rules exist)
+                accumulator.append(token)
+                accumulator_corrections.append(False)
+                return  # finished with this token
+            except IndexError:  # new_tokens is empty because of REMOVE_FIRST rules
+                # unusual situation (because there's should be a REMOVE_FIRST rule on Operator.START)
+                # but we'll run with it and assume it's normal
+                accumulator.append(token)
+                accumulator_corrections.append(False)
+                return  # finished with this token
+
+    def parse_postfix(self):
         """
         Just this: https://en.wikipedia.org/wiki/Shunting-yard_algorithm
 
@@ -278,37 +361,17 @@ class Query(object):
             * There are no functions
             * Only two operators, AND and OR, of different precedence and left-associative, are supported
 
-        Requires self.tokens to be populated and operators to be elements of the Operator enum
+        Requires self.tokens to be populated (via tokenize()) and operators to be elements of the Operator enum.
+        parse_grammar() should be run first to verify the grammar and implement certain corrections to allow for
+        graceful degradation of malformed inputs.
         """
-
-        #  TODO An extended feature from the shunting yard (commented as necessary):
-        # * Consecutive words have an implicit AND.
         op_stack = []
         output = []
-
-        def rotate(queue: list, next_token):
-            queue.pop(0)
-            queue.append(next_token)
-
-        # this loop needs to be aware of the "current" token and the "next" token to interpret its grammar rules
-        # So we'll loop, but buffer it in a 2-long queue [current_token, next_token]
-        # At the end of the loop, we'll still have one token left to process (and no next token since it's the end)
-        # (In C I would just iterate on the index and use index+1 for next token... I *think* my solution here is
-        # easier to understand and pythonic.)
-
-        token_queue = [None, None]  # queue of [current_token, next_token]
-
-        for next_token in self.tokens:
-            if token_queue[0] is None:
-                rotate(token_queue, next_token)
-                continue
-            self._parse_process_token(token_queue, op_stack, output)
-            rotate(token_queue, next_token)  # prepare for next iteration
-
-        # finish up the queue (since the queue means we're two tokens behind the current loop iteration...)
-        while token_queue[0] is not None:
-            self._parse_process_token(token_queue, op_stack, output)
-            rotate(token_queue, None)
+        for token in self.tokens:
+            if isinstance(token, Operator):
+                self._parse_process_operator(token, op_stack, output)
+            else:  # non-operator token
+                output.append(token)
 
         # once all tokens processed, take care of remaining op_stack
         try:
@@ -344,6 +407,10 @@ class Query(object):
         :param output: current output - may be modified by this method
         :return: None
         """
+        if op is Operator.START or op is Operator.END\
+                                or op is Operator.REMOVE_FIRST or op is Operator.REMOVE_NEXT:  # last two just in case
+            return
+
         if op is Operator.GROUP_OPEN:
             op_stack.append(op)
         elif op is Operator.GROUP_CLOSE:

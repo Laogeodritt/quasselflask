@@ -298,15 +298,15 @@ class TestQuery(TestCase):
              ['word1', 'word2', Op.OR, 'word3', 'word4', Op.OR, Op.AND]),  # missing open and close parens (diff groups)
 
             # Missing arguments
-            ([Op.OR, 'word1', Op.OR, 'word2'], ['word1', Op.OR, 'word2']),  # (malformed) unary pre-OR
+            ([Op.OR, 'word1', Op.OR, 'word2'], ['word1', 'word2', Op.OR]),  # (malformed) unary pre-OR
 
             (['word1', Op.OR, 'word2', Op.OR], ['word1', 'word2', Op.OR]),  # (malformed) unary post-OR
 
             (['word1', Op.OR, Op.GROUP_OPEN, Op.OR, 'word2', Op.OR, 'word3', Op.GROUP_CLOSE],
-             ['word1', 'word2', Op.OR, 'word3', Op.OR, Op.OR]),  # (malformed) unary pre-OR parens
+             ['word1', 'word2', 'word3', Op.OR, Op.OR]),  # (malformed) unary pre-OR parens
 
             (['word1', Op.OR, Op.GROUP_OPEN, 'word2', Op.OR, 'word3', Op.OR, Op.GROUP_CLOSE],
-             ['word1', 'word2', Op.OR, 'word3', Op.OR, Op.OR]),  # (malformed) unary post-OR parens
+             ['word1', 'word2', 'word3', Op.OR, Op.OR]),  # (malformed) unary post-OR parens
 
             # Parenthesis weirdness
             (['word1', Op.AND, 'word2', Op.GROUP_OPEN, Op.GROUP_CLOSE, Op.OR, 'word3'],
