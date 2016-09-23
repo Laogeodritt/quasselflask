@@ -144,6 +144,7 @@ Query parameters (all optional):
 * PM search
 
 # Things to document
+* QF_ALLOW_TEST_PAGES
 * User:
 
       \connect quasseldb

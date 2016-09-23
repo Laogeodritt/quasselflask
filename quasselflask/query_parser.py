@@ -3,10 +3,75 @@ Query parsing tools.
 
 Project: QuasselFlask
 """
-# TODO: update docstring
 
 from enum import Enum
 from logging import Logger
+
+
+def escape_like(s: str) -> str:
+    """
+    Escape special characters _ and % for LIKE queries, as well as the escape character '\'.
+    :param s:
+    :return:
+    """
+    if s is None:
+        return None
+    return s.replace('\\', '\\\\').replace('_', '\\_').replace('%', '\\%')
+
+
+def extract_glob_list(s: str, sep=' ') -> [str]:
+    """
+    Extracts an argument of `sep`-separated items, splits it into a list, and converts GLOB-style syntax to SQL LIKE-
+    style syntax, ready for use in SQLAlchemy.
+
+    :param s: Argument string to split.
+    :param sep: The separator character.
+    :return: List of extracted strings. If the `key` is not present in `args`, or its value is empty, returns an
+            empty list.
+    """
+    return [convert_glob_to_like(s)[0] for s in s.split(sep) if s and not s.isspace()]
+
+
+def convert_glob_to_like(s: str) -> (str, bool):
+    """
+    Converts a glob-style wildcard string to SQL LIKE syntax. Only handles conversion of * and ? to % and _, plus
+    escaped characters via '\' (no character classes). NOTE: Does not place % around the expression.
+    :param s: Glob string to convert.
+    :return: (like_str, hasWildcards) - hasWildcards is True if a non-escaped wildcard was found.
+    """
+    if s is None:
+        return None
+
+    s_parse = []
+    is_escaped = False
+    has_wildcards = False
+    for c in s:
+        if is_escaped:
+            if c == '\\':
+                s_parse.append('\\\\')
+            elif c == '*' or c == '?':
+                s_parse.append(c)
+            elif c == '_' or c == '%':
+                s_parse.append('\\' + c)
+            else:
+                s_parse.append(c)
+            is_escaped = False
+        else:
+            if c == '\\':
+                is_escaped = True
+            elif c == '*':
+                s_parse.append('%')
+                has_wildcards = True
+            elif c == '?':
+                s_parse.append('_')
+                has_wildcards = True
+            elif c == '_' or c == '%':
+                s_parse.append('\\' + c)
+            else:
+                s_parse.append(c)
+    if is_escaped:  # in case there's a hanging backslash
+        s_parse.append('\\\\')
+    return ''.join(s_parse), has_wildcards
 
 
 class Operator(Enum):
@@ -22,9 +87,9 @@ class Operator(Enum):
     REMOVE_BOTH = 0xc8
 
 
-class Query(object):
+class BooleanQuery(object):
     """
-    Parser for binary search queries (Google-like). Supports:
+    Parser for boolean search queries (Google-like). Supports:
 
     * AND and OR operators (left-associative, AND has higher precedence)
     * Implicit AND of multiple space-separated words
@@ -190,9 +255,10 @@ class Query(object):
         """
         Process a character during tokenization, outside special contexts.
 
-        :param c: current character being processed
+        :param c: current character being processed. Note that a whitespace character is handled specially: it is
+            considered equivalent to a space, and if it is added to the output it will be converted to a space 0x20.
         :param accumulator: current token accumulator
-        :param delimiters: token delimiters (which aren't tokens themselves), default [' ']
+        :param delimiters: token delimiters (which aren't tokens themselves), default [' '].
         :param tokens: token delimiters which also act as single-char tokens themselves; default ['(', ')']
         :param escape: the escape character
         :param quote: the quote character
@@ -206,6 +272,9 @@ class Query(object):
             delimiters = [' ']
         if tokens is None:
             tokens = ['(', ')']
+
+        if c.isspace():  # all whitespace treated as spaces
+            c = ' '
 
         if c in delimiters:
             self._add_token(accumulator)
@@ -236,6 +305,10 @@ class Query(object):
         :param escape: escape char
         :return: None
         """
+
+        if c.isspace():  # all whitespace treated as spaces
+            c = ' '
+
         if c in escapables:
             accumulator.append(c)
         else:
@@ -432,7 +505,7 @@ class Query(object):
                 pass  # This is OK - popping entire op_stack is equivalent to hitting GROUP_OPEN
             op_stack.append(op)
 
-    def eval(self, and_func=None, or_func=None):
+    def eval(self, and_func=None, or_func=None, operand_wrapper=None):
         """
         Evaluate the processed query, once tokenization + infix conversion is completed.
 
@@ -442,21 +515,25 @@ class Query(object):
 
         :param and_func: Callback taking two arguments for the AND function.
         :param or_func: Callback taking two operands for the OR function.
+        :param operand_wrapper: Callback that is called on all operands before AND and OR operations (including operands
+            that are evaluated from AND/OR). Useful if all operands need a conversion before being passed to AND/OR
+            (but make sure to guard against reconverting an already AND'd or OR'd result). Must return the value that is
+            to be passed to AND/OR functions or returned as the expression evaluation result.
         :return: The final result of evaluation
         :raise ValueError: unexpected tokens or insufficient operands. In the case of an error being raised, it is the
                 caller's responsibility to clean up the expression execution that was occurring via the callbacks.
         """
-
-        #
-        # FIXME: Unary AND/OR should be silently ignored (malformed input:
-        # AND/OR at beginning/end of string or parenthetical)
-        #
         arg_queue = []
         token = None
+        if not self.postfix:
+            return None
+        if operand_wrapper is None:
+            def noop(s): pass
+            operand_wrapper = noop
         try:
             for token in self.postfix:
                 if not isinstance(token, Operator):
-                    arg_queue.append(token)
+                    arg_queue.append(operand_wrapper(token))
                 else:
                     if token is Operator.AND:
                         arg_queue.append(and_func(arg_queue.pop(), arg_queue.pop()))
@@ -466,6 +543,7 @@ class Query(object):
                         ValueError('Unexpected operator %s during eval', token.name)
             if len(arg_queue) != 1:
                 raise ValueError('Orphaned operands during eval')
+            return arg_queue[0]
+
         except IndexError:
             raise ValueError('Insufficient operands for operator %s during eval', token.name)
-

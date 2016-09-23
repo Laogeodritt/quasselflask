@@ -4,23 +4,21 @@ Main QuasselFlask package.
 Project: QuasselFlask
 """
 
-from flask import Flask, request, g
-from flask import render_template, redirect, url_for
-from flask_sqlalchemy import SQLAlchemy
-
-from sqlalchemy import or_
-from sqlalchemy.ext.automap import automap_base
-from sqlalchemy.sql.schema import MetaData
-import sqlalchemy.orm.query  # for IDE inspection
-
-from werkzeug.datastructures import MultiDict
-
-from datetime import datetime
+import os
 import re
 import time
-import os
-
+from datetime import datetime
 from enum import Enum
+from typing import Callable
+
+import sqlalchemy.orm
+import sqlalchemy.orm.query  # for IDE inspection
+from flask import Flask, request, g, render_template, redirect, url_for
+from flask_sqlalchemy import SQLAlchemy, get_debug_queries
+from sqlalchemy import MetaData, and_, or_, desc
+from sqlalchemy.ext.automap import automap_base
+
+from quasselflask.query_parser import extract_glob_list, convert_glob_to_like, escape_like, BooleanQuery
 
 __version__ = "0.1"
 
@@ -35,16 +33,19 @@ class DefaultConfig:
     MAX_RESULTS_DEFAULT = 100  # Default maximum results set in the search form
     MAX_RESULTS = 1000  # Maximum number of results per query, regardless of search form settings.
 
+
 class LibraryConfig:
     """
     Configurations for the libraries. Do not change these unless you know what you're doing.
     """
     SQLALCHEMY_TRACK_MODIFICATIONS = False
+    SQLALCHEMY_RECORD_QUERIES = bool(os.environ['FLASK_DEBUG'])
 
 
 # Bootstrap the application
 app = Flask(__name__, instance_path=os.environ.get('QF_CONFIG_PATH', None), instance_relative_config=True)
 app.config.from_object(DefaultConfig)
+app.config.from_object(LibraryConfig)
 app.config.from_pyfile('quasselflask.cfg')
 
 # Bootstrap the database
@@ -63,11 +64,18 @@ Buffer = Base.classes.buffer
 
 
 def __repr_backlog(self):
-    return "[{:%Y-%m-%d %H:%M:%S}] <{}>[{:d}] {}".format(self.time, self.sender.sender, self.type, self.message)
+    return "[{:%Y-%m-%d %H:%M:%S}] [{:d}]<{}:{}> {}".format(self.time, self.type, self.buffer.buffername,
+                                                            self.sender.sender, self.message)
+
+
 Backlog.__repr__ = __repr_backlog
 
 
 class BacklogType(Enum):
+    """
+    https://github.com/quassel/quassel/blob/master/src/common/message.h
+    That is all.
+    """
     Plain = 0x00001
     Notice = 0x00002
     Action = 0x00004
@@ -87,6 +95,7 @@ class BacklogType(Enum):
     NetsplitQuit = 0x10000
     Invite = 0x20000
 
+
 @app.before_request
 def globals_init():
     g.start_time = time.time()
@@ -101,20 +110,75 @@ def home():
 
 @app.route('/search')
 def search():
-    sql_args = search_parse_args(request.args)
+    # some helpful constants for the request argument processing
+    # type of extraction/processing - this is more documentation as it's not used to process at the moment
+    unique_args = {'start', 'end', 'limit', 'query_wildcard'}
+    list_wildcard_args = {'channel', 'usermask'}  # space-separated lists; if any arg repeated, list is concatenated
+    query_args = {'query'}  # requires query parsing
+    search_args = unique_args | list_wildcard_args | query_args
 
-    # If no arguments passed, we can just redirect to the home
-    if sql_args is None:
+    args = request.args
+    available_args = search_args & set(args.keys())
+
+    # if no arguments passed, we can just redirect to the home
+    if not available_args:
         return redirect(url_for('home'))
 
-    query = db.session.query(Backlog).join(Buffer)  # type: sqlalchemy.orm.query.Query
-    results = query.filter(Buffer.buffername == request.args['channel'])[0:2]
+    # prepare SQL query joins
+    query = db.session.query(Backlog).join(Buffer).join(Sender)  # type: sqlalchemy.orm.query.Query
 
-    print(results)
-    return render_template('search_form.html')
-#    return render_template('search_form.html', search_channel='abc', search_usermask='def tyy',
-#        search_start='2016-09-15 11:22:33.000', search_end='2016-09-15 12:33:44.000',
-#        search_limit=12, search_query='search1 search2', search_query_wildcard=True)
+    # Extract and process args for the SQL queries
+    # Unique arguments
+    query_wildcard = args.get('query_wildcard', None, int)  # use later
+
+    limit = args.get('limit', app.config['MAX_RESULTS_DEFAULT'], int)
+
+    start = None
+    if 'start' in available_args:
+        try:
+            start = convert_str_to_datetime(args.get('start'))
+            query = query.filter(Backlog.time >= start)
+        except ValueError:
+            pass  # TODO: handle error
+
+    end = None
+    if 'end' in available_args:
+        try:
+            end = convert_str_to_datetime(args.get('end'))
+            query = query.filter(Backlog.time <= end)
+        except ValueError:
+            pass  # TODO: handle error
+
+    # Flat-list arguments
+    channels = extract_glob_list(args.get('channel', ''))
+    for channel in channels:
+        query = query.filter(Buffer.buffername.ilike(channel))  # TODO: ilike efficiency?
+
+    usermasks = extract_glob_list(args.get('usermask', ''))
+    for usermask in usermasks:
+        query = query.filter(Sender.sender.ilike(usermask))  # TODO: ilike efficiency?
+
+    # fulltext string
+    query_message_filter, parsed_query = parse_query(args.get('query'), query_wildcard)
+    if query_message_filter is not None:
+        query = query.filter(query_message_filter)
+
+    results = reversed(query.order_by(desc(Backlog.time)).limit(limit).all())
+
+    app.logger.debug("Args|SQL-processed: limit=%i channel%s usermask%s start[%s] end[%s] query%s %s",
+                     limit, channels, usermasks, start.isoformat() if start else '', end.isoformat() if end else '',
+                     parsed_query, '[wildcard]' if query_wildcard else '[no_wildcard]')
+
+    info = get_debug_queries()[0]
+    app.logger.debug("SQL: {}\nParameters: {}\nDuration: {:.3f}s".format(
+            info.statement, repr(info.parameters), info.duration))
+    app.logger.debug("Results:\n" + '\n'.join([repr(result) for result in results]))
+
+    # TODO: display results
+    return render_template('search_form.html', search_channel=args.get('channel'), search_usermask=args.get('usermask'),
+                           search_start=args.get('start'), search_end=args.get('end'),
+                           search_query=args.get('query'), search_query_wildcard=args.get('query_wildcard', type=bool),
+                           search_limit=args.get('limit', app.config['MAX_RESULTS_DEFAULT'], int))
 
 
 @app.route('/context/<int:post_id>/<int:num_context>')
@@ -122,66 +186,48 @@ def context(post_id, num_context):
     pass  # TODO context endpoint
 
 
-def search_parse_args(args: MultiDict) -> MultiDict:
+if os.environ.get('QF_ALLOW_TEST_PAGES'):
+    @app.route('/test/parse')
+    def test_parse():
+        pass  # TODO: test_parse endpoint
+
+
+def parse_query(query_str: str, query_wildcard: bool) -> (sqlalchemy.orm.Query, [str]):
     """
-    Parse args. Return MultiDict containing SQLAlchemy-ready arguments, or None on failure (or if no args).
-
-    :raise ValueError: An argument is invalid. Exception argument is a list of tuples,
-            [(arg_key, arg_value, error_text), ...]. Error text may be technical and not suitable for user messages.
+    Parse a query string for a boolean search and return an SQLAlchemy object that can be passed to filter() or
+    expression.select().where().
+    :param query_str: Input query string.
+    :param query_wildcard: If true, search tokens are considered to allow wildcards and a LIKE search is performed
+        instead of a keyword search. (Note that a LIKE search doesn't necessarily break on word boundaries, so
+        a search of "back" can match "backed" or "aback", even without wildcards.)
+    :return: SQLAlchemy query object for a filter() call
     """
-    # some helpful constants for the request
 
-    # type of extraction/processing
-    unique_args = {'start', 'end', 'limit', 'query_wildcard'}
-    flat_args = {'channel', 'usermask'}  # args that are space-separated lists; if an arg is repeated, flatten list
-    query_args = {'query'}  # requires query parsing
-    search_args = unique_args | flat_args | query_args
+    def make_query_evaluator(operator: Callable[[str, str], sqlalchemy.orm.Query]):
+        def evaluator(a: str, b: str):
+            return operator(a, b)
+        return evaluator
 
-    available_args = search_args & set(args.keys())
-    parsed_args = MultiDict()
+    def wildcard(s: str):
+        if isinstance(s, str):
+            return Backlog.message.ilike('%' + convert_glob_to_like(s)[0] + '%')
+        else:
+            return s  # can also be a boolean SQL condition object
 
-    # if no params set
-    if len(available_args) == 0:
-        return None
+    def plain(s: str):
+        if isinstance(s, str):
+            return Backlog.message.ilike('%' + escape_like(s) + '%')
+        else:
+            return s  # can also be a boolean SQL condition object
 
-    # Extract and preprocess args for the SQL queries
-    # Unique arguments
-    if 'start' in available_args:
-        try:
-            parsed_args.add('start', convert_str_to_datetime(args.get('start')))
-        except ValueError:
-            pass  # TODO: handle error
-
-    if 'end' in available_args:
-        try:
-            parsed_args.add('end', convert_str_to_datetime(args.get('end')))
-        except ValueError:
-            pass  # TODO: handle error
-
-    parsed_args.add('query_wildcard', args.get('query_wildcard', None, int) == 1)
-
-    parsed_args.add('limit', args.get('limit', app.config['MAX_RESULTS_DEFAULT'], int))  # TODO: copy to rendered form
-
-    # Flat-list arguments
-    parsed_args.add('channel', _extract_glob_list(args.get('channel')))
-    parsed_args.add('usermask', _extract_glob_list(args.get('usermask')))
-
-    # TODO: parse the query
-
-    return parsed_args
-
-
-def _extract_glob_list(s, sep=' ') -> [str]:
-    """
-    Extracts an argument of `sep`-separated items, splits it into a list, and converts GLOB-style syntax to SQL LIKE-
-    style syntax, ready for use in SQLAlchemy.
-
-    :param s: Argument string to split.
-    :param sep: The separator character.
-    :return: List of extracted strings. If the `key` is not present in `args`, or its value is empty, returns an
-            empty list.
-    """
-    return [convert_glob_to_like(s)[0] for s in s.split(sep) if s != '' and not s.isspace()]
+    q = BooleanQuery(query_str, app.logger)
+    q.tokenize()
+    q.parse()
+    if query_wildcard:
+        sql_query_filter = q.eval(and_, or_, wildcard)
+    else:
+        sql_query_filter = q.eval(and_, or_, plain)
+    return sql_query_filter, q.get_parsed()
 
 
 def convert_str_to_datetime(s: str) -> datetime:
@@ -198,48 +244,6 @@ def convert_str_to_datetime(s: str) -> datetime:
     norm_s = re.sub('-+', '-', norm_s)
     segments_count = norm_s.count('-') + 1
     return datetime.strptime(norm_s, '-'.join(dt_format_arr[0:segments_count]))
-
-
-def convert_glob_to_like(s: str) -> (str, bool):
-    """
-    Converts a glob-style wildcard string to SQL LIKE syntax. Only handles conversion of * and ? to % and _, plus
-    escaped characters via '\' (no character classes).
-    :param s: Glob string to convert.
-    :return: (like_str, hasWildcards) - hasWildcards is True if a non-escaped wildcard was found.
-    """
-    if s is None:
-        return None
-
-    s_parse = []
-    is_escaped = False
-    has_wildcards = False
-    for c in s:
-        if is_escaped:
-            if c == '\\':
-                s_parse.append('\\\\')
-            elif c == '*' or c == '?':
-                s_parse.append(c)
-            elif c == '_' or c == '%':
-                s_parse.append('\\' + c)
-            else:
-                s_parse.append(c)
-            is_escaped = False
-        else:
-            if c == '\\':
-                is_escaped = True
-            elif c == '*':
-                s_parse.append('%')
-                has_wildcards = True
-            elif c == '?':
-                s_parse.append('_')
-                has_wildcards = True
-            elif c == '_' or c == '%':
-                s_parse.append('\\' + c)
-            else:
-                s_parse.append(c)
-    if is_escaped:  # in case there's a hanging backslash
-        s_parse.append('\\')
-    return ''.join(s_parse), has_wildcards
 
 
 if __name__ == '__main__':

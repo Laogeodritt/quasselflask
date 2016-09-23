@@ -1,0 +1,16 @@
+backlog
+ messageid |          time           | bufferid | type | flags | senderid |                 message
+
+buffer
+ bufferid | userid | groupid | networkid |   buffername   |  buffercname   | buffertype | lastseenmsgid | markerlinemsgid | key | joined
+
+network
+ networkid | userid | networkname  | identityid | encodingcodec | decodingcodec | servercodec | userandomserver |            perform            | useautoidentify | autoidentifyservice |   autoidentifypassword   | usesasl | saslaccount |       saslpassword       | useautoreconnect | autoreconnectinterval | autoreconnectretries | unlimitedconnectretries | rejoinchannels | connected | usermode | awaymessage | attachperform | detachperform
+-----------+--------+--------------+------------+---------------+---------------+-------------+-----------------+-------------------------------+-----------------+---------------------+--------------------------+---------+-------------+--------------------------+------------------+-----------------------+----------------------+-------------------------+----------------+-----------+----------+-------------+---------------+---------------
+         1 |      1 | Freenode     |          1 |               |               |             | f               |                               | f               |                     |                          | t       | saslaccount | saslpassword          | t                |                    60 |                   20 | f                       | t              | t         | -        |             |               |
+
+quasseluser
+ userid |  username   |                 password
+
+sender
+ senderid |                    sender

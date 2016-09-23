@@ -5,7 +5,7 @@ Project: QuasselFlask
 """
 
 from unittest import TestCase
-from quasselflask.query_parser import Query, Operator as Op
+from quasselflask.query_parser import BooleanQuery, Operator as Op
 from logging import Logger
 import logging
 
@@ -18,7 +18,7 @@ class TestQuery(TestCase):
         pass
 
     def test__add_token(self):
-        q = Query('', self.logger)
+        q = BooleanQuery('', self.logger)
         expected_tokens = []
         self.assertIsNone(q._add_token(list()), "empty char accumulator token: return value")
         self.assertEqual(q.tokens, expected_tokens, "empty char accumulator token: tokens list")
@@ -59,7 +59,7 @@ class TestQuery(TestCase):
     def test__tokenize_escaped(self):
         acc = []
 
-        q = Query('', self.logger)
+        q = BooleanQuery('', self.logger)
 
         # empty string behaviour undefined. Should never be passed: used only while looping over string
 
@@ -100,7 +100,7 @@ class TestQuery(TestCase):
         acc = acc0.copy()
         tokens = []
 
-        q = Query('', self.logger)
+        q = BooleanQuery('', self.logger)
 
         # empty string behaviour undefined. Should never be passed: used only while looping over string
 
@@ -182,12 +182,12 @@ class TestQuery(TestCase):
         ]
 
         for test_string, expected_result in test_set:
-            q = Query(test_string, self.logger)
+            q = BooleanQuery(test_string, self.logger)
             q.tokenize()
             self.assertEqual(q.tokens, expected_result, "Test string: %s" % test_string)
 
     def test__parse_process_operator(self):
-        q = Query('', self.logger)
+        q = BooleanQuery('', self.logger)
 
         # Test Op.GROUP_OPEN
         # setup string: "word1 AND word2 OR ( ..."
@@ -343,7 +343,7 @@ class TestQuery(TestCase):
         :return:
         """
         for test_tokens, expected_result in test_set:
-            q = Query('', self.logger)
+            q = BooleanQuery('', self.logger)
             q.tokens = test_tokens
             q.parse()
             self.assertEqual(q.postfix, expected_result, "Test input: %s" % repr(test_tokens))
