@@ -13,6 +13,7 @@ setup(
                     'SQLAlchemy>=0.9.1',
                     'Flask-SQLAlchemy>=1.0',
                     'psycopg2',  # PostgreSQL
+                    'crcmod>=1.7'
                     ],
     include_package_data=True,
     zip_safe=False,

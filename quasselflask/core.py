@@ -18,6 +18,9 @@ from flask_sqlalchemy import SQLAlchemy, get_debug_queries
 from sqlalchemy import MetaData, and_, or_, desc
 from sqlalchemy.ext.automap import automap_base
 
+import crcmod.predefined
+calculateNicknameHash = crcmod.predefined.mkPredefinedCrcFun('x-25')
+
 from quasselflask.query_parser import extract_glob_list, convert_glob_to_like, escape_like, BooleanQuery
 
 __version__ = "0.1"
@@ -32,6 +35,7 @@ class DefaultConfig:
     SITE_NAME = 'SiteName'
     MAX_RESULTS_DEFAULT = 100  # Default maximum results set in the search form
     MAX_RESULTS = 1000  # Maximum number of results per query, regardless of search form settings.
+    TIME_FORMAT = '{:%Y-%m-%d %H:%M:%S}'
 
 
 class LibraryConfig:
@@ -39,7 +43,7 @@ class LibraryConfig:
     Configurations for the libraries. Do not change these unless you know what you're doing.
     """
     SQLALCHEMY_TRACK_MODIFICATIONS = False
-    SQLALCHEMY_RECORD_QUERIES = bool(os.environ['FLASK_DEBUG'])
+    SQLALCHEMY_RECORD_QUERIES = bool(os.environ.get('FLASK_DEBUG', 0))
 
 
 # Bootstrap the application
@@ -64,37 +68,140 @@ Buffer = Base.classes.buffer
 
 
 def __repr_backlog(self):
-    return "[{:%Y-%m-%d %H:%M:%S}] [{:d}]<{}:{}> {}".format(self.time, self.type, self.buffer.buffername,
-                                                            self.sender.sender, self.message)
+    try:
+        type_str = BacklogType(self.type).name
+    except IndexError:
+        type_str = 'Unknown'
+    return "[{:%Y-%m-%d %H:%M:%S}] [{}]<{}:{}> {}".format(self.time, type_str, self.buffer.buffername,
+                                                          self.sender.sender, self.message)
 
 
 Backlog.__repr__ = __repr_backlog
 
+
+# CLASSES
 
 class BacklogType(Enum):
     """
     https://github.com/quassel/quassel/blob/master/src/common/message.h
     That is all.
     """
-    Plain = 0x00001
-    Notice = 0x00002
-    Action = 0x00004
-    Nick = 0x00008
-    Mode = 0x00010
-    Join = 0x00020
-    Part = 0x00040
-    Quit = 0x00080
-    Kick = 0x00100
-    Kill = 0x00200
-    Server = 0x00400
-    Info = 0x00800
-    Error = 0x01000
-    DayChange = 0x02000
-    Topic = 0x04000
-    NetsplitJoin = 0x08000
-    NetsplitQuit = 0x10000
-    Invite = 0x20000
+    privmsg = 0x00001
+    notice = 0x00002
+    action = 0x00004
+    nick = 0x00008
+    mode = 0x00010
+    join = 0x00020
+    part = 0x00040
+    quit = 0x00080
+    kick = 0x00100
+    kill = 0x00200
+    server = 0x00400
+    info = 0x00800
+    error = 0x01000
+    daychange = 0x02000
+    topic = 0x04000
+    netsplit_join = 0x08000
+    netsplit_quit = 0x10000
+    invite = 0x20000
 
+
+class Color(Enum):
+    """
+    Colours used in the nickname colour field. Names may be used directly in CSS and should coordinate with CSS classes,
+    e.g.::
+
+        nick_color = Color.red  # determined by some algorithm
+        html += '<span class="nick-' + nick_color.name() + '">User</span>'
+
+    And in CSS::
+
+        .nick-red { color: #ff0000; }
+
+    """
+    yellow = 0
+    orange = 1
+    red = 2
+    magenta = 3
+    violet = 4
+    blue = 5
+    cyan = 6
+    green = 7
+
+
+class DisplayBacklog:
+    _icon_type_map = {
+        BacklogType.privmsg: '',
+        BacklogType.notice: '',
+        BacklogType.action: '-*-',
+        BacklogType.nick: '<->',
+        BacklogType.mode: '***',
+        BacklogType.join: '-->',
+        BacklogType.part: '<--',
+        BacklogType.quit: '<--',
+        BacklogType.kick: '***',
+        BacklogType.kill: '***',
+        BacklogType.server: '*',
+        BacklogType.info: 'i',
+        BacklogType.error: '!!!',
+        BacklogType.daychange: '*',
+        BacklogType.topic: '*',
+        BacklogType.netsplit_join: '-->',
+        BacklogType.netsplit_quit: '<--',
+        BacklogType.invite: '*',
+    }
+
+    def __init__(self, backlog: Backlog):
+        """
+        :param backlog: Backlog string
+        """
+        self.time = app.config['TIME_FORMAT'].format(backlog.time)  # type: str
+        self.channel = backlog.buffer.buffername  # type: str
+        self.sender = backlog.sender.sender  # type: str
+        self.nickname = self.sender.split('!', 1)[0]  # type: str
+        try:
+            self.type = BacklogType(backlog.type)
+        except IndexError:
+            self.type = BacklogType.privmsg
+        self.message = backlog.message  # type: str
+
+    def get_icon_text(self):
+        return self._icon_type_map.get(self.type, '')
+
+    def get_nick_hash(self):
+        """
+        Hashes the nick and returns a four-bit value. This method internally uses CRC16 x-25 implementation, which
+        corresponds to Quassel's implementation (qChecksum() on Quassel 0.10.0, Qt 4.8.5) according to a quick
+        empirical check (6 nicknames).
+
+        See: http://crcmod.sourceforge.net/crcmod.predefined.html
+        :return:
+        """
+        lower_nick = self.nickname.lower().rstrip('_')
+        stripped_nick = lower_nick.rstrip('_')
+        normalized_nick = stripped_nick if stripped_nick else lower_nick  # in case nickname is all underscores
+        return calculateNicknameHash(normalized_nick.encode('latin-1')) & 0xF
+
+    def get_nick_color(self):
+        """
+        Return the nick's colour based on hash. Corresponds to Quassel's own implementation.
+
+        The colours will correspond in QuasselFlask's default colour scheme and in the Solarized Light/Dark themes for
+        Quassel by antoligy <https://github.com/antoligy/SolarizedQuassel>.
+
+        Otherwise, to make this work with other themes, you can customise the Color enum. Usually, Quassel supports 16
+        colours. If you want the colours here to correspond to your Quassel colour scheme, specify all 16 colours you
+        used in Quassel (or specify 8 colours - corresponds to repeating the list of 8 colours twice in Quassel's nick
+        colour settings).
+
+        For Quassel's hash implementation, see:
+        https://github.com/quassel/quassel/blob/6509162911c0ceb3658f6a7ece1a1d82c97b577e/src/uisupport/uistyle.cpp#L874
+        :return: Color object
+        """
+        return Color(self.get_nick_hash() % len(Color))
+
+
+# ENDPOINTS
 
 @app.before_request
 def globals_init():
@@ -169,13 +276,13 @@ def search():
                      limit, channels, usermasks, start.isoformat() if start else '', end.isoformat() if end else '',
                      parsed_query, '[wildcard]' if query_wildcard else '[no_wildcard]')
 
-    info = get_debug_queries()[0]
-    app.logger.debug("SQL: {}\nParameters: {}\nDuration: {:.3f}s".format(
-            info.statement, repr(info.parameters), info.duration))
-    app.logger.debug("Results:\n" + '\n'.join([repr(result) for result in results]))
+    if get_debug_queries():
+        info = get_debug_queries()[0]
+        app.logger.debug("SQL: {}\nParameters: {}\nDuration: {:.3f}s".format(
+                info.statement, repr(info.parameters), info.duration))
 
-    # TODO: display results
-    return render_template('search_form.html', search_channel=args.get('channel'), search_usermask=args.get('usermask'),
+    return render_template('results.html', records=[DisplayBacklog(result) for result in results],
+                           search_channel=args.get('channel'), search_usermask=args.get('usermask'),
                            search_start=args.get('start'), search_end=args.get('end'),
                            search_query=args.get('query'), search_query_wildcard=args.get('query_wildcard', type=bool),
                            search_limit=args.get('limit', app.config['MAX_RESULTS_DEFAULT'], int))

@@ -26,6 +26,8 @@ $green:     #859900;
 
 $content-border-radius: 10px;
 
+@import 'https://fonts.googleapis.com/css?family=PT+Sans|PT+Serif';
+
 @mixin rebase($rebase03,$rebase02,$rebase01,$rebase00,$rebase0,$rebase1,$rebase2,$rebase3)
 {
   background-color: $rebase02;
@@ -41,6 +43,19 @@ $content-border-radius: 10px;
   }
   code { background-color: $rebase02; }
   footer { color: $rebase01; border-color: $rebase0; }
+  .result {
+    table.irc-log {
+      .timestamp {
+        color: $rebase01 !important;
+      }
+      .mode, .join, .part,  .quit, .kick, .kill,
+      .info, .daychange, .topic, .invite
+      .netsplit_join, .netsplit_quit,
+      .nick {
+        td { color: $rebase01; }
+      }
+    }
+  }
 }
 
 @mixin accentize($accent) {
@@ -61,10 +76,13 @@ body {
   padding: 3em 4em 6em;
   margin-left: auto;
   margin-right: auto;
+  font-family: 'PT Sans', sans-serif;
 }
 
 header h1, h1, h2, h3, h4, h5, h6 {
   color: $blue;
+  font-family: 'PT Serif', serif;
+  font-weight: normal;
   border-bottom: 1px solid;
   margin-top: 0.4em;
   margin-bottom: 0.8em;
@@ -87,6 +105,8 @@ footer {
 }
 
 aside, article { @extend section; }
+
+/** Form styling **/
 
 form {
   > div {
@@ -130,4 +150,111 @@ form {
   }
 
   #search-maxlines { max-width: 4em; }
+}
+
+/** Results styling **/
+html .result {
+  table.irc-log {
+    margin: 0.3em 0 1em;
+
+    td {
+      vertical-align: baseline;
+      padding: 0.11em 0.2em;
+    }
+
+    .timestamp {
+      text-align: left;
+      white-space: nowrap;
+      font-size: 80%;
+      font-style: normal;
+      font-weight: normal;
+      &:before { content: '['; }
+      &:after { content: ']'; }
+    }
+    .icon {
+      text-align: center;
+    }
+    .sender {
+      text-align: right;
+      white-space: nowrap;
+
+      &.nick-yellow { color: $yellow; }
+      &.nick-orange { color: $orange; }
+      &.nick-red { color: $red; }
+      &.nick-magenta { color: $magenta; }
+      &.nick-violet { color: $violet; }
+      &.nick-blue { color: $blue; }
+      &.nick-cyan { color: $cyan; }
+      &.nick-green { color: $green; }
+    }
+    .message {
+      text-align: left;
+      white-space: normal;
+    }
+
+
+    /* different message classes */
+    /* grey/deemph colour set by the light/dark rebase above */
+    .privmsg {
+      .sender {
+        &:before { content: '<'; }
+        &:after { content: '>'; }
+      }
+    }
+
+    .notice, .server {
+      td { color: $yellow; }
+      .sender {
+        &:before { content: '['; color: $yellow; }
+        &:after { content: ']'; color: $yellow; }
+      }
+    }
+    .action {
+      font-style: italic;
+    }
+    .mode {
+      td { color: $blue; }
+      .message:before { content: 'Mode '; }
+    }
+    .join {
+      .message:before { content: 'has joined channel '; }
+    }
+    .netsplit_join {
+      .message:before { content: 'has joined channel '; }
+      .message:after { content: ' (netsplit ended)'; }
+    }
+    .part {
+      .message:before { content: ' has left ('; }
+      .message:after { content: ')'; }
+    }
+    .quit {
+      .message:before { content: 'has quit ('; }
+      .message:after { content: ')'; }
+    }
+    .netsplit_quit {
+      .message:before { content: 'has quit (netsplit: '; }
+      .message:after { content: ')'; }
+    }
+    .kick {
+      td { color: $violet; }
+      .message:before { content: 'has kicked '; }
+    }
+    .kill {
+      td { color: $violet; }
+      .message:before { content: 'has killed '; }
+    }
+    .invite {
+      .message:before { content: 'has invited '; }
+      .message:after { content: ' to the channel'; }
+    }
+    .info, .daychange, .topic {
+      /* color set by the light/dark rebase above */
+    }
+    .error {
+      td { color: $red; }
+    }
+    .nick {
+      /* color set by the light/dark rebase above */
+    }
+  }
 }

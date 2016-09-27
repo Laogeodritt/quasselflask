@@ -1,0 +1,26 @@
+{#
+ # Search form with results displayed.
+ #
+ # Arguments:
+ # * Inherits elements from search_form.
+ # * records: list of results to display, type [DisplayRecord]
+ #
+ # Blocks (non-inherited):
+ # content_after_form: after the <section> containing the form. Should have one or more <section> elements
+ #          as the only top-level elements.
+ #}{% extends "search_form.html" %}
+{% block content_after_form %}
+<section class="result">
+    <h2>Results</h2>
+    <table class="irc-log">
+        {% for record in records %}
+            <tr class="{{ record.type.name }}">
+                <td class="timestamp">{{ record.time }}</td>
+                <td class="icon">{{ record.get_icon_text() }}</td>
+                <td class="sender nick-{{ record.get_nick_color().name }}">{{ record.nickname }}</td>
+                <td class="message">{{ record.message }}</td>
+            </tr>
+        {% endfor %}
+    </table>
+</section>
+{% endblock %}

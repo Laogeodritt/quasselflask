@@ -131,17 +131,18 @@ Query parameters (all optional):
 * `query_wildcard`: If value is `1`, enables wildcards on the `query` parameter. If not passed or value `0`, disables wildcards. Be careful about making complex searches with wildcards, as it can be resource-intensive on the database.
 
 
-# Features todo
-* quasseluser/network search criteria
-* User login and user/network/channel limitations
+# Features wishlist
+* Viewing usermasks in the results log
+  * click-toggled or on-focus expando?
 * IRC formatting (bold, italics, colours, etc.)
-* Username colours
+* User login and user/network/channel limitations
+* quasseluser/network search criteria
 * Context up/down + amount of context to fetch
 * Search by type of message (message, join, part, mode changes, etc.)
 * Pagination
 * Text export
 * Server configuration
-* PM search
+* PM search - better search of query buffers resilient despite query buffer renames during nick changes
 
 # Things to document
 * QF_ALLOW_TEST_PAGES

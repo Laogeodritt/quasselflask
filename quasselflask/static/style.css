@@ -6,6 +6,7 @@
  * Licensed under the GNU Public Licence, version 3
  * <https://www.gnu.org/licenses/gpl-3.0.en.html>
  *****************************************************************************/
+@import "https://fonts.googleapis.com/css?family=PT+Sans|PT+Serif";
 html, .light {
   background-color: #eee8d5;
   color: #657b83;
@@ -32,6 +33,18 @@ html code, .light code {
 html footer, .light footer {
   color: #93a1a1;
   border-color: #657b83;
+}
+html .result table.irc-log .timestamp, .light .result table.irc-log .timestamp {
+  color: #93a1a1 !important;
+}
+html .result table.irc-log .mode td, html .result table.irc-log .join td, html .result table.irc-log .part td, html .result table.irc-log .quit td, html .result table.irc-log .kick td, html .result table.irc-log .kill td,
+html .result table.irc-log .info td, html .result table.irc-log .daychange td, html .result table.irc-log .topic td, html .result table.irc-log .invite
+.netsplit_join td, html .result table.irc-log .netsplit_quit td,
+html .result table.irc-log .nick td, .light .result table.irc-log .mode td, .light .result table.irc-log .join td, .light .result table.irc-log .part td, .light .result table.irc-log .quit td, .light .result table.irc-log .kick td, .light .result table.irc-log .kill td,
+.light .result table.irc-log .info td, .light .result table.irc-log .daychange td, .light .result table.irc-log .topic td, .light .result table.irc-log .invite
+.netsplit_join td, .light .result table.irc-log .netsplit_quit td,
+.light .result table.irc-log .nick td {
+  color: #93a1a1;
 }
 
 .dark {
@@ -61,16 +74,28 @@ html footer, .light footer {
   color: #586e75;
   border-color: #839496;
 }
+.dark .result table.irc-log .timestamp {
+  color: #586e75 !important;
+}
+.dark .result table.irc-log .mode td, .dark .result table.irc-log .join td, .dark .result table.irc-log .part td, .dark .result table.irc-log .quit td, .dark .result table.irc-log .kick td, .dark .result table.irc-log .kill td,
+.dark .result table.irc-log .info td, .dark .result table.irc-log .daychange td, .dark .result table.irc-log .topic td, .dark .result table.irc-log .invite
+.netsplit_join td, .dark .result table.irc-log .netsplit_quit td,
+.dark .result table.irc-log .nick td {
+  color: #586e75;
+}
 
 body {
   max-width: 1156px;
   padding: 3em 4em 6em;
   margin-left: auto;
   margin-right: auto;
+  font-family: 'PT Sans', sans-serif;
 }
 
 header h1, h1, h2, h3, h4, h5, h6 {
   color: #268bd2;
+  font-family: 'PT Serif', serif;
+  font-weight: normal;
   border-bottom: 1px solid;
   margin-top: 0.4em;
   margin-bottom: 0.8em;
@@ -91,6 +116,7 @@ footer {
   text-align: center;
 }
 
+/** Form styling **/
 form > div {
   width: 100%;
   display: flex;
@@ -127,6 +153,145 @@ form button[type="reset"] {
 }
 form #search-maxlines {
   max-width: 4em;
+}
+
+/** Results styling **/
+html .result table.irc-log {
+  margin: 0.3em 0 1em;
+  /* different message classes */
+  /* grey/deemph colour set by the light/dark rebase above */
+}
+html .result table.irc-log td {
+  vertical-align: baseline;
+  padding: 0.11em 0.2em;
+}
+html .result table.irc-log .timestamp {
+  text-align: left;
+  white-space: nowrap;
+  font-size: 80%;
+  font-style: normal;
+  font-weight: normal;
+}
+html .result table.irc-log .timestamp:before {
+  content: '[';
+}
+html .result table.irc-log .timestamp:after {
+  content: ']';
+}
+html .result table.irc-log .icon {
+  text-align: center;
+}
+html .result table.irc-log .sender {
+  text-align: right;
+  white-space: nowrap;
+}
+html .result table.irc-log .sender.nick-yellow {
+  color: #b58900;
+}
+html .result table.irc-log .sender.nick-orange {
+  color: #cb4b16;
+}
+html .result table.irc-log .sender.nick-red {
+  color: #dc322f;
+}
+html .result table.irc-log .sender.nick-magenta {
+  color: #d33682;
+}
+html .result table.irc-log .sender.nick-violet {
+  color: #6c71c4;
+}
+html .result table.irc-log .sender.nick-blue {
+  color: #268bd2;
+}
+html .result table.irc-log .sender.nick-cyan {
+  color: #2aa198;
+}
+html .result table.irc-log .sender.nick-green {
+  color: #859900;
+}
+html .result table.irc-log .message {
+  text-align: left;
+  white-space: normal;
+}
+html .result table.irc-log .privmsg .sender:before {
+  content: '<';
+}
+html .result table.irc-log .privmsg .sender:after {
+  content: '>';
+}
+html .result table.irc-log .notice td, html .result table.irc-log .server td {
+  color: #b58900;
+}
+html .result table.irc-log .notice .sender:before, html .result table.irc-log .server .sender:before {
+  content: '[';
+  color: #b58900;
+}
+html .result table.irc-log .notice .sender:after, html .result table.irc-log .server .sender:after {
+  content: ']';
+  color: #b58900;
+}
+html .result table.irc-log .action {
+  font-style: italic;
+}
+html .result table.irc-log .mode td {
+  color: #268bd2;
+}
+html .result table.irc-log .mode .message:before {
+  content: 'Mode ';
+}
+html .result table.irc-log .join .message:before {
+  content: 'has joined channel ';
+}
+html .result table.irc-log .netsplit_join .message:before {
+  content: 'has joined channel ';
+}
+html .result table.irc-log .netsplit_join .message:after {
+  content: ' (netsplit ended)';
+}
+html .result table.irc-log .part .message:before {
+  content: ' has left (';
+}
+html .result table.irc-log .part .message:after {
+  content: ')';
+}
+html .result table.irc-log .quit .message:before {
+  content: 'has quit (';
+}
+html .result table.irc-log .quit .message:after {
+  content: ')';
+}
+html .result table.irc-log .netsplit_quit .message:before {
+  content: 'has quit (netsplit: ';
+}
+html .result table.irc-log .netsplit_quit .message:after {
+  content: ')';
+}
+html .result table.irc-log .kick td {
+  color: #6c71c4;
+}
+html .result table.irc-log .kick .message:before {
+  content: 'has kicked ';
+}
+html .result table.irc-log .kill td {
+  color: #6c71c4;
+}
+html .result table.irc-log .kill .message:before {
+  content: 'has killed ';
+}
+html .result table.irc-log .invite .message:before {
+  content: 'has invited ';
+}
+html .result table.irc-log .invite .message:after {
+  content: ' to the channel';
+}
+html .result table.irc-log .info, html .result table.irc-log .daychange, html .result table.irc-log .topic {
+  /* color set by the light/dark rebase above */
+}
+html .result table.irc-log .error td {
+  color: #dc322f;
+}
+html .result table.irc-log .nick {
+  /* color set by the light/dark rebase above */
 }
 
 /*# sourceMappingURL=style.css.map */
