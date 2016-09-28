@@ -82,7 +82,6 @@ This is an important step, because Quassel doesn't use the database to do deep s
 
 As a point of comparison: without doing this, searches took 15-20 seconds (ridiculous!). After doing this, the same test searches took around 0.2-0.6 seconds, with some of them taking up to 4s (didn't quite understand why so long!).
 
-
 # Installation and running
 
 We recommend using a virtualenv to set up Quasselflask. This is a standard Python tool and I will assume you know how to use it; if you are new to Python, you can read the [Flask docs on virtualenv and installing Flask](http://flask.pocoo.org/docs/0.11/installation/) to get a basic introduction.
@@ -133,7 +132,7 @@ Query parameters (all optional):
 
 # Features wishlist
 * Viewing usermasks in the results log
-  * click-toggled or on-focus expando?
+  * click-toggled or on-focus expansion?
 * IRC formatting (bold, italics, colours, etc.)
 * User login and user/network/channel limitations
 * quasseluser/network search criteria

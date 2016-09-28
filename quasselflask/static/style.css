@@ -10,18 +10,20 @@
 html, .light {
   background-color: #eee8d5;
   color: #657b83;
-  /* h1,h2,h3,h4,h5,h6 { color: $rebase1; border-color: $rebase0; } */
 }
 html section, html footer, html aside, html article, html article, html footer, html aside, .light section, .light footer, .light aside, .light article, .light article, .light footer, .light aside {
   background-color: #fdf6e3;
 }
-html *, .light * {
+html input, .light input {
   color: #657b83;
 }
 html header h1, html h1, html h2, html h3, html h4, html h5, html h6, .light header h1, .light h1, .light h2, .light h3, .light h4, .light h5, .light h6 {
   border-color: #657b83;
 }
 html a, html a:active, html a:visited, .light a, .light a:active, .light a:visited {
+  color: #586e75;
+}
+html section#error, html footer#error, html aside#error, html article#error, html section#warning, html footer#warning, html aside#warning, html article#warning, html section#notice, html footer#notice, html aside#notice, html article#notice, .light section#error, .light footer#error, .light aside#error, .light article#error, .light section#warning, .light footer#warning, .light aside#warning, .light article#warning, .light section#notice, .light footer#notice, .light aside#notice, .light article#notice {
   color: #586e75;
 }
 html form input, .light form input {
@@ -50,18 +52,20 @@ html .result table.irc-log .nick td, .light .result table.irc-log .mode td, .lig
 .dark {
   background-color: #002b36;
   color: #839496;
-  /* h1,h2,h3,h4,h5,h6 { color: $rebase1; border-color: $rebase0; } */
 }
 .dark section, .dark footer, .dark aside, .dark article, .dark article, .dark footer, .dark aside {
   background-color: #073642;
 }
-.dark * {
+.dark input {
   color: #839496;
 }
 .dark header h1, .dark h1, .dark h2, .dark h3, .dark h4, .dark h5, .dark h6 {
   border-color: #839496;
 }
 .dark a, .dark a:active, .dark a:visited {
+  color: #93a1a1;
+}
+.dark section#error, .dark footer#error, .dark aside#error, .dark article#error, .dark section#warning, .dark footer#warning, .dark aside#warning, .dark article#warning, .dark section#notice, .dark footer#notice, .dark aside#notice, .dark article#notice {
   color: #93a1a1;
 }
 .dark form input {
@@ -108,6 +112,18 @@ section, footer, aside, article {
   margin-top: 0.8em;
   margin-bottom: 1.5em;
   padding: 0.7em 1.5em;
+}
+
+section#error, footer#error, aside#error, article#error {
+  background-color: #ee9e9c;
+}
+
+section#warning, footer#warning, aside#warning, article#warning {
+  background-color: #ffce36;
+}
+
+section#notice, footer#notice, aside#notice, article#notice {
+  background-color: #71dad2;
 }
 
 footer {

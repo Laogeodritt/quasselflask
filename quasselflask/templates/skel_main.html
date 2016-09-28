@@ -1,5 +1,8 @@
 {#
  # PARAMETERS:
+ # error: (str) error text to display
+ # warning: (str) warning text to display
+ # notice: (str) notice text to display
  #
  # BLOCKS:
  # head: <head> content. Contains the <title> by default (super() recommended, but can be omitted to customise
@@ -33,6 +36,10 @@
     <ul id="nav-right">{% block navright %}{% endblock %}</ul>
     <ul id="nav-left"><li id="nav-color">TOGGLE_COLOR</li><li id="nav-user">USER_MENU</li></ul>
 </nav>
+
+{% if error is defined %}<section id="error"><strong>Error</strong> {{ error }}</section>{% endif %}
+{% if warning is defined %}<section id="warning"><strong>Warning</strong> {{ warning }}</section>{% endif %}
+{% if notice is defined %}<section id="notice">{{ notice }}</section>{% endif %}
 
 {% block content %}{% endblock %}
 
