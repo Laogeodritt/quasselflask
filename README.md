@@ -4,12 +4,13 @@
 
 The features supported:
 
-(**WARNING**: This software is in early development, so only some of these features are functional. It's not ready for general use. Curious where things are? Feel free to contact me.)
+(**WARNING**: This software is in early development, so only some of these features are functional. It's not ready for general use. Curious where things are? See the Features Wishlist section below, or feel free to contact me.)
 
 * Searching quassel logs via network, channel, usermask, date/time range, keywords (boolean search)
 * User management: protects logs from public access via username/password. Optionally, limit the channels that can be searched by each user (does not integrate with quassel's users)
 * Text and HTML export of results
-* Support for IRC formatting and colours and nickname colours
+* Support for IRC formatting and colours
+* Support for nickname colours (hash matches Quassel)
 * Context expansion of search results
 * Default CSS colour scheme available in your choice of [Solarized](http://ethanschoonover.com/solarized) Light or Dark =\] (I know some are less fond of it, but I personally love this colour palette!)
 
@@ -133,7 +134,6 @@ Query parameters (all optional):
 # Features wishlist
 * Viewing usermasks in the results log
   * click-toggled or on-focus expansion?
-* IRC formatting (bold, italics, colours, etc.)
 * User login and user/network/channel limitations
 * quasseluser/network search criteria
 * Context up/down + amount of context to fetch

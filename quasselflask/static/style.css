@@ -229,6 +229,111 @@ html .result table.irc-log .message {
   text-align: left;
   white-space: normal;
 }
+html .result table.irc-log .message .irc-bold {
+  font-weight: bold;
+}
+html .result table.irc-log .message .irc-italic {
+  font-style: italic;
+}
+html .result table.irc-log .message .irc-underline {
+  text-decoration: underline;
+}
+html .result table.irc-log .message .irc-color00 {
+  color: #fdf6e3;
+}
+html .result table.irc-log .message .irc-color01 {
+  color: #002b36;
+}
+html .result table.irc-log .message .irc-color02 {
+  color: #073642;
+}
+html .result table.irc-log .message .irc-color03 {
+  color: #859900;
+}
+html .result table.irc-log .message .irc-color04 {
+  color: #dc322f;
+}
+html .result table.irc-log .message .irc-color05 {
+  color: #586e75;
+}
+html .result table.irc-log .message .irc-color06 {
+  color: #6c71c4;
+}
+html .result table.irc-log .message .irc-color07 {
+  color: #cb4b16;
+}
+html .result table.irc-log .message .irc-color08 {
+  color: #b58900;
+}
+html .result table.irc-log .message .irc-color09 {
+  color: #b1cc00;
+}
+html .result table.irc-log .message .irc-color10 {
+  color: #2aa198;
+}
+html .result table.irc-log .message .irc-color11 {
+  color: #35c9be;
+}
+html .result table.irc-log .message .irc-color12 {
+  color: #268bd2;
+}
+html .result table.irc-log .message .irc-color13 {
+  color: #d33682;
+}
+html .result table.irc-log .message .irc-color14 {
+  color: #657b83;
+}
+html .result table.irc-log .message .irc-color15 {
+  color: #93a1a1;
+}
+html .result table.irc-log .message .irc-bgcolor00 {
+  background-color: #fdf6e3;
+}
+html .result table.irc-log .message .irc-bgcolor01 {
+  background-color: #002b36;
+}
+html .result table.irc-log .message .irc-bgcolor02 {
+  background-color: #073642;
+}
+html .result table.irc-log .message .irc-bgcolor03 {
+  background-color: #859900;
+}
+html .result table.irc-log .message .irc-bgcolor04 {
+  background-color: #dc322f;
+}
+html .result table.irc-log .message .irc-bgcolor05 {
+  background-color: #586e75;
+}
+html .result table.irc-log .message .irc-bgcolor06 {
+  background-color: #6c71c4;
+}
+html .result table.irc-log .message .irc-bgcolor07 {
+  background-color: #cb4b16;
+}
+html .result table.irc-log .message .irc-bgcolor08 {
+  background-color: #b58900;
+}
+html .result table.irc-log .message .irc-bgcolor09 {
+  background-color: #b1cc00;
+}
+html .result table.irc-log .message .irc-bgcolor10 {
+  background-color: #2aa198;
+}
+html .result table.irc-log .message .irc-bgcolor11 {
+  background-color: #35c9be;
+}
+html .result table.irc-log .message .irc-bgcolor12 {
+  background-color: #268bd2;
+}
+html .result table.irc-log .message .irc-bgcolor13 {
+  background-color: #d33682;
+}
+html .result table.irc-log .message .irc-bgcolor14 {
+  background-color: #657b83;
+}
+html .result table.irc-log .message .irc-bgcolor15 {
+  background-color: #93a1a1;
+}
 html .result table.irc-log .privmsg .sender:before {
   content: '<';
 }

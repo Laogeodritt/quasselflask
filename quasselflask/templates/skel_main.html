@@ -23,13 +23,13 @@
     <!--script src="https://ajax.googleapis.com/ajax/libs/jqueryui/1.12.0/jquery-ui.min.js"></script-->
     <script src="{{ url_for('static', filename='quasselflask.js') }}"></script>
     {% block head %}
-        <title>{% block title %}{% endblock %} - {{ config['SITE_NAME'] }} - QuasselFlask</title>
+        <title>{% block title %}{% endblock %} - {{ config['SITE_NAME']|e }} - QuasselFlask</title>
     {% endblock %}
 </head>
 <body>
 
 <header>
-    <h1>{% block headtitle %}{{ config['SITE_NAME'] }} - QuasselFlask{% endblock %}</h1>
+    <h1>{% block headtitle %}{{ config['SITE_NAME']|e }} - QuasselFlask{% endblock %}</h1>
 </header>
 
 <nav>

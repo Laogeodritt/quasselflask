@@ -21,23 +21,23 @@
     <h2>Search</h2>
     <form action="/search" method="get">
         <div class="search-query-container">
-            <input type="text" name="query" id="search-query" title="Search Query" placeholder="Search Query" {% if search_query is defined %}value="{{ search_query }}"{% endif %}>
+            <input type="text" name="query" id="search-query" title="Search Query" placeholder="Search Query" {% if search_query is defined %}value="{{ search_query|e }}"{% endif %}>
             <input type="checkbox" name="query_wildcard" id="search-query-wildcard" value="1" {% if search_query_wildcard is defined and search_query_wildcard %}checked="checked"{% endif %}>
             <label for="search-query-wildcard">Wildcards</label>
         </div>
         <div>
-            <input type="text" name="channel" id="search-channel" placeholder="#channelName" {% if search_channel is defined %}value="{{ search_channel }}"{% endif %}>
-            <input type="text" name="usermask" id="search-usermask" placeholder="nick!username@hostmask" {% if search_usermask is defined %}value="{{ search_usermask }}"{% endif %}>
+            <input type="text" name="channel" id="search-channel" placeholder="#channelName" {% if search_channel is defined %}value="{{ search_channel|e }}"{% endif %}>
+            <input type="text" name="usermask" id="search-usermask" placeholder="nick!username@hostmask" {% if search_usermask is defined %}value="{{ search_usermask|e }}"{% endif %}>
         </div>
         <div>
             <label for="search-time-start">From</label>
-            <input type="text" name="start" id="search-time-start" placeholder="YYYY-MM-DD HH:MM:SS" {% if search_start is defined %}value="{{ search_start }}"{% endif %}>
+            <input type="text" name="start" id="search-time-start" placeholder="YYYY-MM-DD HH:MM:SS" {% if search_start is defined %}value="{{ search_start|e }}"{% endif %}>
 
             <label for="search-time-end">until</label>
-            <input type="text" name="end" id="search-time-end" placeholder="YYYY-MM-DD HH:MM:SS" {% if search_end is defined %}value="{{ search_end }}"{% endif %}>
+            <input type="text" name="end" id="search-time-end" placeholder="YYYY-MM-DD HH:MM:SS" {% if search_end is defined %}value="{{ search_end|e }}"{% endif %}>
         </div>
         <div>
-            <label for="search-maxlines">Max lines</label>: <input type="number" max="{{ config.MAX_RESULTS }}" name="limit" id="search-maxlines" value="{{ search_limit|default(config.MAX_RESULTS_DEFAULT) }}">
+            <label for="search-maxlines">Max lines</label>: <input type="number" max="{{ config.MAX_RESULTS }}" name="limit" id="search-maxlines" value="{{ search_limit|e|default(config.MAX_RESULTS_DEFAULT) }}">
         </div>
         <div id="buttons">
             <button type="reset">Clear</button> <button type="submit">Submit</button>

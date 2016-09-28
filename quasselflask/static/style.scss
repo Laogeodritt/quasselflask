@@ -213,6 +213,44 @@ html .result {
     .message {
       text-align: left;
       white-space: normal;
+
+      .irc-bold { font-weight: bold; }
+      .irc-italic { font-style: italic; }
+      .irc-underline { text-decoration: underline; }
+
+      .irc-color00 { color: $base3; }
+      .irc-color01 { color: $base03; }
+      .irc-color02 { color: $base02; }
+      .irc-color03 { color: $green; }
+      .irc-color04 { color: $red; }
+      .irc-color05 { color: $base01; }
+      .irc-color06 { color: $violet; }
+      .irc-color07 { color: $orange; }
+      .irc-color08 { color: $yellow; }
+      .irc-color09 { color: lighten($green, 10%); }
+      .irc-color10 { color: $cyan; }
+      .irc-color11 { color: lighten($cyan, 10%); }
+      .irc-color12 { color: $blue }
+      .irc-color13 { color: $magenta; }
+      .irc-color14 { color: $base00; }
+      .irc-color15 { color: $base1; }
+
+      .irc-bgcolor00 { background-color: $base3; }
+      .irc-bgcolor01 { background-color: $base03; }
+      .irc-bgcolor02 { background-color: $base02; }
+      .irc-bgcolor03 { background-color: $green; }
+      .irc-bgcolor04 { background-color: $red; }
+      .irc-bgcolor05 { background-color: $base01; }
+      .irc-bgcolor06 { background-color: $violet; }
+      .irc-bgcolor07 { background-color: $orange; }
+      .irc-bgcolor08 { background-color: $yellow; }
+      .irc-bgcolor09 { background-color: lighten($green, 10%); }
+      .irc-bgcolor10 { background-color: $cyan; }
+      .irc-bgcolor11 { background-color: lighten($cyan, 10%); }
+      .irc-bgcolor12 { background-color: $blue }
+      .irc-bgcolor13 { background-color: $magenta; }
+      .irc-bgcolor14 { background-color: $base00; }
+      .irc-bgcolor15 { background-color: $base1; }
     }
 
 

@@ -5,8 +5,10 @@ Project: QuasselFlask
 """
 from enum import Enum
 from datetime import datetime
+from flask import escape, Markup
 
 import crcmod.predefined
+import re
 
 calculateNicknameHash = crcmod.predefined.mkPredefinedCrcFun('x-25')
 
@@ -81,9 +83,21 @@ class DisplayBacklog:
         BacklogType.invite: '*',
     }
     _time_format = '{:%Y-%m-%d %H:%M:%S}'
+    _format_chars = ['\x02', '\x1D', '\x1F', '\x03', '\x16', '\x0f']
+    _color_number = '1[0-5]|0?[1-9]'  # between 01 and 15 inclusive
+    # capture groups always (formatting_match, num1, num2)
+    # num1 and num2 are colour ids (or None) for \x03, None for other formatting
+    _format_re = re.compile('(\x02|'  # b
+                            '\x1D|'  # i
+                            '\x1F|'  # u
+                            # colours, capture groups: full spec, color1|None, color2|None
+                            '\x03' r'(?:(' + _color_number + ')(?:,(' + _color_number + '))?)?|'
+                            '\x16|'  # swap
+                            '\x0f)'  # reset
+                            )
 
-    @staticmethod
-    def set_time_format(s: str):
+    @classmethod
+    def set_time_format(cls, s: str):
         """
         :param s: format() specifier containing one variable for a datetime argument. This method does not check whether
             the time format specifies a valid datetime format, only that it executes format() without raising an
@@ -92,8 +106,8 @@ class DisplayBacklog:
         :raise IndexError: too many arguments in format specifier
         :raise KeyError: invalid key specified in format specifier
         """
-        _ = s.format(datetime.now())  # test if valid - may throw IndexError or KeyError on invalid specifications
-        DisplayBacklog._time_format = s
+        _ = s.format(datetime.now())  # test if valid - may throw IndexError or KeyError on invalid specification
+        cls._time_format = s
 
     def __init__(self, backlog):
         """
@@ -105,9 +119,9 @@ class DisplayBacklog:
         self.nickname = self.sender.split('!', 1)[0]  # type: str
         try:
             self.type = BacklogType(backlog.type)
-        except IndexError:
+        except ValueError:
             self.type = BacklogType.privmsg
-        self.message = backlog.message  # type: str
+        self._message = backlog.message  # type: str
 
     def get_icon_text(self):
         return self._icon_type_map.get(self.type, '')
@@ -144,4 +158,133 @@ class DisplayBacklog:
         """
         return Color(self.get_nick_hash() % len(Color))
 
+    def format_html_message(self):
+        """
+        Convert IRC formatting into HTML.
+        :return: HTML string
+        """
+        irc_chars = DisplayBacklog._format_chars
 
+        safe_msg = escape(self._message)
+        in_msg_tokens = DisplayBacklog._format_re.split(safe_msg)  # simple tokenize!
+        out_msg_tokens = []
+
+        nesting = 0
+        state = {
+            'bold': False,
+            'italic': False,
+            'underline': False,
+            'color': False
+        }
+        color_processing = False
+        color_processing_arg = 0
+        color_args = [None, None]
+
+        for token in in_msg_tokens:
+            if color_processing:
+                try:
+                    color_args[color_processing_arg] = int(token)
+                except (ValueError, TypeError):
+                    color_args[color_processing_arg] = None
+                color_processing_arg += 1
+
+                # end condition
+                if color_processing_arg >= 2:
+                    self._add_html_close_tag(out_msg_tokens, state)
+                    state['color'] = True if any(color_args) else False
+                    color_processing = False
+                    color_processing_arg = 0
+                    self._add_html_open_tag(out_msg_tokens, state, color_args)
+
+            elif token and (token[0] in irc_chars):
+                c = token[0]
+                if c == '\x02':
+                    self._add_html_close_tag(out_msg_tokens, state)
+                    state['bold'] = not state['bold']
+                    self._add_html_open_tag(out_msg_tokens, state, color_args)
+                elif c == '\x1d':
+                    self._add_html_close_tag(out_msg_tokens, state)
+                    state['italic'] = not state['italic']
+                    self._add_html_open_tag(out_msg_tokens, state, color_args)
+                elif c == '\x1f':
+                    self._add_html_close_tag(out_msg_tokens, state)
+                    state['underline'] = not state['underline']
+                    self._add_html_open_tag(out_msg_tokens, state, color_args)
+                elif c == '\x03':
+                    color_processing = True
+                    color_processing_arg = 0
+                elif c == '\x16':
+                    if state['color']:  # only if colour is applied right now
+                        self._add_html_close_tag(out_msg_tokens, state)
+                        color_args[0], color_args[1] = color_args[1], color_args[0]
+                        self._add_html_open_tag(out_msg_tokens, state, color_args)
+                elif c == '\x0f':
+                    self._add_html_close_tag(out_msg_tokens, state)
+                    state = {k: False for k in state}
+                else:
+                    raise ValueError('Bad formatting character - '
+                                     'did you change _format_chars and forget to update format_html_message()?')
+            else:  # not a special character
+                if token:  # we only filter None/empty string here because None is valuable for colour processing
+                    out_msg_tokens.append(token)
+
+        # if any formatting still applied at the end, close the last tag
+        self._add_html_close_tag(out_msg_tokens, state)
+        return Markup(''.join(out_msg_tokens))
+
+    @staticmethod
+    def _add_html_open_tag(output: list, state: {str: bool}, color_args=(None, None)):
+        """
+        Add HTML opening tag for the currently enabled formatting options (in ``state`` plus ``color_args``) to
+        ``output``. Used by format_html_message(). If no formatting options enabled, does nothing.
+        :param output: the current list of output tokens so far
+        :param state: The formatting flags to be applied.
+        :param color_args: Color arguments, a 2-element addressable collection (e.g. tuple or list).
+        :return: True if an open tag was added, False otherwise (because no formatting enabled)
+        """
+        classes = []
+
+        for name, enabled in state.items():
+            if enabled and name != 'color':
+                classes.append('irc-{}'.format(name))
+            elif enabled and name == 'color' and any(color_args):
+                try:
+                    classes.append('irc-color{:02d}'.format(color_args[0]))
+                    classes.append('irc-bgcolor{:02d}'.format(color_args[1]))
+                except (ValueError, TypeError):
+                    # no colour, I guess! None (no arg) and invalid strings
+                    # foreground colour may be set at this point even if background colour is None/invalid
+                    # that behaviour is intended: no need for cleanup here
+                    pass
+
+        if classes:
+            output.append('<span class="{}">'.format(' '.join(classes)))
+            return True
+        return False
+
+    @staticmethod
+    def _add_html_close_tag(output: list, pre_state: {str: bool}):
+        """
+        Add an HTML closing tag if any formatting options are enabled now in ``pre-state``, which represents the
+        formatting state before the closing tag is added. This state is not modified - it is the responsibility of the
+        caller to update the state after the formatting is closed.
+
+        In the case that ``output`` contains an opening tag as its last element, and thus adding this close tag would
+        create a redundant/empty element, this redundant element is removed instead.
+        :param output: the current list of output tokens so far
+        :param pre_state: the formatting options state (enabled/disabled) before the close tag is added
+        :return: True if anything was added or redundant tags removed, False if not (because nothing applied)
+        """
+        if any(pre_state.values()):  # close tag only if formatting had previously been applied
+            if output and output[-1].startswith('<span'):  # redundant element
+                output.pop()
+            else:
+                output.append('</span>')
+            return True
+        return False
+
+    @staticmethod
+    def _make_html_open_tag(state: {str: bool}, color_args=(None, None)):
+        """
+        :return:
+        """
