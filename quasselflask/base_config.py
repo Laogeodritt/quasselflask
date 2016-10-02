@@ -11,7 +11,10 @@ class DefaultConfig:
     """
     These configuration variables can be copied into your quasselflask.cfg file and changed.
     Only copy the lines you want to change. You don't need to copy all of them if the defaults are OK.
+
+    Commented lines must be set in your quasselflask.cfg file.
     """
+
     # SQLALCHEMY_DATABASE_URI = 'postgresql://sqluser:password@hostname-or-IP-address/databasename'  # SQL config
     SITE_NAME = 'SiteName'
     RESULTS_NUM_DEFAULT = 100  # Default number of results per query set in the search form

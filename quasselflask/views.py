@@ -54,7 +54,8 @@ def search():
         'search_end': form_args.get('end'),
         'search_query': form_args.get('query'),
         'search_query_wildcard': form_args.get('search_query_wildcard', int),
-        'search_limit': form_args.get('limit', app.config['RESULTS_NUM_DEFAULT'], int)  # post-processed value
+        'search_limit': form_args.get('limit', app.config['RESULTS_NUM_DEFAULT'], int),
+        'search_order': form_args.get('order')
     }
 
     # Process and parse the args
@@ -64,8 +65,8 @@ def search():
         errtext = e.args[0]
         return render_template('search_form.html', error=errtext, **render_args)
 
-    app.logger.debug("Args|SQL-processed: limit=%i channel%s usermask%s start[%s] end[%s] query%s %s",
-                     sql_args['limit'], sql_args['channels'], sql_args['usermasks'],
+    app.logger.debug("Args|SQL-processed: limit=%i order=%s channel%s usermask%s start[%s] end[%s] query%s %s",
+                     sql_args['limit'], sql_args['order'], sql_args['channels'], sql_args['usermasks'],
                      sql_args['start'].isoformat() if sql_args['start'] else '',
                      sql_args['end'].isoformat() if sql_args['end'] else '',
                      sql_args['query'].get_parsed(), '[wildcard]' if sql_args['query_wildcard'] else '[no_wildcard]')
@@ -73,9 +74,13 @@ def search():
     # update after processing params
     render_args['search_query_wildcard'] = sql_args.get('query_wildcard')
     render_args['search_limit'] = sql_args.get('limit')
+    render_args['search_order'] = sql_args.get('order')
 
     # build and execute the query
-    results = reversed(build_db_search_query(db.session, sql_args).all())
+    results = build_db_search_query(db.session, sql_args).all()
+
+    if sql_args['order'] == 'newest':
+        results = reversed(results)
 
     if (app.debug or app.testing) and get_debug_queries():
         info = get_debug_queries()[0]

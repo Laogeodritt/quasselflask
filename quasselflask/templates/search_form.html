@@ -37,7 +37,9 @@
             <input type="text" name="end" id="search-time-end" placeholder="YYYY-MM-DD HH:MM:SS" {% if search_end is defined %}value="{{ search_end|e }}"{% endif %}>
         </div>
         <div>
-            <label for="search-maxlines">Max lines</label>: <input type="number" max="{{ config.MAX_RESULTS }}" name="limit" id="search-maxlines" value="{{ search_limit|e|default(config['MAX_RESULTS_DEFAULT']) }}">
+            Retrieve the <input type="radio" name="order" id="search-newest" value="recent" {% if search_order is defined and search_order == 'newest' %}checked="checked"{% endif %}><label for="search-newest">newest</label>
+            <input type="radio" name="order" id="search-oldest" value="oldest" {% if search_order is defined and search_order == 'oldest' %}checked="checked"{% endif %}><label for="search-oldest">oldest</label>
+            <input type="number" max="{{ config.RESULTS_NUM_MAX }}" name="limit" id="search-maxlines" value="{{ search_limit|default(config.RESULTS_NUM_DEFAULT)|e }}"> <label for="search-maxlines">lines</label>
         </div>
         <div id="buttons">
             <button type="reset">Clear</button> <button type="submit">Submit</button>

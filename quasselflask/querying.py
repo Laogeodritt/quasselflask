@@ -5,7 +5,7 @@ Project: QuasselFlask
 """
 
 import sqlalchemy.orm
-from sqlalchemy import desc, and_, or_
+from sqlalchemy import desc, asc, and_, or_
 
 from quasselflask import app
 from quasselflask.models import Backlog, Buffer, Sender
@@ -15,16 +15,15 @@ from quasselflask.parsing.query import BooleanQuery
 
 def build_db_search_query(session, args) -> sqlalchemy.orm.query.Query:
     """
-    Builds database query (as an SQLAlchemy Query object) for an IRC backlog search.
+    Builds database query (as an SQLAlchemy Query object) for an IRC backlog search. This function does very little
+    checking on ``args``, as it assumes the args have already been processed and validated and reasonable defaults set.
+
     :param session: Database session (SQLAlchemy)
     :param args: Search parameters as returned by quasselflask.parsing.form.process_search_params()
     :return:
     """
     # prepare SQL query joins
     query = session.query(Backlog).join(Buffer).join(Sender)  # type: sqlalchemy.orm.query.Query
-
-    query_wildcard = args.get('query_wildcard', None)  # use later
-    limit = args.get('limit')
 
     if args.get('start'):
         query = query.filter(Backlog.time >= args.get('start'))
@@ -39,11 +38,16 @@ def build_db_search_query(session, args) -> sqlalchemy.orm.query.Query:
         query = query.filter(Sender.sender.ilike(usermask))
 
     # fulltext string
-    query_message_filter = build_sql_search_terms(args.get('query'), query_wildcard)
+    query_message_filter = build_sql_search_terms(args.get('query'), args.get('query_wildcard', None))
     if query_message_filter is not None:
         query = query.filter(query_message_filter)
 
-    query = query.order_by(desc(Backlog.time)).limit(limit)
+    if args.get('order') == 'newest':
+        query = query.order_by(desc(Backlog.time))
+    else:
+        query = query.order_by(asc(Backlog.time))
+
+    query = query.limit(args.get('limit'))
 
     return query
 

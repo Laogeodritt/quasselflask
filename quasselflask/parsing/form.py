@@ -5,7 +5,7 @@ Project: QuasselFlask
 """
 
 import re
-from datetime import datetime
+from datetime import datetime, timedelta
 
 from quasselflask import app
 from quasselflask.parsing.query import BooleanQuery
@@ -19,6 +19,7 @@ def process_search_params(in_args) -> dict:
 
     - query_wildcard: boolean - always set (default false)
     - limit: int - if not set, set to default value in configuration; limited to the max value in configuration
+    - order: str - "newest" (default) or "oldest"
     - start: datetime|None
     - end: datetime|None
     - channels: list (may be empty)
@@ -37,6 +38,10 @@ def process_search_params(in_args) -> dict:
     if out_args['limit'] > app.config['RESULTS_NUM_MAX']:
         out_args['limit'] = app.config['RESULTS_NUM_MAX']
 
+    out_args['order'] = in_args.get('order')
+    if out_args['order'] not in ('newest', 'oldest'):
+        out_args['order'] = 'newest'
+
     out_args['start'] = None
     if in_args.get('start'):
         try:
@@ -48,6 +53,7 @@ def process_search_params(in_args) -> dict:
     if in_args.get('end'):
         try:
             out_args['end'] = convert_str_to_datetime(in_args.get('end'))
+            out_args['end'] += timedelta(seconds=1)  # to deal with rounding if user copy-pastes timestamps
         except ValueError as e:
             raise ValueError('Invalid end time format: must be in YYYY-MM-DD HH:MM:SS.SSS format.') from e
 
