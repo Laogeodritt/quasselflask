@@ -3,10 +3,11 @@ DisplayBacklog tests.
 
 Project: QuasselFlask
 """
-from unittest import TestCase
-from quasselflask.irclog import DisplayBacklog
-from datetime import datetime
 import re
+from datetime import datetime
+from unittest import TestCase
+
+from quasselflask.parsing.irclog import DisplayBacklog
 
 FORMAT_TAG = '<span class="([^"]+)">'
 

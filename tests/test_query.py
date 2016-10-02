@@ -4,10 +4,11 @@ Tests for query parser.
 Project: QuasselFlask
 """
 
-from unittest import TestCase
-from quasselflask.query_parser import BooleanQuery, Operator as Op
-from logging import Logger
 import logging
+from logging import Logger
+from unittest import TestCase
+
+from quasselflask.parsing.query import BooleanQuery, Operator as Op
 
 
 class TestQuery(TestCase):

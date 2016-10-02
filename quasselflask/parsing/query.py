@@ -324,7 +324,9 @@ class BooleanQuery(object):
                 next_token = token if isinstance(token, Operator) else str
                 corrector = rules[last_token][next_token]
                 # remove correctors that broke things as priority
-                if (corrector is Operator.REMOVE_FIRST or corrector is Operator.REMOVE_NEXT or corrector is Operator.REMOVE_BOTH)\
+                if (corrector is Operator.REMOVE_FIRST or
+                        corrector is Operator.REMOVE_NEXT or
+                        corrector is Operator.REMOVE_BOTH)\
                         and accumulator_corrections[-1]:
                     accumulator.pop()
                     accumulator_corrections.pop()
@@ -409,13 +411,15 @@ class BooleanQuery(object):
 
     def _parse_process_operator(self, op: Operator, op_stack: [str], output: list):
         """
+        During parse, processes an operator token.
         :param op: current Operator token
         :param op_stack: current operator stack - may be modified by this method
         :param output: current output - may be modified by this method
         :return: None
         """
+        # Operator values that don't do anything (markers for operator rules checking mostly)
         if op is Operator.START or op is Operator.END\
-                                or op is Operator.REMOVE_FIRST or op is Operator.REMOVE_NEXT:  # last two just in case
+                                or op is Operator.REMOVE_FIRST or op is Operator.REMOVE_NEXT:
             return
 
         if op is Operator.GROUP_OPEN:

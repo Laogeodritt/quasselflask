@@ -36,10 +36,21 @@ Here is a basic example configuration file that is enough to get you up and runn
 
     SQLALCHEMY_DATABASE_URI = 'postgresql://sqluser:password@hostname-or-IP-address/databasename'
     SITE_NAME = "John's IRC Logs"
+    SECRET_KEY = 'A totally random string here - important for security!'
 
 The first line `SQLALCHEMY_DATABASE_URI` tells Quasselflask which database to connect to. At this time, only the PostgreSQL backend is supported[1]. The example is self-explanatory, but here is documentation if needed: [SQLAlchemy Database URLs](http://docs.sqlalchemy.org/en/latest/core/engines.html#postgresql).
 
 The second line `SITE_NAME` refers to the name that will be shown in the tab title and as a heading at the top of each page. It is purely aesthetic.
+
+The third line `SECRET_KEY` is important for the security of passwords and other hashed items. It is very important you use a long, random string.
+
+You can use the following in Python (Linux only?) to generate a secret key to copy-and-paste into your config file:
+
+    >>> import os
+    >>> os.urandom(24)
+    '\xfd{H\xe5<\x95\xf9\xe3\x96.5\xd1\x01O<!\xd5\xa2\xa0\x9fR"\xa1\xa8'
+
+The third line will change randomly and is a good secret key (see also [Flask Quickstart: Sessions](http://flask.pocoo.org/docs/0.11/quickstart/#sessions)). Alternatively, you could use [Random.org's string service](www.random.org/strings) (in this case, make it at least 28 characters with uppercase/lowercase letters and numbers all enabled.)
 
 You can find out about other configuration variables by checking out [quasselflask/core.py](quasselflask/core.py) - scroll down to the `class DefaultConfig:` line. Each line underneath that one is a configuration variable you can change by copying it into your `quasselflask.cfg` file and modifying the value; the comment after the `#` is an explanation (you can remove this).
 
@@ -132,6 +143,7 @@ Query parameters (all optional):
 
 
 # Features wishlist
+* Viewing channel in results log, if >1 channel?
 * Viewing usermasks in the results log
   * click-toggled or on-focus expansion?
 * User login and user/network/channel limitations
@@ -139,9 +151,10 @@ Query parameters (all optional):
 * Context up/down + amount of context to fetch
 * Search by type of message (message, join, part, mode changes, etc.)
 * Pagination
-* Text export
+* Text export (option to email?)
 * Server configuration
 * PM search - better search of query buffers resilient despite query buffer renames during nick changes
+* Access logs by qfuser - IP, hostname (flat files not db - cf RotatingFileHandler)
 
 # Things to document
 * QF_ALLOW_TEST_PAGES

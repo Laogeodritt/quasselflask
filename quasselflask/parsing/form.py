@@ -1,8 +1,9 @@
 """
-Search input parameters parsing and conversion tools (for preparing and sanitising for database queries).
+Form input parameters parsing and conversion tools (for preparing and sanitising for database queries).
 
 Project: QuasselFlask
 """
+
 import re
 from datetime import datetime
 

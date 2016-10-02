@@ -282,9 +282,3 @@ class DisplayBacklog:
                 output.append('</span>')
             return True
         return False
-
-    @staticmethod
-    def _make_html_open_tag(state: {str: bool}, color_args=(None, None)):
-        """
-        :return:
-        """

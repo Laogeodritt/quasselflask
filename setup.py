@@ -10,10 +10,11 @@ setup(
     author_email='marcalexc@arenthil.net',
     setup_requires=['Flask>=0.10',
                     'Flask-User>=0.6.8',
-                    'SQLAlchemy>=0.9.1',
                     'Flask-SQLAlchemy>=1.0',
+                    'Flask-Mail>=0.9.0',
+                    'SQLAlchemy>=0.9.1',
                     'psycopg2',  # PostgreSQL
-                    'crcmod>=1.7'
+                    'crcmod>=1.7',
                     ],
     include_package_data=True,
     zip_safe=False,
