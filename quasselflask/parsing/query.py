@@ -134,6 +134,17 @@ class BooleanQuery(object):
         self.tokens = []
         self.postfix = []
         self.logger = logger.getChild('query_parser')
+        self._is_tokenized = False
+        self._is_preparsed = False
+        self._is_postfix = False
+
+    @property
+    def is_tokenized(self):
+        return self._is_tokenized
+
+    @property
+    def is_parsed(self):
+        return self._is_postfix
 
     def get_tokens(self):
         """
@@ -183,6 +194,7 @@ class BooleanQuery(object):
                     in_escape = cur_escape
         # save anything left in accumulator - probably a last token if anything
         self._add_token(accumulator)
+        self._is_tokenized = True
 
     def _tokenize_char(self, c: str, accumulator: [str],
                        delimiters=None, tokens=None, escape='\\', quote='"'):
@@ -315,6 +327,7 @@ class BooleanQuery(object):
             self._parse_grammar_token(token, new_tokens, new_tokens_corr, rules)
         self._parse_grammar_token(Operator.END, new_tokens, new_tokens_corr, rules)
         self.tokens = new_tokens
+        self._is_preparsed = True
 
     def _parse_grammar_token(self, token, accumulator: list, accumulator_corrections: [bool],
                              rules: {Operator: {Operator: Operator}}):
@@ -396,6 +409,7 @@ class BooleanQuery(object):
             pass  # empty op_stack - this is normal
 
         self.postfix = output
+        self._is_postfix = True
 
     def _parse_process_token(self, token_queue: list, op_stack: [str], output: list):
         """

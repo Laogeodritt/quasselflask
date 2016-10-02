@@ -37,7 +37,7 @@
             <input type="text" name="end" id="search-time-end" placeholder="YYYY-MM-DD HH:MM:SS" {% if search_end is defined %}value="{{ search_end|e }}"{% endif %}>
         </div>
         <div>
-            <label for="search-maxlines">Max lines</label>: <input type="number" max="{{ config.MAX_RESULTS }}" name="limit" id="search-maxlines" value="{{ search_limit|e|default(config.MAX_RESULTS_DEFAULT) }}">
+            <label for="search-maxlines">Max lines</label>: <input type="number" max="{{ config.MAX_RESULTS }}" name="limit" id="search-maxlines" value="{{ search_limit|e|default(config['MAX_RESULTS_DEFAULT']) }}">
         </div>
         <div id="buttons">
             <button type="reset">Clear</button> <button type="submit">Submit</button>

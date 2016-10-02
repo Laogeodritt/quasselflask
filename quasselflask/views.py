@@ -12,8 +12,9 @@ from flask_sqlalchemy import get_debug_queries
 
 import quasselflask
 from quasselflask import app, db
+from quasselflask.parsing.form import process_search_params
 from quasselflask.parsing.irclog import DisplayBacklog
-from quasselflask.querying import build_db_query
+from quasselflask.querying import build_db_search_query
 from quasselflask.util import repr_user_input
 
 
@@ -38,33 +39,50 @@ def search():
     query_args = {'query'}  # requires query parsing
     search_args = unique_args | list_wildcard_args | query_args
 
-    args = request.args
-    available_args = search_args & set(args.keys())
+    form_args = request.args
+    available_args = search_args & set(form_args.keys())
 
     # if no arguments passed, we can just redirect to the home
     if not available_args:
         return redirect(url_for('home'))
 
+    # For rendering in templates - will be updated after processing search params (if successful) before render
+    render_args = {
+        'search_channel': form_args.get('channel'),
+        'search_usermask': form_args.get('usermask'),
+        'search_start': form_args.get('start'),
+        'search_end': form_args.get('end'),
+        'search_query': form_args.get('query'),
+        'search_query_wildcard': form_args.get('search_query_wildcard', int),
+        'search_limit': form_args.get('limit', app.config['RESULTS_NUM_DEFAULT'], int)  # post-processed value
+    }
+
+    # Process and parse the args
     try:
-        results = reversed(build_db_query(db.session, request.args).all())
+        sql_args = process_search_params(form_args)
     except ValueError as e:
         errtext = e.args[0]
-        return render_template('search_form.html', error=errtext,
-            search_channel=args.get('channel'), search_usermask=args.get('usermask'),
-            search_start=args.get('start'), search_end=args.get('end'),
-            search_query=args.get('query'), search_query_wildcard=args.get('query_wildcard', type=bool),
-            search_limit=args.get('limit', app.config['RESULTS_NUM_DEFAULT'], int))
+        return render_template('search_form.html', error=errtext, **render_args)
 
-    if get_debug_queries():
+    app.logger.debug("Args|SQL-processed: limit=%i channel%s usermask%s start[%s] end[%s] query%s %s",
+                     sql_args['limit'], sql_args['channels'], sql_args['usermasks'],
+                     sql_args['start'].isoformat() if sql_args['start'] else '',
+                     sql_args['end'].isoformat() if sql_args['end'] else '',
+                     sql_args['query'].get_parsed(), '[wildcard]' if sql_args['query_wildcard'] else '[no_wildcard]')
+
+    # update after processing params
+    render_args['search_query_wildcard'] = sql_args.get('query_wildcard')
+    render_args['search_limit'] = sql_args.get('limit')
+
+    # build and execute the query
+    results = reversed(build_db_search_query(db.session, sql_args).all())
+
+    if (app.debug or app.testing) and get_debug_queries():
         info = get_debug_queries()[0]
         app.logger.debug("SQL: {}\nParameters: {}\nDuration: {:.3f}s".format(
                 info.statement, repr(info.parameters), info.duration))
 
-    return render_template('results.html', records=[DisplayBacklog(result) for result in results],
-                           search_channel=args.get('channel'), search_usermask=args.get('usermask'),
-                           search_start=args.get('start'), search_end=args.get('end'),
-                           search_query=args.get('query'), search_query_wildcard=args.get('query_wildcard', type=bool),
-                           search_limit=args.get('limit', app.config['RESULTS_NUM_DEFAULT'], int))
+    return render_template('results.html', records=[DisplayBacklog(result) for result in results], **render_args)
 
 
 @app.route('/context/<int:post_id>/<int:num_context>')

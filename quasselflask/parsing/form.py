@@ -7,6 +7,61 @@ Project: QuasselFlask
 import re
 from datetime import datetime
 
+from quasselflask import app
+from quasselflask.parsing.query import BooleanQuery
+
+
+def process_search_params(in_args) -> dict:
+    """
+    Process arguments for the /search endpoint.
+
+    Keys returned:
+
+    - query_wildcard: boolean - always set (default false)
+    - limit: int - if not set, set to default value in configuration; limited to the max value in configuration
+    - start: datetime|None
+    - end: datetime|None
+    - channels: list (may be empty)
+    - usermasks: list (may be empty)
+    - query: quasselflask.parsing.query.BooleanQuery
+
+    :param in_args:
+    :return:
+    """
+    out_args = dict()
+
+    # Unique arguments
+    out_args['query_wildcard'] = bool(in_args.get('query_wildcard', None, int))
+
+    out_args['limit'] = in_args.get('limit', app.config['RESULTS_NUM_DEFAULT'], int)
+    if out_args['limit'] > app.config['RESULTS_NUM_MAX']:
+        out_args['limit'] = app.config['RESULTS_NUM_MAX']
+
+    out_args['start'] = None
+    if in_args.get('start'):
+        try:
+            out_args['start'] = convert_str_to_datetime(in_args.get('start'))
+        except ValueError as e:
+            raise ValueError('Invalid start time format: must be in YYYY-MM-DD HH:MM:SS.SSS format.') from e
+
+    out_args['end'] = None
+    if in_args.get('end'):
+        try:
+            out_args['end'] = convert_str_to_datetime(in_args.get('end'))
+        except ValueError as e:
+            raise ValueError('Invalid end time format: must be in YYYY-MM-DD HH:MM:SS.SSS format.') from e
+
+    # Flat-list arguments
+    out_args['channels'] = extract_glob_list(in_args.get('channel', ''))
+    out_args['usermasks'] = extract_glob_list(in_args.get('usermask', ''))
+
+    # fulltext string
+    out_args['query'] = BooleanQuery(in_args.get('query', ''), app.logger)
+    out_args['query'].tokenize()
+    out_args['query'].parse()
+
+    return out_args
+
 
 def convert_str_to_datetime(s: str) -> datetime:
     """
