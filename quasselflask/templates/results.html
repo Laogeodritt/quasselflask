@@ -15,11 +15,15 @@
     <h2>Results</h2>
     <table class="irc-log">
         {% for record in records %}
-            <tr class="{{ record.type.name|safe }}">
+            <tr class="irc-line {{ record.type.name|safe }}">
                 <td class="timestamp">{{ record.time|safe }}</td>
                 <td class="icon">{{ record.get_icon_text()|safe }}</td>
                 <td class="sender nick-{{ record.get_nick_color().name|safe }}">{{ record.nickname|e }}</td>
                 <td class="message">{{ record.format_html_message()|safe }}</td>
+            </tr>
+            <tr class="irc-backlog-details">
+                <td colspan="3">{{ record.network }}/{{ record.channel }}</td>
+                <td>{{ record.sender }}</td>
             </tr>
         {% endfor %}
     </table>

@@ -114,6 +114,7 @@ class DisplayBacklog:
         :param backlog: Backlog string
         """
         self.time = DisplayBacklog._time_format.format(backlog.time)  # type: str
+        self.network = backlog.buffer.network.networkname  # type: str
         self.channel = backlog.buffer.buffername  # type: str
         self.sender = backlog.sender.sender  # type: str
         self.nickname = self.sender.split('!', 1)[0]  # type: str

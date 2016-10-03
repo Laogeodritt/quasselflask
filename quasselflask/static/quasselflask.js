@@ -12,6 +12,14 @@
 
 /* bootstrap */
 $(document).ready(function() {
+    $('table.irc-log tr.irc-line').click(function(event) {
+        toggle(event.delegateTarget);
+    });
 });
 
 /* library */
+function toggle(el) {
+    var $target = $(el).next();
+    $target.toggle()
+    // slideUp() and slideDown(), or other anims, not supported on tables. Gah!
+}
