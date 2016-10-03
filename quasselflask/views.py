@@ -9,13 +9,13 @@ import time
 
 from flask import request, g, render_template, redirect, url_for
 from flask_sqlalchemy import get_debug_queries
+from flask_user import login_required
 
 import quasselflask
 from quasselflask import app, db
 from quasselflask.parsing.form import process_search_params
 from quasselflask.parsing.irclog import DisplayBacklog
 from quasselflask.querying import build_db_search_query
-from quasselflask.util import repr_user_input
 
 
 @app.before_request
@@ -26,11 +26,13 @@ def globals_init():
 
 
 @app.route('/')
+@login_required
 def home():
     return render_template('search_form.html')
 
 
 @app.route('/search')
+@login_required
 def search():
     # some helpful constants for the request argument processing
     # type of extraction/processing - this is more documentation as it's not used to process at the moment

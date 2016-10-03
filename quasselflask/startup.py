@@ -25,6 +25,7 @@ def init_app():
     mail = Mail(app)  # Flask-Mail, for Flask-User
 
     # User/Login handling
+    app.config['USER_APP_NAME'] = app.config['SITE_NAME']  # used by Flask-Usere email templates
     # TODO: make/set anonymous (not-logged-in) class in Flask-User (flask-login specifically) with is_superuser() - "Anonymous users" section https://flask-login.readthedocs.io/en/latest/
 
     from quasselflask.models import QfUser

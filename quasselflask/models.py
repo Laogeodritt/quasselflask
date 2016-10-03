@@ -52,6 +52,10 @@ class QfUser(Base, UserMixin):
     password = db.Column(db.String(255), nullable=False, server_default='')  # TODO: empty default? hashing?
     reset_password_token = db.Column(db.String(100), nullable=False, server_default='')
 
+    # User email information
+    email = db.Column(db.String(255), nullable=False, unique=True)
+    confirmed_at = db.Column(db.DateTime())
+
     active = db.Column('is_active', db.Boolean(), nullable=False, server_default='0')
     superuser = db.Column('is_superuser', db.Boolean(), nullable=False, server_default='0')
 
@@ -106,7 +110,7 @@ class QfPermissions(Base):
     )
     qfpermid = db.Column(db.Integer, primary_key=True)
 
-    qfuserid = db.Column(db.Integer, db.ForeignKey('qf_user.qfuserid'), index=True)
+    qfuserid = db.Column(db.Integer, db.ForeignKey('qf_user.qfuserid', ondelete='CASCADE'), index=True)
     qfuser = db.relationship('QfUser', back_populates='permissions')
 
     # Access type: allow or deny?
@@ -115,11 +119,11 @@ class QfPermissions(Base):
     # what is being allowed/denied
     type = db.Column(db.Enum(PermissionType), nullable=False, server_default='all')
 
-    userid = db.Column(db.Integer, db.ForeignKey('quasseluser.userid'), nullable=True)
+    userid = db.Column(db.Integer, db.ForeignKey('quasseluser.userid', ondelete='SET NULL'), nullable=True)
     quasseluser = db.relationship("QuasselUser")
 
-    networkid = db.Column(db.Integer, db.ForeignKey('network.networkid'), nullable=True)
+    networkid = db.Column(db.Integer, db.ForeignKey('network.networkid', ondelete='SET NULL'), nullable=True)
     network = db.relationship("Network")
 
-    bufferid = db.Column(db.Integer, db.ForeignKey('buffer.bufferid'), nullable=True)
+    bufferid = db.Column(db.Integer, db.ForeignKey('buffer.bufferid', ondelete='SET NULL'), nullable=True)
     buffer = db.relationship("Buffer")

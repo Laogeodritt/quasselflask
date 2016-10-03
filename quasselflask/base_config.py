@@ -38,5 +38,18 @@ class InternalConfig:
     Internal configuration of Flask and its extensions or other libraries. Generally don't change these unless you're
     very sure of what you're doing.
     """
+
     SQLALCHEMY_TRACK_MODIFICATIONS = False
     SQLALCHEMY_RECORD_QUERIES = bool(os.environ.get('FLASK_DEBUG', 0))
+    CSRF_ENABLED = True
+
+    USER_ENABLE_CHANGE_USERNAME = False
+    USER_ENABLE_REGISTRATION = True  # TODO: how does this interact with invitation?
+
+    USER_AUTO_LOGIN_AFTER_CONFIRM = False
+    USER_CONFIRM_EMAIL_EXPIRATION = 3*24*3600  # seconds
+    USER_INVITE_EXPIRATION = 7*24*3600  # seconds
+    USER_PASSWORD_HASH = 'sha512_crypt'
+    USER_REQUIRE_INVITATION = True
+    USER_RESET_PASSWORD_EXPIRATION = 24*3600  # seconds
+    USER_SHOW_USERNAME_EMAIL_DOES_NOT_EXIST = False
