@@ -12,6 +12,6 @@ __version__ = "0.1"
 
 app = Flask(__name__, instance_path=os.environ.get('QF_CONFIG_PATH', None), instance_relative_config=True)
 db = SQLAlchemy(app)
+user_manager = None  # set on running init_app
 
-# noinspection PyPep8
 from quasselflask.startup import init_app

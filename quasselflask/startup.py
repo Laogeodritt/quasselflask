@@ -31,6 +31,9 @@ def init_app():
     db_adapter = SQLAlchemyAdapter(db, QfUser)
     user_manager = UserManager(db_adapter, app)
 
+    # export objects into the main space
+    import quasselflask
+    quasselflask.user_manager = user_manager
     import quasselflask.views
 
     return app
