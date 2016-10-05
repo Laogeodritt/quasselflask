@@ -13,13 +13,33 @@
 /* bootstrap */
 $(document).ready(function() {
     $('table.irc-log tr.irc-line').click(function(event) {
-        toggle(event.delegateTarget);
+        toggleIrcLineDetails(event.delegateTarget);
     });
+
 });
 
 /* library */
-function toggle(el) {
+function toggleIrcLineDetails(el) {
     var $target = $(el).next();
-    $target.toggle()
+    if($target.hasClass('expanded'))
+        $target.addClass('collapsed')
+               .removeClass('expanded');
+    else
+        $target.addClass('expanded')
+               .removeClass('collapsed');
     // slideUp() and slideDown(), or other anims, not supported on tables. Gah!
+}
+
+function expandAllIrcLineDetails() {
+    $('table.irc-log tr.irc-backlog-details.collapsed')
+            .addClass('expanded')
+            .removeClass('collapsed');
+    return false; // when used as a click event on <a>
+}
+
+function collapseAllIrcLineDetails() {
+    $('table.irc-log tr.irc-backlog-details.expanded')
+            .addClass('collapsed')
+            .removeClass('expanded');
+    return false; // when used as a click event on <a>
 }

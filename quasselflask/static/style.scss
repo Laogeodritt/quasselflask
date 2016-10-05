@@ -40,7 +40,7 @@ $content-border-radius: 10px;
 
   header h1, h1, h2, h3, h4, h5, h6 { border-color: $rebase0; }
 
-  a, a:active, a:visited { color: $rebase1; }
+  /* a, a:active, a:visited { color: $rebase1; } */
 
   section#error, section#warning, section#notice {
     color: $rebase1;
@@ -128,6 +128,14 @@ footer {
 
 aside, article { @extend section; }
 
+a, a:visited {
+  color: $blue;
+}
+
+a:hover, a:active {
+  color: $cyan;
+}
+
 /** Form styling **/
 
 form {
@@ -176,15 +184,25 @@ form {
 
 /** Results styling **/
 html .result {
+  display: flex;
+  flex-direction: column;
+  align-items: stretch;
+
+  #nav-irc-log {
+    text-align: right;
+    margin: 0 0.3em 0.5em;
+    a { font-size: 80%; }
+  }
+
   table.irc-log {
     margin: 0.3em 0 1em;
 
     tr.irc-backlog-details {
       font-size: 80%;
-      display: none;
       td:first-child { text-align: end; }
       td { text-align: start; }
     }
+    tr.irc-backlog-details.collapsed { display: none; }
 
     td {
       vertical-align: baseline;

@@ -143,10 +143,10 @@ Query parameters (all optional):
 
 
 # Features wishlist
-* Viewing channel in results log, if >1 channel?
-* Viewing usermasks in the results log
-  * click-toggled or on-focus expansion?
-* User login and user/network/channel limitations
+
+* user search endpoint (not a log search but unique users)
+* top/floating navigation bar - add expand/collapse all
+* User handling and user/network/channel limitations
 * quasseluser/network search criteria
 * Context up/down + amount of context to fetch
 * Search by type of message (message, join, part, mode changes, etc.)
@@ -154,7 +154,7 @@ Query parameters (all optional):
 * Text export (option to email?)
 * Server configuration
 * PM search - better search of query buffers resilient despite query buffer renames during nick changes
-* Access logs by qfuser - IP, hostname (flat files not db - cf RotatingFileHandler)
+* Store access logs by qfuser - IP, hostname (flat files not db - cf RotatingFileHandler)
 
 # Things to document
 * QF_ALLOW_TEST_PAGES

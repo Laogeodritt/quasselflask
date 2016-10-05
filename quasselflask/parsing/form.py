@@ -115,8 +115,9 @@ def convert_glob_to_like(s: str) -> (str, bool):
     escaped characters via '\' (no character classes). NOTE: Does not place % around the expression.
     :param s: Glob string to convert.
     :return: (like_str, hasWildcards) - hasWildcards is True if a non-escaped wildcard was found.
+            like_str may be None if the input is empty/None.
     """
-    if s is None:
+    if not s:  # empty or None
         return None
 
     s_parse = []

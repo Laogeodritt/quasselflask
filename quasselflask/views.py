@@ -55,7 +55,8 @@ def search():
         'search_query': form_args.get('query'),
         'search_query_wildcard': form_args.get('search_query_wildcard', int),
         'search_limit': form_args.get('limit', app.config['RESULTS_NUM_DEFAULT'], int),
-        'search_order': form_args.get('order')
+        'search_order': form_args.get('order'),
+        'expand_line_details': False,
     }
 
     # Process and parse the args
@@ -77,17 +78,35 @@ def search():
     render_args['search_order'] = sql_args.get('order')
 
     # build and execute the query
-    results = build_db_search_query(db.session, sql_args).all()
+    results_cursor = build_db_search_query(db.session, sql_args).all()
 
     if sql_args['order'] == 'newest':
-        results = reversed(results)
+        results_cursor = reversed(results_cursor)
 
     if (app.debug or app.testing) and get_debug_queries():
         info = get_debug_queries()[0]
         app.logger.debug("SQL: {}\nParameters: {}\nDuration: {:.3f}s".format(
                 info.statement, repr(info.parameters), info.duration))
 
-    return render_template('results.html', records=[DisplayBacklog(result) for result in results], **render_args)
+    results_raw = list(results_cursor)
+    results_display = [DisplayBacklog(result) for result in results_raw]
+
+    # get unique channels and users by ID
+    # efficiency note for big result sets: set() type uses hashing for fast "x in s" operations, and
+    # set.add() won't add redundant entries - so this yields sets of unique channels/users.
+    result_users = set()
+    result_channels = set()
+    for result in results_raw:
+        result_users.add(result.senderid)
+        result_channels.add(result.bufferid)
+
+    # determine some display settings based on the type of query made
+    has_single_channel = (len(result_channels) == 1)
+    is_user_search = bool(sql_args.get('usermasks'))
+    is_keyword_search = bool(sql_args.get('query'))
+    render_args['expand_line_details'] = not has_single_channel or is_user_search or is_keyword_search
+
+    return render_template('results.html', records=results_display, **render_args)
 
 
 @app.route('/context/<int:post_id>/<int:num_context>')
