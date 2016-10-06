@@ -134,6 +134,16 @@ footer {
   text-align: center;
 }
 
+dt {
+  margin-top: 0.5em;
+  font-weight: bold;
+  color: #268bd2;
+}
+
+dd {
+  margin-top: 0.3em;
+}
+
 a, a:visited {
   color: #268bd2;
 }

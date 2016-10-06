@@ -33,8 +33,13 @@
 </header>
 
 <nav>
-    <ul id="nav-right">{% block navright %}{% endblock %}</ul>
-    <ul id="nav-left"><li id="nav-color">TOGGLE_COLOR</li><li id="nav-user">USER_MENU</li></ul>
+    <ul id="nav-right">
+        {% block navright %}{% endblock %}
+    </ul>
+    <ul id="nav-left">
+        {% if config.QF_ALLOW_TEST_PAGES %}<li id="nav-test-query"><a href="{{ url_for('test_parse_home') }}">TEST: Query Parser</a></li>{% endif %}
+        <li id="nav-color">TOGGLE_COLOR</li>
+        <li id="nav-user">USER_MENU</li></ul>
 </nav>
 
 {% if error is defined %}<section id="error"><strong>Error</strong> {{ error }}</section>{% endif %}

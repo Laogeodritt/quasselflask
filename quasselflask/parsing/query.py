@@ -163,8 +163,8 @@ class BooleanQuery(object):
 
     def tokenize(self):
         """
-        Tokenize the input.
-        :return: None
+        Tokenize the input. Can be chained.
+        :return: self
         """
         self.tokens.clear()
         accumulator = []
@@ -195,6 +195,7 @@ class BooleanQuery(object):
         # save anything left in accumulator - probably a last token if anything
         self._add_token(accumulator)
         self._is_tokenized = True
+        return self
 
     def _tokenize_char(self, c: str, accumulator: [str],
                        delimiters=None, tokens=None, escape='\\', quote='"'):
@@ -287,8 +288,13 @@ class BooleanQuery(object):
         return token
 
     def parse(self):
+        """
+        Parse the query. Must be called after tokenization. Can be chained.
+        :return: self
+        """
         self.parse_grammar()
         self.parse_postfix()
+        return self
 
     def parse_grammar(self):
         """

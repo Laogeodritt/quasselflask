@@ -32,6 +32,8 @@ class DefaultConfig:
 
     MAX_LOG_LENGTH_USER_INPUT = 1024  # For logs involving user input, max log length (avoids large logs on large input)
 
+    QF_ALLOW_TEST_PAGES = False  # Used for testing only
+
 
 class InternalConfig:
     """

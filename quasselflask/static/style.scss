@@ -128,6 +128,16 @@ footer {
 
 aside, article { @extend section; }
 
+dt {
+  margin-top: 0.5em;
+  font-weight: bold;
+  color: $blue;
+}
+
+dd {
+  margin-top: 0.3em;
+}
+
 a, a:visited {
   color: $blue;
 }

@@ -4,7 +4,6 @@ Flask endpoints for this application.
 Project: QuasselFlask
 """
 
-import os
 import time
 
 from flask import request, g, render_template, redirect, url_for
@@ -15,7 +14,6 @@ from quasselflask import app, db
 from quasselflask.parsing.form import process_search_params
 from quasselflask.parsing.irclog import DisplayBacklog
 from quasselflask.querying import build_db_search_query
-from quasselflask.util import repr_user_input
 
 
 @app.before_request
@@ -112,11 +110,3 @@ def search():
 @app.route('/context/<int:post_id>/<int:num_context>')
 def context(post_id, num_context):
     pass  # TODO context endpoint
-
-
-if os.environ.get('QF_ALLOW_TEST_PAGES'):
-    @app.route('/test/parse')
-    def test_parse():
-        pass  # TODO: test_parse endpoint
-
-

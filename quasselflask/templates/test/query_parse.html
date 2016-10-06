@@ -1,0 +1,56 @@
+{#
+ # Query parser testing.
+ #
+ # Arguments:
+ # search_query:str: the query to test parsing with
+ # evaluated:str: the evaluated query to show to the user
+ #
+ # Blocks (non-inherited):
+ # - None
+ #
+ #}{% extends "skel_main.html" %}
+{% block head %}{{ super() }}
+    <style type="text/css">
+        .results dl dd {
+            font-family: monospace;
+        }
+    </style>
+{% endblock %}
+{% block title %}Search{% endblock %}
+{% block content %}<section>
+    <h2>Query parser test utility</h2>
+
+    <p style="font-family: monospace;">(hi, Grine_, Yazuki! =3)</p>
+    <form>
+        <script type="text/javascript">
+            function submitForm(elem) {
+                var url_template = "{{ url_for('test_parse', query_str='{query_str}')|safe }}";
+                var url = url_template.replace(encodeURIComponent('{query_str}'), encodeURIComponent(elem.form.query.value));
+                location.replace(url);
+                return false;
+            }
+        </script>
+        <div class="search-query-container">
+            <input type="text" name="query" id="search-query" title="Search Query" placeholder="Search Query" {% if search_query is defined and search_query %}value="{{ search_query|e }}"{% endif %}>
+            <label for="search-query-wildcard">Wildcards</label>
+        </div>
+        <div id="buttons">
+            <button type="reset">Clear</button> <button type="submit" onclick="return submitForm(this);">Submit</button>
+        </div>
+    </form>
+</section>
+{% block content_after_form %}{% endblock %}
+<section class="results">
+    <h2>Result</h2>
+    <dl>
+        <dt>Input</dt>
+        <dd>{{ search_query }}</dd>
+        <dt>Parsed</dt>
+        <dd>{{ evaluated|default('No parse result')|e }}</dd>
+        <dt>Polish notation (for developer use)</dt>
+        <dd>{{ postfix|default('No parse result') }}</dd>
+    </dl>
+</section>
+<section>
+    {% include 'include/help.html' %}
+</section>{% endblock %}

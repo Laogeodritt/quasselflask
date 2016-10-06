@@ -4,6 +4,8 @@ App initialization and configuration.
 Project: QuasselFlask
 """
 
+import os
+
 from flask_mail import Mail
 from flask_user import SQLAlchemyAdapter, UserManager
 
@@ -16,6 +18,7 @@ def init_app():
     app.config.from_object(DefaultConfig)
     app.config.from_object(InternalConfig)
     app.config.from_pyfile('quasselflask.cfg')
+    app.config.from_envvar('QF_ALLOW_TEST_PAGES', True)
 
     if not app.config.get('SECRET_KEY', None):
         raise EnvironmentError("QuasselFlask SECRET_KEY parameter not set or empty in configuration")
@@ -35,5 +38,8 @@ def init_app():
     import quasselflask
     quasselflask.user_manager = user_manager
     import quasselflask.views
+
+    if app.config.get('QF_ALLOW_TEST_PAGES', False):
+        import quasselflask.views_test
 
     return app
