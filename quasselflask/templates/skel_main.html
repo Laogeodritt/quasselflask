@@ -34,12 +34,40 @@
 
 <nav>
     <ul id="nav-right">{% block navright %}{% endblock %}</ul>
-    <ul id="nav-left"><li id="nav-color">TOGGLE_COLOR</li><li id="nav-user">USER_MENU</li></ul>
+    <ul id="nav-left">
+        <li id="nav-color">TOGGLE_COLOR</li>
+        <li id="nav-user">
+            {% if call_or_get(current_user.is_authenticated) %}
+                <a href="{{ url_for('user.profile') }}">{{ current_user.username }}</a>
+                &nbsp; | &nbsp;
+                <a href="{{ url_for('user.logout') }}">Sign out</a>
+            {% else %}
+                <a href="{{ url_for('user.login') }}">Sign in</a>
+            {% endif %}
+        </li>
+    </ul>
 </nav>
 
-{% if error is defined %}<section id="error"><strong>Error</strong> {{ error }}</section>{% endif %}
-{% if warning is defined %}<section id="warning"><strong>Warning</strong> {{ warning }}</section>{% endif %}
-{% if notice is defined %}<section id="notice">{{ notice }}</section>{% endif %}
+{# One-time system messages called Flash messages #}
+{% if error is defined %}<section id="error"><strong>Error</strong>{{ error|e }}</section>{% endif %}
+{% if warning is defined %}<section id="warning"><strong>Warning</strong>{{ warning|e }}</section>{% endif %}
+{% if notice is defined %}<section id="notice">{{ notice|e }}</section>{% endif %}
+
+{% block flash_messages %}
+{%- with messages = get_flashed_messages(with_categories=true) -%}
+{% if messages %}
+{% for category, message in messages %}
+    {% if category=='error' or category=='danger' %}
+        <section id="error"><strong>Error</strong>{{ message|safe }}</section>
+    {% elif category=='warning' %}
+        <section id="warning"><strong>Warning</strong>{{ message|safe }}</section>
+    {% else %}
+        <section id="notice">{{ notice|e }}</section>
+    {% endif %}
+{% endfor %}
+{% endif %}
+{%- endwith %}
+{% endblock %}
 
 {% block content %}{% endblock %}
 

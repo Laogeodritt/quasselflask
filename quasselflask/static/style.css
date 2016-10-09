@@ -123,7 +123,7 @@ section#warning, footer#warning, aside#warning, article#warning {
 }
 
 section#notice, footer#notice, aside#notice, article#notice {
-  background-color: #71dad2;
+  background-color: #e1ff1a;
 }
 
 footer {
@@ -133,29 +133,54 @@ footer {
 }
 
 /** Form styling **/
+form {
+  display: flex;
+  flex-direction: column;
+  align-items: flex-end;
+}
+form#form-login {
+  width: 33%;
+  margin-left: auto;
+  margin-right: auto;
+}
+form#form-login .forgot-password {
+  font-size: 80%;
+}
 form > div {
   width: 100%;
   display: flex;
   flex-direction: row;
-  justify-content: center;
+  justify-content: space-between;
   align-items: baseline;
+}
+form .help-block {
+  /* TODO login.html */
 }
 form input, form button {
   border: 1px solid;
   border-radius: 10px;
-  margin: 0 0.4em 0.6em;
+  margin: 0.6em 0.4em 0;
   padding: 0.3em 0.6em;
 }
+form > div.has-error input {
+  border-color: #dc322f;
+  background-color: #f2b3b2;
+}
 form label, form input[type="checkbox"], form input[type="radio"] {
-  margin: 0 0.2em 0.6em;
+  margin: 0.6em 0.2em 0;
   padding: 0;
 }
-form input[type="text"], form input[type="number"], form input[type="textarea"] {
+form input[type="text"], form input[type="password"], form input[type="number"], form input[type="textarea"] {
   flex-grow: 1;
   text-align: center;
 }
 form input[type="text"], form input[type="number"] {
   text-align: center;
+}
+form .help-block {
+  margin: 0.2em 0.4em 0;
+  color: #dc322f;
+  font-size: 80%;
 }
 form #search-query {
   text-align: left;

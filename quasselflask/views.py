@@ -9,7 +9,7 @@ import time
 
 from flask import request, g, render_template, redirect, url_for
 from flask_sqlalchemy import get_debug_queries
-from flask_user import login_required
+from flask_user import login_required, confirm_email_required
 
 import quasselflask
 from quasselflask import app, db
@@ -27,12 +27,14 @@ def globals_init():
 
 @app.route('/')
 @login_required
+@confirm_email_required
 def home():
     return render_template('search_form.html')
 
 
 @app.route('/search')
 @login_required
+@confirm_email_required
 def search():
     # some helpful constants for the request argument processing
     # type of extraction/processing - this is more documentation as it's not used to process at the moment
@@ -91,6 +93,7 @@ def search():
 
     return render_template('results.html', records=[DisplayBacklog(result) for result in results], **render_args)
 
+# TODO: look at flask_users/views.py login() endpoint - security issue with 'next' GET parameter?
 
 @app.route('/context/<int:post_id>/<int:num_context>')
 def context(post_id, num_context):
