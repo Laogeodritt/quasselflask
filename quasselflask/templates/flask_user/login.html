@@ -5,7 +5,7 @@
     {% from "flask_user/_macros.html" import render_field, render_checkbox_field, render_submit_field %}
     <h2>{%trans%}Login{%endtrans%}</h2>
 
-    <form action="" method="POST" id="form-login" role="form">
+    <form action="" method="POST" id="form-login" role="form" class="narrow">
         {{ form.hidden_tag() }}
 
         {# Username or Email field #}

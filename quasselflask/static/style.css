@@ -138,19 +138,22 @@ form {
   flex-direction: column;
   align-items: flex-end;
 }
-form#form-login {
+form#form-login .forgot-password {
+  font-size: 80%;
+}
+form.narrow {
   width: 33%;
   margin-left: auto;
   margin-right: auto;
 }
-form#form-login .forgot-password {
-  font-size: 80%;
+form.narrow > div {
+  justify-content: space-between;
 }
 form > div {
   width: 100%;
   display: flex;
   flex-direction: row;
-  justify-content: space-between;
+  justify-content: center;
   align-items: baseline;
 }
 form .help-block {

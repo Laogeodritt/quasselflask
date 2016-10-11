@@ -138,12 +138,18 @@ form {
   align-items: flex-end;
 
   &#form-login {
+    .forgot-password {
+      font-size: $small-font-size;
+    }
+  }
+
+  &.narrow {
     width: 33%;
     margin-left: auto;
     margin-right: auto;
 
-    .forgot-password {
-      font-size: $small-font-size;
+    > div {
+      justify-content: space-between;
     }
   }
 
@@ -151,7 +157,7 @@ form {
     width: 100%;
     display: flex;
     flex-direction: row;
-    justify-content: space-between;
+    justify-content: center;
     align-items: baseline;
   }
 
