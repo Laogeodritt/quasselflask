@@ -8,17 +8,14 @@ Project: QuasselFlask
 from enum import Enum
 
 from flask_user import UserMixin
-from sqlalchemy import MetaData
 from sqlalchemy.ext.automap import automap_base
 
 from quasselflask import db
 from quasselflask.parsing.irclog import BacklogType
 
-
-db_metadata = MetaData()
 _db_tables = ['backlog', 'sender', 'buffer', 'network', 'quasseluser']
-db_metadata.reflect(db.engine, only=_db_tables)
-Base = automap_base(metadata=db_metadata)
+db.metadata.reflect(db.engine, only=_db_tables)
+Base = automap_base(metadata=db.metadata)
 Base.prepare()
 
 Backlog = Base.classes.backlog
@@ -39,7 +36,7 @@ def __repr_backlog(self):
 Backlog.__repr__ = __repr_backlog
 
 
-class QfUser(Base, UserMixin):
+class QfUser(db.Model, UserMixin):
     """
     Quasselflask-specific user table. This is used to login to Quasselflask and is distinct from a QuasselUser, used to
     log into Quassel and associated to IRC backlogs and connections.
@@ -49,7 +46,7 @@ class QfUser(Base, UserMixin):
 
     # Authentication
     username = db.Column(db.String(50), nullable=False, index=True, unique=True)
-    password = db.Column(db.String(255), nullable=False, server_default='')  # TODO: empty default? hashing?
+    password = db.Column(db.String(255), nullable=False, server_default='')
     reset_password_token = db.Column(db.String(100), nullable=False, server_default='')
 
     # User email information
@@ -59,7 +56,7 @@ class QfUser(Base, UserMixin):
     active = db.Column('is_active', db.Boolean(), nullable=False, server_default='0')
     superuser = db.Column('is_superuser', db.Boolean(), nullable=False, server_default='0')
 
-    permissions = db.relationship('QfPermissions', back_populates='qfuser')
+    permissions = db.relationship('QfPermission', back_populates='qfuser', lazy='joined')
 
     # For Flask-User: see UserMixin
     def get_id(self):
@@ -85,6 +82,11 @@ class QfUser(Base, UserMixin):
     def is_superuser(self):  # to match the UserMixin API
         return self.superuser
 
+    def __repr__(self):
+        return '<QfUser {}{}{}>'.format(
+            self.username,
+            '[su]' if self.is_superuser else '', '[disabled]' if not self.active else '')
+
 
 class PermissionAccess(Enum):
     deny = 0
@@ -98,8 +100,39 @@ class PermissionType(Enum):
     all = 15
 
 
-class QfPermissions(Base):
-    __tablename__ = "qf_permissions"
+class QfPermission(db.Model):
+    """
+    Table defining the permissions of a Quasselflask user. Permissions define what a user can search in terms of
+    quassel users, networks, and channels. A user's permissions are defined by:
+
+    1. an "allow all" or "deny all" permission (required);
+    2. One or more rules allowing specific users, networks or buffers.
+
+    The rules are applied in the following order:
+
+    1. "allow all" or "deny all"
+    2. quassel user rules
+    3. network rules
+    4. buffer rules
+
+    For example, you could have the rules:
+
+    1. deny all
+    2. allow quassel user 'user1'
+    3. deny buffer '##secret-channel'
+
+    This would give the user access to all of logs of the user 'user1', except ##secret-channel.
+
+    The attribute ``access`` defines whether a rule is allow or deny; ``type`` defines whether it refers to "all",
+    "user" (quassel user), "network" or "buffer" (channel) restrictions. For "all" type, the ``userid``,
+    ``networkid`` and ``bufferid`` columns must be NULL; for other types, only the column corresponding to the type must
+    be non-NULL.
+
+    Note: userid, networkid, bufferid do not have relationships as QfUser/QfPermission need to use Flask-SQLAlchemy
+    for Flask-User compatibility, but the reflected Quassel classes are direct SQLAlchemy using a different
+    declarative Base. This is an issue to address.
+    """
+    __tablename__ = "qf_permission"
     __table_args__ = (
         db.CheckConstraint("""
         (type = 'all' and userid IS NULL and networkid IS NULL and bufferid IS NULL) OR
@@ -119,11 +152,61 @@ class QfPermissions(Base):
     # what is being allowed/denied
     type = db.Column(db.Enum(PermissionType), nullable=False, server_default='all')
 
-    userid = db.Column(db.Integer, db.ForeignKey('quasseluser.userid', ondelete='SET NULL'), nullable=True)
-    quasseluser = db.relationship("QuasselUser")
+    userid = db.Column(db.Integer, db.ForeignKey('quasseluser.userid', ondelete='CASCADE'), nullable=True)
+    user = db.relationship(QuasselUser)
 
-    networkid = db.Column(db.Integer, db.ForeignKey('network.networkid', ondelete='SET NULL'), nullable=True)
-    network = db.relationship("Network")
+    networkid = db.Column(db.Integer, db.ForeignKey('network.networkid', ondelete='CASCADE'), nullable=True)
+    network = db.relationship(Network)
 
-    bufferid = db.Column(db.Integer, db.ForeignKey('buffer.bufferid', ondelete='SET NULL'), nullable=True)
-    buffer = db.relationship("Buffer")
+    bufferid = db.Column(db.Integer, db.ForeignKey('buffer.bufferid', ondelete='CASCADE'), nullable=True)
+    buffer = db.relationship(Buffer)
+
+    def __init__(self, access: PermissionAccess, type: PermissionType, id: int=None):
+        """
+        Create a new permission. Add this to the ``QfUser.permissions`` list for the user.
+        :param access:
+        :param type:
+        :param id:
+        """
+        self.access = access
+        self.type = type
+        if self.type == PermissionType.user:
+            self.userid = id
+        elif self.type == PermissionType.network:
+            self.networkid = id
+        elif self.type == PermissionType.buffer:
+            self.bufferid = id
+        elif self.type == PermissionType.all:
+            if id is not None:
+                raise TypeError("id must not be passed for type=all")
+
+    def __repr__(self):
+        if self.type == PermissionType.user:
+            id = self.userid
+        elif self.type == PermissionType.network:
+            id = self.networkid
+        elif self.type == PermissionType.buffer:
+            id = self.bufferid
+        else:
+            id = None
+        return '<QfPermission:{0:<5s}:{1:<7}:{2:d}>'.format(self.access.name, self.type.name, id)
+
+
+def qf_create_all():
+    """
+    Create all QuasselFlask-related tables and types.
+    :return:
+    """
+    db.create_all()
+
+
+def qf_drop_all():
+    """
+    Drops all QuasselFlask-related tables types. Does not drop Quassel tables.
+
+    The connected PostgreSQL user must be owner (or member to the owner group) of the table to drop it.
+    :return:
+    """
+    db.metadata.drop_all(bind=db.engine, tables=[QfUser.__table__, QfPermission.__table__], checkfirst=True)
+    db.Enum(PermissionAccess).drop(db.engine, checkfirst=True)
+    db.Enum(PermissionType).drop(db.engine, checkfirst=True)

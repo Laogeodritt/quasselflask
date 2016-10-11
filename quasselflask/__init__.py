@@ -4,14 +4,20 @@ Main QuasselFlask package.
 Project: QuasselFlask
 """
 
-import os
-from flask import Flask
-from flask_sqlalchemy import SQLAlchemy
+import flask
+import flask_mail
+import flask_script
+import flask_sqlalchemy
+import flask_user
+
+import quasselflask.startup
+from quasselflask.startup import init_app
 
 __version__ = "0.1"
 
-app = Flask(__name__, instance_path=os.environ.get('QF_CONFIG_PATH', None), instance_relative_config=True)
-db = SQLAlchemy(app)
-
-# noinspection PyPep8
-from quasselflask.startup import init_app
+# These will be populated by init_app()
+app = quasselflask.startup.DummyObject('app')  # type: flask.Flask
+db = quasselflask.startup.DummyObject('db')  # type: flask_sqlalchemy.SQLAlchemy
+userman = quasselflask.startup.DummyObject('userman')  # type: flask_user.UserManager
+cmdman = quasselflask.startup.DummyObject('cmdman')  # type: flask_script.Manager
+mail = quasselflask.startup.DummyObject('mail')  # type: flask_mail.Mail

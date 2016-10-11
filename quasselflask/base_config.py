@@ -22,6 +22,12 @@ class DefaultConfig:
     TIME_FORMAT = '{:%Y-%m-%d %H:%M:%S}'  # Time format to show in IRC lots, should be Python .format() compatible
     SECRET_KEY = ''  # IMPORTANT: Set this for security! See documentation
 
+    QF_PASSWORD_MIN = 12  # Minimum password length for Quasselflask users
+    QF_PASSWORD_MAX = 128  # Maximum password length for Quasselflask users (generally shouldn't set this low)
+    QF_PASSWORD_REGEX = (r'[A-Z]', r'[a-z]', r'[0-9]')  # tuple of regexes that must all match a valid password
+    QF_PASSWORD_MSG = 'must be at least 12 characters long, and contain at least one uppercase letter, '\
+                      'one lowercase letter and one digit.'
+
     # MAIL_USERNAME = 'email@example.com'  # SMTP username (for user account-related emails)
     # MAIL_PASSWORD = 'password'  # SMTP password (for user account-related emails)
     # MAIL_DEFAULT_SENDER = '"Sender" <noreply@example.com>'  # 'From' address (for user account-related emails)
@@ -43,10 +49,10 @@ class InternalConfig:
     SQLALCHEMY_RECORD_QUERIES = bool(os.environ.get('FLASK_DEBUG', 0))
     CSRF_ENABLED = True
 
-    USER_ENABLE_CHANGE_PASSWORD = False
+    USER_ENABLE_CHANGE_PASSWORD = True
     USER_ENABLE_CHANGE_USERNAME = False
     USER_ENABLE_CONFIRM_EMAIL = True
-    USER_ENABLE_FORGOT_PASSWORD = False
+    USER_ENABLE_FORGOT_PASSWORD = True
     USER_ENABLE_LOGIN_WITHOUT_CONFIRM = False
     USER_ENABLE_EMAIL = True
     USER_ENABLE_MULTIPLE_EMAILS = False

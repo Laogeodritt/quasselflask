@@ -9,4 +9,5 @@ import quasselflask
 quasselflask.init_app()
 
 if __name__ == "__main__":
-    quasselflask.app.run()
+    quasselflask.cmdman.run()
+    # quasselflask.app.run()

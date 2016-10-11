@@ -94,6 +94,7 @@ def search():
     return render_template('results.html', records=[DisplayBacklog(result) for result in results], **render_args)
 
 # TODO: look at flask_users/views.py login() endpoint - security issue with 'next' GET parameter?
+# TODO: customize normal reg form for superuser field
 
 @app.route('/context/<int:post_id>/<int:num_context>')
 def context(post_id, num_context):

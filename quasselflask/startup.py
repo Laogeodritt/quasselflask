@@ -4,15 +4,51 @@ App initialization and configuration.
 Project: QuasselFlask
 """
 
+import os
+from flask import Flask
 from flask_mail import Mail
 from flask_user import SQLAlchemyAdapter, UserManager
-
-from quasselflask import app, db
-from quasselflask.base_config import DefaultConfig, InternalConfig
-from quasselflask.parsing.irclog import DisplayBacklog
+from flask_sqlalchemy import SQLAlchemy
+from flask_script import Manager
 
 
-def init_app():
+class DummyObject:
+    """
+    Dummy object that provides a helpful error message on attempting to access or call attributes/methods.
+    """
+    error_format = 'Cannot access {}.{}: quasselflask.init_app() has not been called.'
+
+    def __init__(self, name='component'):
+        self.name = name
+
+    def __getattr__(self, item):
+        error_msg = self.error_format.format(self.name, item)
+        raise RuntimeError(error_msg)
+
+    def __setattr__(self, key, value):
+        if key == 'name':
+            super().__setattr__(key, value)
+        else:
+            self.__getattr__(key)
+
+
+def init_app(instance_path=None):
+    """
+    Initializes Flask configurations, SQLAlchemy, Quasselflask-specific setup, Flask extension setup/glue.
+    Imports SQLAlchemy models (will create DB connections immediately due to the need to reflect Quassel).
+
+    Does not create Quasselflask-specific tables - need to call ``init_db()``.
+    :return:
+    """
+    import quasselflask
+    from quasselflask.base_config import DefaultConfig, InternalConfig
+    from quasselflask.parsing.irclog import DisplayBacklog
+    from quasselflask.parsing.form import PasswordValidator
+
+    # Flask
+    app = quasselflask.app = Flask(__name__,
+                                   instance_path=os.environ.get('QF_CONFIG_PATH', None),
+                                   instance_relative_config=True)
     app.config.from_object(DefaultConfig)
     app.config.from_object(InternalConfig)
     app.config.from_pyfile('quasselflask.cfg')
@@ -20,18 +56,36 @@ def init_app():
     if not app.config.get('SECRET_KEY', None):
         raise EnvironmentError("QuasselFlask SECRET_KEY parameter not set or empty in configuration")
 
-    DisplayBacklog.set_time_format(app.config['TIME_FORMAT'])
+    app.config['USER_APP_NAME'] = app.config['SITE_NAME']  # used by Flask-User email templates
 
-    mail = Mail(app)  # Flask-Mail, for Flask-User
+    # Flask-Script
+    cmdman = quasselflask.cmdman = Manager(app)
+    cmdman.help_args = ('-?', '--help')
 
-    # User/Login handling
-    app.config['USER_APP_NAME'] = app.config['SITE_NAME']  # used by Flask-Usere email templates
+    # Database
+    db = quasselflask.db = SQLAlchemy(app)
+    import quasselflask.models
+    quasselflask.models.qf_create_all()
+
+    # Flask-Mail, for Flask-User
+    mail = quasselflask.mail = Mail(app)  # Flask-Mail, for Flask-User
+
+    # Flask-User
+    db_adapter = SQLAlchemyAdapter(db, quasselflask.models.QfUser)
+    userman = quasselflask.userman = UserManager(db_adapter, app,
+                          password_validator=PasswordValidator(
+                              min=app.config['QF_PASSWORD_MIN'],
+                              max=app.config['QF_PASSWORD_MAX'],
+                              required_regex=app.config['QF_PASSWORD_REGEX'],
+                              message=app.config['QF_PASSWORD_MSG']
+                          ))
+
     # TODO: make/set anonymous (not-logged-in) class in Flask-User (flask-login specifically) with is_superuser() - "Anonymous users" section https://flask-login.readthedocs.io/en/latest/
 
-    from quasselflask.models import QfUser
-    db_adapter = SQLAlchemyAdapter(db, QfUser)
-    user_manager = UserManager(db_adapter, app)
+    # Configure other internal classes
+    DisplayBacklog.set_time_format(app.config['TIME_FORMAT'])
 
     import quasselflask.views
+    import quasselflask.commands
 
     return app

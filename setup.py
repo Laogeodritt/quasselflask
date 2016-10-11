@@ -11,8 +11,9 @@ setup(
     setup_requires=['Flask>=0.10',
                     'Flask-User>=0.6.8',
                     'Flask-SQLAlchemy>=1.0',
-                    'Flask-Mail>=0.9.0',
-                    'SQLAlchemy>=0.9.1',
+                    'Flask-Mail>=0.9.0',  # this was just the latest at the time
+                    'Flask-Script>=2.0.0',  # version? "latest" on readthedocs.io say 0.4.0... no version notations...
+                    'SQLAlchemy>=1.1',
                     'psycopg2',  # PostgreSQL
                     'crcmod>=1.7',
                     ],

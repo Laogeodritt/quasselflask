@@ -49,8 +49,8 @@
 </nav>
 
 {# One-time system messages called Flash messages #}
-{% if error is defined %}<section id="error"><strong>Error</strong>{{ error|e }}</section>{% endif %}
-{% if warning is defined %}<section id="warning"><strong>Warning</strong>{{ warning|e }}</section>{% endif %}
+{% if error is defined %}<section id="error"><strong>Error</strong> {{ error|e }}</section>{% endif %}
+{% if warning is defined %}<section id="warning"><strong>Warning</strong> {{ warning|e }}</section>{% endif %}
 {% if notice is defined %}<section id="notice">{{ notice|e }}</section>{% endif %}
 
 {% block flash_messages %}
@@ -60,9 +60,9 @@
     {% if category=='error' or category=='danger' %}
         <section id="error"><strong>Error</strong>{{ message|safe }}</section>
     {% elif category=='warning' %}
-        <section id="warning"><strong>Warning</strong>{{ message|safe }}</section>
+        <section id="warning"><strong>Warning</strong> {{ message|safe }}</section>
     {% else %}
-        <section id="notice">{{ notice|e }}</section>
+        <section id="notice">{{ message|safe }}</section>
     {% endif %}
 {% endfor %}
 {% endif %}
