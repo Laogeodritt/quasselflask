@@ -36,6 +36,17 @@ def __repr_backlog(self):
 Backlog.__repr__ = __repr_backlog
 
 
+class PermissionAccess(Enum):
+    deny = 0
+    allow = 1
+
+
+class PermissionType(Enum):
+    user = 0
+    network = 1
+    buffer = 2
+
+
 class QfUser(db.Model, UserMixin):
     """
     Quasselflask-specific user table. This is used to login to Quasselflask and is distinct from a QuasselUser, used to
@@ -55,6 +66,9 @@ class QfUser(db.Model, UserMixin):
 
     active = db.Column('is_active', db.Boolean(), nullable=False, server_default='0')
     superuser = db.Column('is_superuser', db.Boolean(), nullable=False, server_default='0')
+
+    # default access (allow|deny), when no specific permission is specified
+    access = db.Column(db.Enum(PermissionAccess), nullable=False, server_default='deny')
 
     permissions = db.relationship('QfPermission', back_populates='qfuser', lazy='joined')
 
@@ -86,18 +100,6 @@ class QfUser(db.Model, UserMixin):
         return '<QfUser {}{}{}>'.format(
             self.username,
             '[su]' if self.is_superuser else '', '[disabled]' if not self.active else '')
-
-
-class PermissionAccess(Enum):
-    deny = 0
-    allow = 1
-
-
-class PermissionType(Enum):
-    user = 0
-    network = 1
-    buffer = 2
-    all = 15
 
 
 class QfPermission(db.Model):
@@ -135,7 +137,6 @@ class QfPermission(db.Model):
     __tablename__ = "qf_permission"
     __table_args__ = (
         db.CheckConstraint("""
-        (type = 'all' and userid IS NULL and networkid IS NULL and bufferid IS NULL) OR
         (type = 'user' AND userid IS NOT NULL AND networkid IS NULL AND bufferid IS NULL) OR
         (type = 'network' AND userid IS NULL and networkid IS NOT NULL and bufferid IS NULL) OR
         (type = 'buffer' AND userid IS NULL AND networkid IS NOT NULL and bufferid IS NULL)
@@ -150,7 +151,7 @@ class QfPermission(db.Model):
     access = db.Column(db.Enum(PermissionAccess), nullable=False, server_default='deny')
 
     # what is being allowed/denied
-    type = db.Column(db.Enum(PermissionType), nullable=False, server_default='all')
+    type = db.Column(db.Enum(PermissionType), nullable=False)
 
     userid = db.Column(db.Integer, db.ForeignKey('quasseluser.userid', ondelete='CASCADE'), nullable=True)
     user = db.relationship(QuasselUser)
