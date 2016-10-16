@@ -29,6 +29,7 @@ def init_superuser(name, email, password=''):
     """
     from quasselflask.models import QfUser as User
     db_adapter = userman.db_adapter
+    user_class_fields = User.__dict__
     user_fields = {}
 
     # Check for no superusers yet
@@ -43,19 +44,20 @@ def init_superuser(name, email, password=''):
     form.username.data = name
     form.email.data = email
     form.password.data = form.retype_password.data = password
+    form.validate()
+
+    validation_errors = form.errors
+    validation_errors.pop('password', None)
+    validation_errors.pop('retype_password', None)
+    if validation_errors:
+        _print_form_errors(validation_errors)
+        raise InvalidCommand()
 
     # Prompt for password (only show errors after user has entered something)
     first_prompt = True
     while not form.validate():
         if not first_prompt:
-            error_strings = _format_form_errors(form.errors)
-            if not error_strings:
-                print("Something went wrong! This isn't supposed to happen! Erm... try another password? ^^;\n",
-                      file=stderr)
-            elif len(error_strings) == 1:
-                print("Error: {}\n".format(error_strings[0]), file=stderr)
-            else:
-                print("Multiple errors occurred:\n    - {}\n".format("\n    - ".join(error_strings)), file=stderr)
+            _print_form_errors(form.errors)
         else:
             first_prompt = False
 
@@ -66,12 +68,22 @@ def init_superuser(name, email, password=''):
             raise InvalidCommand("Cancelled by KeyboardInterrupt.")
 
     # Create and save the user
-    user_fields['active'] = True
-    user_fields['username'] = form.username.data
-    user_fields['email'] = form.email.data
-    user_fields['confirmed_at'] = datetime.utcnow()
-    user_fields['password'] = userman.hash_password(form.password.data)
+    # For all form fields
+    for field_name, field_value in form.data.items():
+        # Hash password field
+        if field_name == 'password':
+            user_fields['password'] = userman.hash_password(field_value)
+        # Store corresponding Form fields into the User object
+        else:
+            if field_name in user_class_fields:
+                user_fields[field_name] = field_value
 
+    # Hardcoded user fields
+    user_fields['active'] = True
+    user_fields['superuser'] = True
+    user_fields['confirmed_at'] = datetime.utcnow()
+
+    # Add User record using named arguments 'user_fields'
     db_adapter.add_object(User, **user_fields)
     db_adapter.commit()
 
@@ -91,6 +103,17 @@ def _format_form_errors(errors: {str: [str]}) -> [str]:
     for field, errlist in errors.items():
         result.extend(['{}: {}'.format(field, error) for error in errlist])
     return result
+
+
+def _print_form_errors(errors: {str: [str]}) -> None:
+    error_strings = _format_form_errors(errors)
+    if not error_strings:
+        print("Something went wrong! This isn't supposed to happen! Erm... try something else? ^^;\n",
+              file=stderr)
+    elif len(error_strings) == 1:
+        print("Error: {}\n".format(error_strings[0]), file=stderr)
+    else:
+        print("Multiple errors occurred:\n    - {}\n".format("\n    - ".join(error_strings)), file=stderr)
 
 
 @cmdman.command
