@@ -7,7 +7,7 @@ Project: QuasselFlask
 import os
 from flask import Flask
 from flask_mail import Mail
-from flask_user import SQLAlchemyAdapter, UserManager
+from flask_user import SQLAlchemyAdapter, UserManager, LoginManager
 from flask_sqlalchemy import SQLAlchemy
 from flask_script import Manager
 
@@ -72,15 +72,16 @@ def init_app(instance_path=None):
 
     # Flask-User
     db_adapter = SQLAlchemyAdapter(db, quasselflask.models.QfUser)
+    loginman = LoginManager()
+    loginman.anonymous_user = quasselflask.models.QfAnonymousUserMixin
     userman = quasselflask.userman = UserManager(db_adapter, app,
-                          password_validator=PasswordValidator(
-                              min=app.config['QF_PASSWORD_MIN'],
-                              max=app.config['QF_PASSWORD_MAX'],
-                              required_regex=app.config['QF_PASSWORD_REGEX'],
-                              message=app.config['QF_PASSWORD_MSG']
-                          ))
-
-    # TODO: make/set anonymous (not-logged-in) class in Flask-User (flask-login specifically) with is_superuser() - "Anonymous users" section https://flask-login.readthedocs.io/en/latest/
+                                                 password_validator=PasswordValidator(
+                                                     min=app.config['QF_PASSWORD_MIN'],
+                                                     max=app.config['QF_PASSWORD_MAX'],
+                                                     required_regex=app.config['QF_PASSWORD_REGEX'],
+                                                     message=app.config['QF_PASSWORD_MSG']),
+                                                 login_manager=loginman
+                                                 )
 
     # Configure other internal classes
     DisplayBacklog.set_time_format(app.config['TIME_FORMAT'])

@@ -8,6 +8,7 @@ Project: QuasselFlask
 from enum import Enum
 
 from flask_user import UserMixin
+from flask_login import AnonymousUserMixin
 from sqlalchemy.ext.automap import automap_base
 
 from quasselflask import db
@@ -76,21 +77,26 @@ class QfUser(db.Model, UserMixin):
     def get_id(self):
         return self.qfuserid
 
-    def has_role(self, *specified_role_names):
-        if 'superuser' in specified_role_names:
-            return self.is_superuser
-        return super().has_role(*specified_role_names)
+    def has_role(self, *role_names):
+        """
+        Checks if the user has any of the role_names. This override does a special check for the 'superuser'
+        role, which is stored as a separate bit from Flask_User's ``roles`` attribute.
+        :param role_names:
+        :return:
+        """
+        return (self.is_superuser and 'superuser' in role_names) or super(QfUser, self).has_role(*role_names)
 
     def has_roles(self, *requirements):
         """
-        Pre-check the "superuser" role requirement, then pass on any other roles to the
+        Checks if the user has all the roles in ``requirements``. This override does a special check for the 'superuser'
+        role, which is stored as a separate bit from Flask_User's ``roles`` attribute, and passes any other roles
+        back to the superclass method.
         :param requirements:
         :return:
         """
-        if self.is_superuser or 'superuser' not in self.requirements:
-            new_reqs = tuple(req for req in requirements if req != 'superuser')
-            return super().has_roles(*new_reqs)
-        return False
+        residual_requirements = tuple(req for req in requirements if req != 'superuser')
+        return (self.is_superuser or 'superuser' not in requirements) and \
+            (not residual_requirements or super(QfUser, self).has_roles(*residual_requirements))
 
     @property
     def is_superuser(self):  # to match the UserMixin API
@@ -191,6 +197,12 @@ class QfPermission(db.Model):
         else:
             id = None
         return '<QfPermission:{0:<5s}:{1:<7}:{2:d}>'.format(self.access.name, self.type.name, id)
+
+
+class QfAnonymousUserMixin(AnonymousUserMixin):
+    @property
+    def is_superuser(self):
+        return False
 
 
 def qf_create_all():
