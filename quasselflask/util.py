@@ -6,8 +6,17 @@ Project: QuasselFlask
 
 import random
 import string
+from urllib.parse import urlparse, urljoin
 
-from quasselflask import app
+# NOTE: This file is imported very early in the startup process, when some Flask objects (like app) may not have been
+# constructed yet. This module should be treated as a "leaf" module that doesn't have dependencies on modules that have
+# Flask dependencies, except "import quasselflask" (avoid using "from quasselflask import ...") and totally independent
+# modules like quasselflask.base_config. Otherwise, circular dependencies or breaking the startup sequence may result.
+
+from flask import request
+from werkzeug.utils import redirect as unsafe_redirect
+
+import quasselflask
 from quasselflask.base_config import DefaultConfig
 
 random.seed()
@@ -23,7 +32,7 @@ def repr_user_input(obj):
     :param obj:
     :return:
     """
-    s = repr(obj)[0:app.config.get('MAX_LOG_LENGTH_USER_INPUT', DefaultConfig.MAX_LOG_LENGTH_USER_INPUT)]
+    s = repr(obj)[0:quasselflask.app.config.get('MAX_LOG_LENGTH_USER_INPUT', DefaultConfig.MAX_LOG_LENGTH_USER_INPUT)]
     return '[' + str(len(s)) + ']' + s
 
 
@@ -36,3 +45,40 @@ def random_string(length=16, chars=string.printable) -> str:
     :return: Random string.
     """
     return ''.join(random.choice(chars) for _ in range(length))
+
+
+def safe_redirect(location, *args, **kwargs):
+    """
+    Safe redirect, built on top of ``werkzeug.util.redirect``. Verifies that the protocol is HTTP or HTTPS and the
+    hostname is the same as the Flask request hostname. Must be called in a Flask request context.
+
+    Used for a dirty hack, because Flask-User 0.6.8 doesn't implement secure redirects.
+
+    The method used is described at: http://flask.pocoo.org/snippets/62/
+
+    :raise ValueError: redirect URL is unsafe
+    """
+    response = unsafe_redirect(location, *args, **kwargs)
+
+    # check either no location set, or is safe:
+    if not response.headers.get('Location', None) or is_safe_url(response.headers.get('Location')):
+        return response
+    else:
+        raise ValueError("Unsafe redirect blocked: redirect must be to same hostname as current website. "
+                         "Use quasselflask.util.unsafe_redirect() (equivalent to werkzeug.utils.redirect()) if you "
+                         "want to redirect to an external domain.")
+
+
+def is_safe_url(target):
+    """
+    Check whether the URL is safe (HTTP or HTTPS protocol, same hostname).
+
+    Source: http://flask.pocoo.org/snippets/62/
+
+    :param target: Target URL string
+    :return: True if safe URL, false otherwise.
+    """
+    ref_url = urlparse(request.host_url)
+    test_url = urlparse(urljoin(request.host_url, target))
+    return test_url.scheme in ('http', 'https') and ref_url.netloc == test_url.netloc
+

@@ -16,7 +16,23 @@ from quasselflask import app, db, userman
 from quasselflask.parsing.form import process_search_params
 from quasselflask.parsing.irclog import DisplayBacklog
 from quasselflask.querying import build_db_search_query
-from quasselflask.util import random_string
+from quasselflask.util import random_string, safe_redirect
+
+
+@app.before_first_request
+def flask_user_redirect_patch():
+    """
+    HACK: Replace werkzeug redirect() with a safe version globally at runtime
+
+    This is a workaround for Flask-User <0.6.8, which upon login, logout, etc. will redirect according to the 'next'
+    GET parameter without validating it and thus presents an open redirect security risk. As a solution, we will
+    globally replace the redirect() function in werkzeug with a safety-checked one.
+
+    The original method is available as werkzeug.util.unsafe_redirect.
+    """
+    import flask_user.views
+    flask_user.views.unsafe_redirect = flask_user.views.redirect
+    flask_user.views.redirect = flask_user.views.safe_redirect = safe_redirect
 
 
 @app.before_request
