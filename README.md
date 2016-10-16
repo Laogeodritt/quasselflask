@@ -206,9 +206,6 @@ Query parameters (all optional):
 
 
 # Features wishlist
-* Viewing channel in results log, if >1 channel?
-* Viewing usermasks in the results log
-  * click-toggled or on-focus expansion?
 * User login and user/network/channel limitations
 * quasseluser/network search criteria
 * Context up/down + amount of context to fetch
@@ -218,6 +215,9 @@ Query parameters (all optional):
 * Server configuration
 * PM search - better search of query buffers resilient despite query buffer renames during nick changes
 * Access logs by qfuser - IP, hostname (flat files not db - cf RotatingFileHandler)
+    * https://pythonhosted.org/Flask-User/recipes.html#account-tracking
+    * Dependency for signals: https://pythonhosted.org/Flask-User/signals.html
+* Switch dark/light theme
 
 # Things to document
 * QF_ALLOW_TEST_PAGES

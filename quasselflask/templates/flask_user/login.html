@@ -22,7 +22,7 @@
         {# Password field #}
         {% set field = form.password %}
         <div class="{% if field.errors %}has-error{% endif %}">
-            {{ field(class_='form-control', tabindex=120, placeholder='Password') }}
+            {{ field(class_='', tabindex=120, placeholder='Password') }}
         </div>
         {% if field.errors %}
             {% for e in field.errors %}

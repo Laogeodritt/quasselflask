@@ -1,0 +1,44 @@
+{% extends 'skel_main.html' %}
+{% block title %}Create New User{% endblock %}
+{% block content %}
+<section>
+    {% from "flask_user/_macros.html" import render_field, render_checkbox_field, render_submit_field %}
+    <h2>{%trans%}Create New User{%endtrans%}</h2>
+
+    <form action="" method="POST" id="form-login" role="form" class="narrow">
+        {{ form.hidden_tag() }}
+
+        {# Username or Email field #}
+        {% set field = form.username if user_manager.enable_username else form.email %}
+        <div class="{% if field.errors %}has-error{% endif %}">
+            {{ field(tabindex=210, placeholder='Username') }}
+        </div>
+        {% if field.errors %}
+            {% for e in field.errors %}
+                <p class="help-block">{{ e }}</p>
+            {% endfor %}
+        {% endif %}
+
+        {# Email field #}
+        {% if user_manager.enable_email and user_manager.enable_username %}
+            {% set field = form.email %}
+            <div class="{% if field.errors %}has-error{% endif %}">
+                {{ field(class_='', tabindex=220, placeholder='Email') }}
+            </div>
+            {% if field.errors %}
+                {% for e in field.errors %}
+                    <p class="help-block">{{ e }}</p>
+                {% endfor %}
+            {% endif %}
+        {% endif %}
+
+        {# Superuser checkbox #}
+        <div>
+            {{ render_checkbox_field(form.superuser, tabindex=250) }}
+        </div>
+
+        {# Submit button #}
+        {{ render_submit_field(form.submit, tabindex=280) }}
+    </form>
+</section>
+{% endblock %}

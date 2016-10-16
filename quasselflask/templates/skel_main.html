@@ -45,6 +45,13 @@
                 <a href="{{ url_for('user.login') }}">Sign in</a>
             {% endif %}
         </li>
+        {% if not call_or_get(current_user.is_anonymous) and call_or_get(current_user.is_superuser) %}
+        <li id="nav-admin">
+            <a href="{{ url_for('admin_create_user') }}">Create user</a>
+            |
+            <a href="{{ url_for('admin_users') }}">Manage users</a>
+        </li>
+        {% endif %}
     </ul>
 </nav>
 
@@ -58,7 +65,7 @@
 {% if messages %}
 {% for category, message in messages %}
     {% if category=='error' or category=='danger' %}
-        <section id="error"><strong>Error</strong>{{ message|safe }}</section>
+        <section id="error"><strong>Error</strong> {{ message|safe }}</section>
     {% elif category=='warning' %}
         <section id="warning"><strong>Warning</strong> {{ message|safe }}</section>
     {% else %}

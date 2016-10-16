@@ -7,15 +7,16 @@ Project: QuasselFlask
 import os
 import time
 
-from flask import request, g, render_template, redirect, url_for
+from flask import request, g, render_template, redirect, url_for, flash
 from flask_sqlalchemy import get_debug_queries
-from flask_user import login_required, confirm_email_required
+from flask_user import login_required, roles_required
 
 import quasselflask
-from quasselflask import app, db
+from quasselflask import app, db, userman
 from quasselflask.parsing.form import process_search_params
 from quasselflask.parsing.irclog import DisplayBacklog
 from quasselflask.querying import build_db_search_query
+from quasselflask.util import random_string
 
 
 @app.before_request
@@ -27,14 +28,12 @@ def globals_init():
 
 @app.route('/')
 @login_required
-@confirm_email_required
 def home():
     return render_template('search_form.html')
 
 
 @app.route('/search')
 @login_required
-@confirm_email_required
 def search():
     # some helpful constants for the request argument processing
     # type of extraction/processing - this is more documentation as it's not used to process at the moment
@@ -94,11 +93,110 @@ def search():
     return render_template('results.html', records=[DisplayBacklog(result) for result in results], **render_args)
 
 # TODO: look at flask_users/views.py login() endpoint - security issue with 'next' GET parameter?
-# TODO: customize normal reg form for superuser field
+# TODO: create user permissions page
+# TODO: user permissions "copy from" functionality
+# TODO: remember me token - don't use user id
+# TODO: reset password form
+# TODO: forgot password form
+
 
 @app.route('/context/<int:post_id>/<int:num_context>')
+@login_required
 def context(post_id, num_context):
     pass  # TODO context endpoint
+
+
+@app.route('/admin/create-user', methods=['GET', 'POST'])
+@roles_required('superuser')
+def admin_create_user():
+    """
+    Display registration form and create new User.
+
+    Modified from Flask-User 0.6.8 - BSD Licence.
+    """
+
+    from flask_user import emails
+    from quasselflask.forms import CreateUserForm
+
+    db_adapter = userman.db_adapter
+
+    # Initialize form
+    create_form = CreateUserForm(request.form)
+
+    # Process valid POST
+    if request.method == 'POST' and create_form.validate():
+        # Create a User object using Form fields that have a corresponding User field
+        User = db_adapter.UserClass
+        user_class_fields = User.__dict__
+        user_fields = {}
+
+        # Enable user account
+        if hasattr(db_adapter.UserClass, 'active'):
+            user_fields['active'] = True
+        elif hasattr(db_adapter.UserClass, 'is_enabled'):
+            user_fields['is_enabled'] = True
+        else:
+            user_fields['is_active'] = True
+
+        # For all form fields
+        for field_name, field_value in create_form.data.items():
+            # Store corresponding Form fields into the User object
+            if field_name in user_class_fields:
+                user_fields[field_name] = field_value
+
+        # set an unusable password (too long) to "disable" the account until password reset
+        # (avoid using blank in case 'plaintext' password storage is configured... not that anyone should be!)
+        pass_length = app.config['QF_PASSWORD_MAX'] + 1
+        if pass_length <= 0:
+            pass_length = 128
+        user_fields['password'] = userman.hash_password(random_string(pass_length))
+
+        # Add User record using named arguments 'user_fields'
+        user = db_adapter.add_object(User, **user_fields)
+        db_adapter.commit()  # needed to generate ID for email token
+        try:
+            # Send 'registered' email and delete new User object if send fails
+            if userman.enable_email and (userman.send_registered_email or userman.enable_confirm_email):
+                # Generate confirm email link
+                object_id = int(user.get_id())
+                token = userman.generate_token(object_id)
+                # confirm_email_link = url_for('user.confirm_email', token=token, _external=True)
+                reset_password_link = url_for('user.reset_password', token=token, _external=True)
+
+                # send password reset email (when reset, marks email as confirmed: see flask_user/views.py:578 v0.6.8)
+                # emails.send_registered_email(user, None, confirm_email_link)
+                emails.send_forgot_password_email(user, None, reset_password_link)
+                db_adapter.update_object(user, reset_password_token=token)
+                db_adapter.commit()
+
+            # Prepare one-time system message
+            if userman.enable_confirm_email:
+                flash('User {user} created. A confirmation/password reset email has been sent to {email}.'
+                      .format(user=user.username, email=user.email), 'success')
+            else:
+                flash('User {user} created.'.format(user=user.username), 'success')
+
+        except Exception:
+            db_adapter.delete_object(user)
+            db_adapter.commit()
+            raise
+
+        return redirect(url_for('admin_manage_user', username=user.username))
+
+    # Process GET or invalid POST
+    return render_template('admin/create_user.html', form=create_form, register_form=create_form)
+
+
+@app.route('/admin/users/<username>', methods=['GET', 'POST'])
+@roles_required('superuser')
+def admin_manage_user(username):
+    return render_template('admin/manage_user.html')  # TODO
+
+
+@app.route('/admin/users', methods=['GET', 'POST'])
+@roles_required('superuser')
+def admin_users():
+    return render_template('admin/user_list.html')  # TODO
 
 
 if os.environ.get('QF_ALLOW_TEST_PAGES'):
