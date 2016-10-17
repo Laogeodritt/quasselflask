@@ -156,18 +156,11 @@ form > div {
   justify-content: center;
   align-items: baseline;
 }
-form .help-block {
-  /* TODO login.html */
-}
 form input, form button {
   border: 1px solid;
   border-radius: 10px;
   margin: 0.6em 0.4em 0;
   padding: 0.3em 0.6em;
-}
-form > div.has-error input {
-  border-color: #dc322f;
-  background-color: #f2b3b2;
 }
 form label, form input[type="checkbox"], form input[type="radio"] {
   margin: 0.6em 0.2em 0;
@@ -180,6 +173,10 @@ form input[type="text"], form input[type="password"], form input[type="number"],
 form input[type="text"], form input[type="number"] {
   text-align: center;
 }
+form > div.has-error input {
+  border-color: #dc322f;
+  background-color: #f2b3b2;
+}
 form .help-block {
   margin: 0.2em 0.4em 0;
   color: #dc322f;
@@ -188,12 +185,22 @@ form .help-block {
 form #search-query {
   text-align: left;
 }
-form button {
+form button, form input[type="submit"] {
   background-color: #268bd2;
+  border: solid #268bd2 1px;
   color: #fdf6e3;
+  transition: background-color 0.3s;
 }
-form button[type="reset"] {
+form button:hover, form button:active, form input[type="submit"]:hover, form input[type="submit"]:active {
+  background-color: #4ca2df;
+}
+form button[type="reset"], form input[type="reset"] {
   background-color: #6c71c4;
+  border: solid #6c71c4 1px;
+  transition: background-color 0.3s;
+}
+form button[type="reset"]:hover, form button[type="reset"]:active, form input[type="reset"]:hover, form input[type="reset"]:active {
+  background-color: #9094d3;
 }
 form #search-maxlines {
   max-width: 4em;

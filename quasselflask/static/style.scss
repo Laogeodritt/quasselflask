@@ -26,6 +26,8 @@ $green:     #859900;
 
 $content-border-radius: 10px;
 $small-font-size: 80%;
+$bg-hover-transition: background-color 0.3s;
+$bg-hover-amount: 10%;
 
 @import 'https://fonts.googleapis.com/css?family=PT+Sans|PT+Serif';
 
@@ -161,20 +163,11 @@ form {
     align-items: baseline;
   }
 
-  .help-block {
-    /* TODO login.html */
-  }
-
   input, button {
     border: 1px solid;
     border-radius: $content-border-radius;
     margin: 0.6em 0.4em 0;
     padding: 0.3em 0.6em;
-  }
-
-  > div.has-error input {
-    border-color: $red;
-    background-color: lighten($red, 30%)
   }
 
   label, input[type="checkbox"], input[type="radio"] {
@@ -189,6 +182,11 @@ form {
 
   input[type="text"], input[type="number"] { text-align: center; }
 
+  > div.has-error input {
+    border-color: $red;
+    background-color: lighten($red, 30%)
+  }
+
   .help-block {
     margin: 0.2em 0.4em 0;
     color: $red;
@@ -199,13 +197,25 @@ form {
     text-align: left;
   }
 
-  button {
+  button, input[type="submit"] {
     background-color: $blue;
+    border: solid $blue 1px;
     color: $base3;
+    transition: $bg-hover-transition;
+
+    &:hover, &:active {
+      background-color: lighten($blue, $bg-hover-amount);
+    }
   }
 
-  button[type="reset"] {
+  button[type="reset"], input[type="reset"] {
     background-color: $violet;
+    border: solid $violet 1px;
+    transition: $bg-hover-transition;
+
+    &:hover, &:active {
+      background-color: lighten($violet, $bg-hover-amount);
+    }
   }
 
   #search-maxlines { max-width: 4em; }

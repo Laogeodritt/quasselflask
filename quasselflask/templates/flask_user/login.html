@@ -2,33 +2,20 @@
 {% block title %}Login{% endblock %}
 {% block content %}
 <section>
-    {% from "flask_user/_macros.html" import render_field, render_checkbox_field, render_submit_field %}
+    {% from "flask_user/_macros.html" import render_checkbox_field, render_submit_field %}
+    {% from "flask_user/_qf_macros.html" import render_field %}
     <h2>{%trans%}Login{%endtrans%}</h2>
 
     <form action="" method="POST" id="form-login" role="form" class="narrow">
         {{ form.hidden_tag() }}
-
-        {# Username or Email field #}
-        {% set field = form.username if user_manager.enable_username else form.email %}
-        <div class="{% if field.errors %}has-error{% endif %}">
-            {{ field(tabindex=110, placeholder='Username') }}
-        </div>
-        {% if field.errors %}
-            {% for e in field.errors %}
-                <p class="help-block">{{ e }}</p>
-            {% endfor %}
+        {% if user_manager.enable_username %}
+            {{ render_field(form.username, label="Username", tabindex=110) }}
+        {% else %}
+            {{ render_field(form.email, label="Email address", tabindex=110) }}
         {% endif %}
 
-        {# Password field #}
-        {% set field = form.password %}
-        <div class="{% if field.errors %}has-error{% endif %}">
-            {{ field(class_='', tabindex=120, placeholder='Password') }}
-        </div>
-        {% if field.errors %}
-            {% for e in field.errors %}
-                <p class="help-block">{{ e }}</p>
-            {% endfor %}
-        {% endif %}
+        {{ render_field(form.password, label="Password", tabindex=120) }}
+
         <div>
             {# Remember me #}
             {% if user_manager.enable_remember_me %}
@@ -36,7 +23,7 @@
             {% endif %}
             {% if user_manager.enable_forgot_password %}
                 <div class="forgot-password">
-                    <a href="{{ url_for('user.forgot_password') }}" tabindex='195'>
+                    <a href="{{ url_for('user.forgot_password') }}" tabindex="195">
                         {%trans%}Forgot your Password?{%endtrans%}</a>
                 </div>
             {% endif %}

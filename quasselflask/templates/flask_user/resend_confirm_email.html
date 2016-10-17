@@ -1,0 +1,16 @@
+{% extends 'skel_main.html' %}
+{% block title %}Resend Confirmation Email{% endblock %}
+{% block content %}
+<section>
+    {% from "flask_user/_macros.html" import render_submit_field %}
+    {% from "flask_user/_qf_macros.html" import render_field %}
+    <h2>{%trans%}Resend Confirmation Email{%endtrans%}</h2>
+
+    <form action="" method="POST" id="form-resend-confirm" class="narrow" role="form">
+        {{ form.hidden_tag() }}
+        {{ render_field(form.email, tabindex=10) }}
+        {{ render_submit_field(form.submit, tabindex=90) }}
+    </form>
+</section>
+{% endblock %}
+a
