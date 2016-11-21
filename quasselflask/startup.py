@@ -10,6 +10,7 @@ from flask_mail import Mail
 from flask_user import SQLAlchemyAdapter, UserManager, LoginManager
 from flask_sqlalchemy import SQLAlchemy
 from flask_script import Manager
+from flask_wtf.csrf import CsrfProtect
 
 
 class DummyObject:
@@ -66,6 +67,9 @@ def init_app(instance_path=None):
     db = quasselflask.db = SQLAlchemy(app)
     import quasselflask.models
     quasselflask.models.qf_create_all()
+
+    # Forms
+    CsrfProtect(app)
 
     # Flask-Mail, for Flask-User
     mail = quasselflask.mail = Mail(app)  # Flask-Mail, for Flask-User
