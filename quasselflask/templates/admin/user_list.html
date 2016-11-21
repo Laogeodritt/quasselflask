@@ -16,18 +16,17 @@
                         <th><!-- Actions --></th>
                     </tr>
                     {% for user in users %}
+                        {% set is_current_user = user is sameas current_user %}
                     <tr class="user{% if call_or_get(user.is_superuser) %} superuser{% endif %}">
                         <td class="uid">{{ user.get_id() }}</td>
-                        <td class="username">{{ user.username }}</td>
+                        <td class="username"{% if call_or_get(user.is_superuser) %} title="Superuser"{% endif %}>{{ user.username }}</td>
                         <td class="email">{{ user.email }} {% if user.confirmed_at %}<span title="Confirmed" class="confirmed">✓</span>{% else %}<a class="unconfirmed" title="Unconfirmed (click to force confirmed)" href="{{ url_for('admin_confirm_user', userid=user.get_id()) }}">✗</a>{% endif %}</td>
                         <td class="actions">
-                            {% if call_or_get(user.is_active) %}{{ user_disable_link(user) }}{% endif %}
+                            {% if call_or_get(user.is_active) %}{{ user_disable_link(user, is_current_user) }}{% endif %}
                             {{ user_action_link(url_for('admin_manage_user', userid=user.get_id()), 'edit', 'action-edit') }}
                         </td>
                     </tr>
                     {% endfor %}
-                    <!-- TODO: verify CSRF protection - something to change in Flask-User? -->
-                    <!-- TODO: current user shouldn't be disablable -->
                 </table>
             {% else %}
                 <p>No users. How'd you even get here?! (More seriously: Probably a bug, contact your friendly neighbourhood Quasselflask developer to report it.)</p>

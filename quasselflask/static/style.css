@@ -50,6 +50,9 @@ html .result table.irc-log .nick td, .light .result table.irc-log .mode td, .lig
 }
 html table.userlist tr, .light table.userlist tr {
   border-bottom: 1px solid #657b83;
+  /*&.superuser {
+    @include rebase_bgcolor($red, $rebase03);
+  }*/
 }
 
 .dark {
@@ -92,6 +95,9 @@ html table.userlist tr, .light table.userlist tr {
 }
 .dark table.userlist tr {
   border-bottom: 1px solid #839496;
+  /*&.superuser {
+    @include rebase_bgcolor($red, $rebase03);
+  }*/
 }
 
 body {
@@ -235,6 +241,10 @@ form button, form input[type="submit"] {
 form button:hover, form button:active, form input[type="submit"]:hover, form input[type="submit"]:active {
   background-color: #4ca2df;
 }
+form button[disabled], form button[disabled]:hover, form button[disabled]:active, form input[type="submit"][disabled], form input[type="submit"][disabled]:hover, form input[type="submit"][disabled]:active {
+  background-color: #62ade3;
+  border-color: #78b9e6;
+}
 form button[type="reset"], form input[type="reset"] {
   background-color: #6c71c4;
   border: solid #6c71c4 1px;
@@ -243,6 +253,10 @@ form button[type="reset"], form input[type="reset"] {
 }
 form button[type="reset"]:hover, form button[type="reset"]:active, form input[type="reset"]:hover, form input[type="reset"]:active {
   background-color: #9094d3;
+}
+form button[type="reset"][disabled], form button[type="reset"][disabled]:hover, form button[type="reset"][disabled]:active, form input[type="reset"][disabled], form input[type="reset"][disabled]:hover, form input[type="reset"][disabled]:active {
+  background-color: #a3a6da;
+  border-color: #b5b7e1;
 }
 form #search-maxlines {
   max-width: 4em;
@@ -511,6 +525,13 @@ table.userlist th {
 table.userlist td {
   padding: 0.8em 0.6em;
 }
+table.userlist tr.superuser .username {
+  color: #dc322f;
+}
+table.userlist tr.superuser .username:after {
+  content: ' SU';
+  font-size: 60%;
+}
 table.userlist .uid {
   text-align: right;
 }
@@ -532,6 +553,7 @@ table.userlist form.linkform {
 }
 table.userlist form.linkform input[type='submit'] {
   display: inline-block;
+  margin: 0 0.4em;
 }
 table.userlist form.linkform input[type='submit'].user-enabled {
   background-color: #2aa198;
@@ -542,6 +564,10 @@ table.userlist form.linkform input[type='submit'].user-enabled {
 table.userlist form.linkform input[type='submit'].user-enabled:hover, table.userlist form.linkform input[type='submit'].user-enabled:active {
   background-color: #35c9be;
 }
+table.userlist form.linkform input[type='submit'].user-enabled[disabled], table.userlist form.linkform input[type='submit'].user-enabled[disabled]:hover, table.userlist form.linkform input[type='submit'].user-enabled[disabled]:active {
+  background-color: #48cfc5;
+  border-color: #5cd5cb;
+}
 table.userlist form.linkform input[type='submit'].user-disabled {
   background-color: #dc322f;
   border: solid #dc322f 1px;
@@ -551,14 +577,22 @@ table.userlist form.linkform input[type='submit'].user-disabled {
 table.userlist form.linkform input[type='submit'].user-disabled:hover, table.userlist form.linkform input[type='submit'].user-disabled:active {
   background-color: #e35d5b;
 }
+table.userlist form.linkform input[type='submit'].user-disabled[disabled], table.userlist form.linkform input[type='submit'].user-disabled[disabled]:hover, table.userlist form.linkform input[type='submit'].user-disabled[disabled]:active {
+  background-color: #e77370;
+  border-color: #eb8886;
+}
 table.userlist form.linkform.action-edit input[type='submit'] {
-  background-color: #6c71c4;
-  border: solid #6c71c4 1px;
+  background-color: #268bd2;
+  border: solid #268bd2 1px;
   color: #fdf6e3;
   transition: background-color 0.3s;
 }
 table.userlist form.linkform.action-edit input[type='submit']:hover, table.userlist form.linkform.action-edit input[type='submit']:active {
-  background-color: #9094d3;
+  background-color: #4ca2df;
+}
+table.userlist form.linkform.action-edit input[type='submit'][disabled], table.userlist form.linkform.action-edit input[type='submit'][disabled]:hover, table.userlist form.linkform.action-edit input[type='submit'][disabled]:active {
+  background-color: #62ade3;
+  border-color: #78b9e6;
 }
 
 /*# sourceMappingURL=style.css.map */

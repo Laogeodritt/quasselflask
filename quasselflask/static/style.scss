@@ -29,6 +29,9 @@ $small-font-size: 80%;
 $large-font-size: 120%;
 $bg-hover-transition: background-color 0.3s;
 $bg-hover-amount: 10%;
+$bg-disabled-amount: 15%;
+$border-disabled-amount: 20%;
+$bg-mix-opacity: 30%;
 
 @import 'https://fonts.googleapis.com/css?family=PT+Sans|PT+Serif';
 
@@ -74,7 +77,15 @@ $bg-hover-amount: 10%;
 
   table.userlist tr {
     border-bottom: 1px solid $rebase0;
+
+    /*&.superuser {
+      @include rebase_bgcolor($red, $rebase03);
+    }*/
   }
+}
+
+@mixin rebase_bgcolor($color, $ref) { /* lighten/darken a colour to be BG-appropriate */
+  background-color: mix($color, $ref, $bg-mix-opacity);
 }
 
 @mixin accentize($accent) {
@@ -114,6 +125,11 @@ $bg-hover-amount: 10%;
 
   &:hover, &:active {
     background-color: lighten($bgcolor, $bg-hover-amount);
+  }
+
+  &[disabled], &[disabled]:hover, &[disabled]:active {
+    background-color: lighten($bgcolor, $bg-disabled-amount);
+    border-color: lighten($bgcolor, $border-disabled-amount);
   }
 }
 
@@ -434,6 +450,15 @@ table.userlist {
     padding: 0.8em 0.6em;
   }
 
+  tr.superuser .username {
+    color: $red;
+
+    &:after {
+      content: ' SU';
+      font-size: 60%;
+    }
+  }
+
   .uid {
     text-align: right;
   }
@@ -455,6 +480,7 @@ table.userlist {
 
     input[type='submit'] {
       display: inline-block;
+      margin: 0 0.4em;
 
       &.user-enabled {
         @include button_color($cyan);
@@ -466,7 +492,7 @@ table.userlist {
     }
 
     &.action-edit input[type='submit'] {
-      @include button_color($violet);
+      @include button_color($blue);
     }
   }
 }
