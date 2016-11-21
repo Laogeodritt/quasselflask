@@ -48,6 +48,9 @@ html .result table.irc-log .nick td, .light .result table.irc-log .mode td, .lig
 .light .result table.irc-log .nick td {
   color: #93a1a1;
 }
+html table.userlist tr, .light table.userlist tr {
+  border-bottom: 1px solid #657b83;
+}
 
 .dark {
   background-color: #002b36;
@@ -87,6 +90,9 @@ html .result table.irc-log .nick td, .light .result table.irc-log .mode td, .lig
 .dark .result table.irc-log .nick td {
   color: #586e75;
 }
+.dark table.userlist tr {
+  border-bottom: 1px solid #839496;
+}
 
 body {
   max-width: 1156px;
@@ -111,7 +117,7 @@ section, footer, aside, article {
   border-radius: 10px;
   margin-top: 0.8em;
   margin-bottom: 1.5em;
-  padding: 0.7em 1.5em;
+  padding: 0.7em 1.5em 1.5em 1.5em;
 }
 
 section#error, footer#error, aside#error, article#error {
@@ -130,6 +136,41 @@ footer {
   font-size: 80%;
   font-style: italic;
   text-align: center;
+}
+
+/** General elements **/
+.links-bar {
+  float: right;
+  padding: 0;
+  margin: 0.5em 0 1em 0;
+}
+
+.links-bar a {
+  display: inline-block;
+  margin: 0 0.3em;
+  padding: 0.3em 0.6em;
+  background-color: #268bd2;
+  border: solid #268bd2 1px;
+  border-radius: 10px;
+  transition: background-color 0.3s;
+  color: #fdf6e3;
+  text-decoration: none;
+}
+.links-bar a:visited, .links-bar a:hover, .links-bar a:active {
+  color: #fdf6e3;
+  text-decoration: none;
+}
+.links-bar a:hover, .links-bar a:active {
+  background-color: #4ca2df;
+}
+
+.links-bar a, .links-bar a:visited, .links-bar a:hover, .links-bar a:active {
+  color: #fdf6e3;
+  text-decoration: none;
+}
+
+.links-bar a:hover, .links-bar a:active {
+  background-color: #9094d3;
 }
 
 /** Form styling **/
@@ -197,6 +238,7 @@ form button:hover, form button:active, form input[type="submit"]:hover, form inp
 form button[type="reset"], form input[type="reset"] {
   background-color: #6c71c4;
   border: solid #6c71c4 1px;
+  color: #fdf6e3;
   transition: background-color 0.3s;
 }
 form button[type="reset"]:hover, form button[type="reset"]:active, form input[type="reset"]:hover, form input[type="reset"]:active {
@@ -448,6 +490,75 @@ html .result table.irc-log .error td {
 }
 html .result table.irc-log .nick {
   /* color set by the light/dark rebase above */
+}
+
+/* Userlist styling */
+.userlist-container {
+  width: 60%;
+  margin-left: auto;
+  margin-right: auto;
+  clear: both;
+}
+
+table.userlist {
+  width: 100%;
+}
+table.userlist th {
+  font-size: 120%;
+  font-weight: bold;
+  text-align: center;
+}
+table.userlist td {
+  padding: 0.8em 0.6em;
+}
+table.userlist .uid {
+  text-align: right;
+}
+table.userlist .email .confirmed {
+  color: #2aa198;
+}
+table.userlist .email .unconfirmed {
+  color: #dc322f;
+  text-decoration: none;
+}
+table.userlist .actions {
+  text-align: center;
+}
+table.userlist form.linkform {
+  display: inline-block;
+  vertical-align: middle;
+  margin: 0  0.2em;
+  padding: 0;
+}
+table.userlist form.linkform input[type='submit'] {
+  display: inline-block;
+}
+table.userlist form.linkform input[type='submit'].user-enabled {
+  background-color: #2aa198;
+  border: solid #2aa198 1px;
+  color: #fdf6e3;
+  transition: background-color 0.3s;
+}
+table.userlist form.linkform input[type='submit'].user-enabled:hover, table.userlist form.linkform input[type='submit'].user-enabled:active {
+  background-color: #35c9be;
+}
+table.userlist form.linkform input[type='submit'].user-disabled {
+  background-color: #dc322f;
+  border: solid #dc322f 1px;
+  color: #fdf6e3;
+  transition: background-color 0.3s;
+}
+table.userlist form.linkform input[type='submit'].user-disabled:hover, table.userlist form.linkform input[type='submit'].user-disabled:active {
+  background-color: #e35d5b;
+}
+table.userlist form.linkform.action-edit input[type='submit'] {
+  background-color: #6c71c4;
+  border: solid #6c71c4 1px;
+  color: #fdf6e3;
+  transition: background-color 0.3s;
+}
+table.userlist form.linkform.action-edit input[type='submit']:hover, table.userlist form.linkform.action-edit input[type='submit']:active {
+  background-color: #9094d3;
 }
 
 /*# sourceMappingURL=style.css.map */

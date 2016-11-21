@@ -26,6 +26,7 @@ $green:     #859900;
 
 $content-border-radius: 10px;
 $small-font-size: 80%;
+$large-font-size: 120%;
 $bg-hover-transition: background-color 0.3s;
 $bg-hover-amount: 10%;
 
@@ -70,11 +71,50 @@ $bg-hover-amount: 10%;
       }
     }
   }
+
+  table.userlist tr {
+    border-bottom: 1px solid $rebase0;
+  }
 }
 
 @mixin accentize($accent) {
   a, a:active, a:visited, code.url { color: $accent; }
   h1,h2,h3,h4,h5,h6 { color: $accent; }
+}
+
+@mixin link_button($bgcolor)
+{
+  display: inline-block;
+  margin: 0 0.3em;
+  padding: 0.3em 0.6em;
+  background-color: $bgcolor;
+  border: solid $bgcolor 1px;
+  border-radius: $content-border-radius;
+  transition: $bg-hover-transition;
+
+  color: $base3;
+  text-decoration: none;
+
+  &:visited, &:hover, &:active {
+    color: $base3;
+    text-decoration: none;
+  }
+
+  &:hover, &:active {
+    background-color: lighten($bgcolor, $bg-hover-amount);
+  }
+}
+
+@mixin button_color($bgcolor)
+{
+  background-color: $bgcolor;
+  border: solid $bgcolor 1px;
+  color: $base3;
+  transition: $bg-hover-transition;
+
+  &:hover, &:active {
+    background-color: lighten($bgcolor, $bg-hover-amount);
+  }
 }
 
 html, .light {
@@ -108,7 +148,7 @@ section {
   border-radius: $content-border-radius;
   margin-top: 0.8em;
   margin-bottom: 1.5em;
-  padding: 0.7em 1.5em;
+  padding: 0.7em 1.5em 1.5em 1.5em;
 }
 
 section#error {
@@ -131,6 +171,26 @@ footer {
 }
 
 aside, article { @extend section; }
+
+/** General elements **/
+.links-bar {
+  float: right;
+  padding: 0;
+  margin: 0.5em 0 1em 0;
+}
+
+.links-bar a {
+  @include link_button($blue);
+}
+
+.links-bar a, .links-bar a:visited, .links-bar a:hover, .links-bar a:active {
+  color: $base3;
+  text-decoration: none;
+}
+
+.links-bar a:hover, .links-bar a:active {
+  background-color: lighten($violet, $bg-hover-amount);
+}
 
 /** Form styling **/
 
@@ -198,24 +258,11 @@ form {
   }
 
   button, input[type="submit"] {
-    background-color: $blue;
-    border: solid $blue 1px;
-    color: $base3;
-    transition: $bg-hover-transition;
-
-    &:hover, &:active {
-      background-color: lighten($blue, $bg-hover-amount);
-    }
+    @include button_color($blue);
   }
 
   button[type="reset"], input[type="reset"] {
-    background-color: $violet;
-    border: solid $violet 1px;
-    transition: $bg-hover-transition;
-
-    &:hover, &:active {
-      background-color: lighten($violet, $bg-hover-amount);
-    }
+    @include button_color($violet);
   }
 
   #search-maxlines { max-width: 4em; }
@@ -362,6 +409,64 @@ html .result {
     }
     .nick {
       /* color set by the light/dark rebase above */
+    }
+  }
+}
+
+/* Userlist styling */
+.userlist-container {
+  width: 60%;
+  margin-left: auto;
+  margin-right: auto;
+  clear: both;
+}
+
+table.userlist {
+  width: 100%;
+
+  th {
+    font-size: $large-font-size;
+    font-weight: bold;
+    text-align: center;
+  }
+
+  td {
+    padding: 0.8em 0.6em;
+  }
+
+  .uid {
+    text-align: right;
+  }
+
+  .email {
+    .confirmed { color: $cyan; }
+    .unconfirmed { color: $red; text-decoration: none; }
+  }
+
+  .actions {
+    text-align: center;
+  }
+
+  form.linkform {
+    display: inline-block;
+    vertical-align: middle;
+    margin: 0  0.2em;
+    padding: 0;
+
+    input[type='submit'] {
+      display: inline-block;
+
+      &.user-enabled {
+        @include button_color($cyan);
+      }
+
+      &.user-disabled {
+        @include button_color($red);
+      }
+    }
+
+    &.action-edit input[type='submit'] {
+      @include button_color($violet);
     }
   }
 }

@@ -15,7 +15,7 @@ import quasselflask
 from quasselflask import app, db, userman
 from quasselflask.parsing.form import process_search_params
 from quasselflask.parsing.irclog import DisplayBacklog
-from quasselflask.querying import build_db_search_query
+from quasselflask.querying import *
 from quasselflask.util import random_string, safe_redirect
 
 
@@ -112,8 +112,7 @@ def search():
 # TODO: create user permissions page
 # TODO: user permissions "copy from" functionality
 # TODO: remember me token - don't use user id
-# TODO: reset password form
-# TODO: forgot password form
+# TODO: send email to admin on registration
 
 
 @app.route('/context/<int:post_id>/<int:num_context>')
@@ -203,16 +202,46 @@ def admin_create_user():
     return render_template('admin/create_user.html', form=create_form, register_form=create_form)
 
 
-@app.route('/admin/users/<username>', methods=['GET', 'POST'])
+@app.route('/admin/users', methods=['GET'])
 @roles_required('superuser')
-def admin_manage_user(username):
+def admin_users():
+    users = query_all_qf_users(db.session)
+    return render_template('admin/user_list.html', users=users)
+
+
+@app.route('/admin/users/<userid>', methods=['GET', 'POST'])
+@roles_required('superuser')
+def admin_manage_user(userid):
     return render_template('admin/manage_user.html')  # TODO
 
 
-@app.route('/admin/users', methods=['GET', 'POST'])
+@app.route('/admin/users/<userid>/disable', methods=['POST'])
 @roles_required('superuser')
-def admin_users():
-    return render_template('admin/user_list.html')  # TODO
+def admin_disable_user(userid):
+    return 'disable'  # TODO. Also, cannot do this to the current user
+
+
+@app.route('/admin/users/<userid>/enable', methods=['POST'])
+@roles_required('superuser')
+def admin_enable_user(userid):
+    return 'enable'  # TODO
+
+
+@app.route('/admin/users/<userid>/delete', methods=['POST'])
+@roles_required('superuser')
+def admin_delete_user(userid):
+    return 'delete'  # TODO - make sure to confirm first. Also, cannot do this to the current user.
+
+
+@app.route('/admin/users/<userid>/confirm', methods=['POST'])
+@roles_required('superuser')
+def admin_confirm_user(userid):
+    """
+    Force confirm user's email address.
+    :param userid: Quasselflask user ID (qfuserid)
+    :return:
+    """
+    return 'force confirm'  # TODO - make sure to confirm first. Also, cannot do this to the current user.
 
 
 if os.environ.get('QF_ALLOW_TEST_PAGES'):

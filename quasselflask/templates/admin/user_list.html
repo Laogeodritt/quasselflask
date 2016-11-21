@@ -1,56 +1,37 @@
 {% extends 'skel_main.html' %}
-{% block title %}Manage Users - USERNAME{% endblock %}
+{% block title %}Manage Users{% endblock %}
 {% block content %}
     <section>
-        {% from "flask_user/_macros.html" import render_field, render_checkbox_field, render_submit_field %}
-        <h2>{%trans%}Manage Users - USERNAME{%endtrans%}</h2>
+        {% from "admin/_qf_macros.html" import user_disable_link, user_action_link %}
+        <h2>{%trans%}Manage Users{%endtrans%}</h2>
 
-        {# TODO: replace this with proper stuff #}
-        <form action="" method="POST" id="form-login" role="form" class="narrow">
-            {{ form.hidden_tag() }}
-
-            {# Username or Email field #}
-            {% set field = form.username if user_manager.enable_username else form.email %}
-            <div class="{% if field.errors %}has-error{% endif %}">
-                {{ field(tabindex=210, placeholder='Username') }}
-            </div>
-            {% if field.errors %}
-                {% for e in field.errors %}
-                    <p class="help-block">{{ e }}</p>
-                {% endfor %}
-            {% endif %}
-
-            {# Email field #}
-            {% if user_manager.enable_email and user_manager.enable_username %}
-                {% set field = form.email %}
-                <div class="{% if field.errors %}has-error{% endif %}">
-                    {{ field(class_='', tabindex=220, placeholder='Email') }}
-                </div>
-                {% if field.errors %}
-                    {% for e in field.errors %}
-                        <p class="help-block">{{ e }}</p>
+        <div class="userlist-container">
+            {% if users %}
+                <div class="links-bar"><a href="{{ url_for('admin_create_user') }}">create user</a></div>
+                <table class="userlist">
+                    <tr>
+                        <th>ID</th>
+                        <th>Username</th>
+                        <th>Email</th>
+                        <th><!-- Actions --></th>
+                    </tr>
+                    {% for user in users %}
+                    <tr class="user{% if call_or_get(user.is_superuser) %} superuser{% endif %}">
+                        <td class="uid">{{ user.get_id() }}</td>
+                        <td class="username">{{ user.username }}</td>
+                        <td class="email">{{ user.email }} {% if user.confirmed_at %}<span title="Confirmed" class="confirmed">✓</span>{% else %}<a class="unconfirmed" title="Unconfirmed (click to force confirmed)" href="{{ url_for('admin_confirm_user', userid=user.get_id()) }}">✗</a>{% endif %}</td>
+                        <td class="actions">
+                            {% if call_or_get(user.is_active) %}{{ user_disable_link(user) }}{% endif %}
+                            {{ user_action_link(url_for('admin_manage_user', userid=user.get_id()), 'edit', 'action-edit') }}
+                        </td>
+                    </tr>
                     {% endfor %}
-                {% endif %}
+                    <!-- TODO: verify CSRF protection - something to change in Flask-User? -->
+                    <!-- TODO: current user shouldn't be disablable -->
+                </table>
+            {% else %}
+                <p>No users. How'd you even get here?! (More seriously: Probably a bug, contact your friendly neighbourhood Quasselflask developer to report it.)</p>
             {% endif %}
-
-            {# Password field #}
-            {% set field = form.password %}
-            <div class="{% if field.errors %}has-error{% endif %}">
-                {{ field(class_='', tabindex=230, placeholder='Password') }}
-            </div>
-            {% if field.errors %}
-                {% for e in field.errors %}
-                    <p class="help-block">{{ e }}</p>
-                {% endfor %}
-            {% endif %}
-
-            {# Superuser checkbox #}
-            <div>
-                {{ render_checkbox_field(form.superuser, tabindex=250) }}
-            </div>
-
-            {# Submit button #}
-            {{ render_submit_field(form.submit, tabindex=280) }}
-        </form>
+        </div>
     </section>
 {% endblock %}

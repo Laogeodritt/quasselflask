@@ -1,0 +1,13 @@
+{% macro user_disable_link(user) -%}
+    <form method="post" class="linkform" action="{% if user.is_active() %}{{ url_for('admin_disable_user', userid=user.get_id()) }}{% else %}{{ url_for('admin_enable_user', userid=user.get_id()) }}{% endif %}">
+        <input type="hidden" name="csrf_token" value="{{ csrf_token() }}">
+        <input type="submit" {% if user.is_active() %}class="user-enabled" value="✓" title="Enabled (click to disable)"{% else %}class="user-disabled" value="✗" title="Disabled (click to enable)"{% endif %} />
+    </form>
+{%- endmacro %}
+
+{% macro user_action_link(url, text, class=None) -%}
+    <form method="post" class="linkform{% if class %} {{ class }}{% endif %}" action="{{ url }}">
+        <input type="hidden" name="csrf_token" value="{{ csrf_token() }}">
+        <input type="submit" value="{{ text }}"/>
+    </form>
+{%- endmacro %}

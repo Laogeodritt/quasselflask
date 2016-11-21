@@ -8,7 +8,7 @@ import sqlalchemy.orm
 from sqlalchemy import desc, asc, and_, or_
 
 from quasselflask import app
-from quasselflask.models import Backlog, Buffer, Sender
+from quasselflask.models import Backlog, Buffer, Sender, QfUser
 from quasselflask.parsing.form import convert_glob_to_like, escape_like
 from quasselflask.parsing.query import BooleanQuery
 
@@ -94,3 +94,13 @@ def build_sql_search_terms(query: BooleanQuery, query_wildcard: bool) -> (sqlalc
     else:
         sql_query_filter = query.eval(and_, or_, plain)
     return sql_query_filter
+
+
+def query_all_qf_users(session) -> sqlalchemy.orm.query.Query:
+    """
+    Query the database for all QuasselFlask users.
+    :param session: Database session (SQLAlchemy)
+    :return: SQLAlchemy results
+    """
+    query = session.query(QfUser).order_by(asc(QfUser.qfuserid))  # type: sqlalchemy.orm.query.Query
+    return query
