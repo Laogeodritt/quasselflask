@@ -215,33 +215,118 @@ def admin_manage_user(userid):
     return render_template('admin/manage_user.html')  # TODO
 
 
-@app.route('/admin/users/<userid>/disable', methods=['POST'])
+@app.route('/admin/users/<userid>/update', methods=['GET', 'POST'])
 @roles_required('superuser')
-def admin_disable_user(userid):
-    return 'disable'  # TODO. Also, cannot do this to the current user
-
-
-@app.route('/admin/users/<userid>/enable', methods=['POST'])
-@roles_required('superuser')
-def admin_enable_user(userid):
-    return 'enable'  # TODO
-
-
-@app.route('/admin/users/<userid>/delete', methods=['POST'])
-@roles_required('superuser')
-def admin_delete_user(userid):
-    return 'delete'  # TODO - make sure to confirm first. Also, cannot do this to the current user.
-
-
-@app.route('/admin/users/<userid>/confirm', methods=['POST'])
-@roles_required('superuser')
-def admin_confirm_user(userid):
+def admin_update_user(userid):
     """
-    Force confirm user's email address.
-    :param userid: Quasselflask user ID (qfuserid)
+    Update the current user's information. Any fields not included will remain unchanged.
+
+    Some actions return a confirmation page. It is necessary to submit the confirmation form to complete the action.
+
+    If acting on the current user, only the email address may be updated.  This prevents the current user from locking
+    themselves out of the application or removing a sole superuser.
+
+    POST parameters (all optional):
+
+    * `status`: 1 (enabled) or 0 (disabled). Other values treated as 0.
+    * `superuser`: 1 (superuser) or 0 (normal user). Cannot be used in combination with other parameters. Returns a
+        confirmation page.
+    * `delete`: 1. Cannot be used in combination with other parameters. Returns a confirmation page.
+    * `confirm_token`: Confirmation token for superuser or delete.
+    * `email`: new email address.
+    * `confirm_email`: 1 (confirm) or 0 (unconfirm). Force the email confirmation status.
+
+    :param userid: The user ID to modify.
     :return:
     """
-    return 'force confirm'  # TODO - make sure to confirm first. Also, cannot do this to the current user.
+    # TODO: confirm: delete, superuser. Token for confirmation.
+    # TODO: disallow: enable/disable, superuser/nosuperuser, confirm/unconfirm, delete current user
+    return render_template('admin/manage_user.html')  # TODO
+
+
+@app.route('/admin/users/<userid>/permissions/json', methods=['GET', 'POST'])
+@roles_required('superuser')
+def admin_permissions(userid):
+    """
+    On GET request, return a user's currently set permissions. Structure similar to the below. The client should use
+    the `admin_list_permissions_json` endpoint to retrieve display data.
+
+    .. code-block:: json
+        {
+          "default": "allow|deny",
+          "quasseluser_allow": [1, 2, 3],
+          "quasseluser_deny": [4, 5, 6],
+          "network_allow": [1, 2, 3],
+          "network_deny": [4, 5, 6],
+          "buffer_allow": [1, 2, 3],
+          "buffer_deny": [4, 5, 6],
+        }
+
+    On POST request, update a user's permissions. Redirects to the user management page.
+
+    POST parameters:
+
+    * `default`: 'allow' or 'deny'. Required.
+    * `quasseluser_allow`: ID of allowed Quassel user. Optional. Multiple permitted.
+    * `quasseluser_deny`: ID of denied Quassel user. Optional. Multiple permitted.
+    * `network_allow`: ID of allowed network. Optional. Multiple permitted.
+    * `network_deny`: ID of denied network. Optional. Multiple permitted.
+    * `buffer_allow`: ID of allowed buffer. Optional. Multiple permitted.
+    * `buffer_deny`: ID of denied buffer. Optional. Multiple permitted.
+
+    :param userid: The user ID to modify.
+    :return:
+    """
+    return 'update permissions'  # TODO
+
+
+@app.route('/admin/list/permissions/json')
+@roles_required('superuser')
+def admin_list_permissions_json():
+    """
+    Return all possible permission values (quassel user, network, buffer) as JSON structure.
+
+    The JSON response structure is as follows (example with two elements for each permission type):
+
+    .. code-block:: json
+        {
+          "quasseluser": [
+            {
+              "id": 0,
+              "name": "user0"
+            },
+            {
+              "id": 1,
+              "name": "user1"
+            }
+          ],
+          "networks": [
+            {
+              "id": 0,
+              "quasseluserid": 0,
+              "name": "Snoonet"
+            },
+            {
+              "id": 1,
+              "quasseluserid": 1,
+              "name": "Freenode"
+            }
+          ],
+          "channels": [
+            {
+              "id": 0,
+              "networkid": 0,
+              "name": "#worldbuilding"
+            },
+            {
+              "id": 4,
+              "networkid": 1,
+              "name": "#debian"
+            }
+          ]
+        }
+    """
+    return 'update permissions'  # TODO
 
 
 if os.environ.get('QF_ALLOW_TEST_PAGES'):

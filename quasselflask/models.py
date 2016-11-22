@@ -168,35 +168,35 @@ class QfPermission(db.Model):
     bufferid = db.Column(db.Integer, db.ForeignKey('buffer.bufferid', ondelete='CASCADE'), nullable=True)
     buffer = db.relationship(Buffer)
 
-    def __init__(self, access: PermissionAccess, type: PermissionType, id: int=None):
+    def __init__(self, access: PermissionAccess, type_: PermissionType, id_: int=None):
         """
         Create a new permission. Add this to the ``QfUser.permissions`` list for the user.
         :param access:
-        :param type:
-        :param id:
+        :param type_:
+        :param id_:
         """
         self.access = access
-        self.type = type
+        self.type = type_
         if self.type == PermissionType.user:
-            self.userid = id
+            self.userid = id_
         elif self.type == PermissionType.network:
-            self.networkid = id
+            self.networkid = id_
         elif self.type == PermissionType.buffer:
-            self.bufferid = id
+            self.bufferid = id_
         elif self.type == PermissionType.all:
-            if id is not None:
+            if id_ is not None:
                 raise TypeError("id must not be passed for type=all")
 
     def __repr__(self):
         if self.type == PermissionType.user:
-            id = self.userid
+            id_ = self.userid
         elif self.type == PermissionType.network:
-            id = self.networkid
+            id_ = self.networkid
         elif self.type == PermissionType.buffer:
-            id = self.bufferid
+            id_ = self.bufferid
         else:
-            id = None
-        return '<QfPermission:{0:<5s}:{1:<7}:{2:d}>'.format(self.access.name, self.type.name, id)
+            id_ = None
+        return '<QfPermission:{0:<5s}:{1:<7}:{2:d}>'.format(self.access.name, self.type.name, id_)
 
 
 class QfAnonymousUserMixin(AnonymousUserMixin):

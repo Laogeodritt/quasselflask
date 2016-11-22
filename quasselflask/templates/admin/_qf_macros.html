@@ -1,13 +1,29 @@
 {% macro user_disable_link(user, is_current_user=False) -%}
-    <form method="post" class="linkform" action="{% if user.is_active() %}{{ url_for('admin_disable_user', userid=user.get_id()) }}{% else %}{{ url_for('admin_enable_user', userid=user.get_id()) }}{% endif %}">
+    {# Create a <form> and user enable/disable link for a specified user.
+     #
+     # :param user: user to update (QfUser object)
+     # :param is_current_user: whether the user is the currently logged-in user
+     #}
+    <form method="post" class="linkform" action="{{ url_for('admin_update_user', userid=user.get_id()) }}">
         <input type="hidden" name="csrf_token" value="{{ csrf_token() }}">
+        <input type="hidden" name="status" value="{{ '0' if user.is_active() else '1' }}">
         <input type="submit" {% if user.is_active() %}class="user-enabled" value="✓" title="Enabled (click to disable)"{% else %}class="user-disabled" value="✗" title="Disabled (click to enable)"{% endif %}{% if is_current_user %} disabled{% endif %} />
     </form>
 {%- endmacro %}
 
-{% macro user_action_link(url, text, class=None, disabled=false) -%}
-    <form method="post" class="linkform{% if class %} {{ class }}{% endif %}" action="{{ url }}">
+{% macro user_action_link(user, text, postname=None, postvalue='1', class=None, title=None, disabled=false) -%}
+    {# Create a <form> and action link (as an <input type="submit">), for POST actions.
+     #
+     # :param user: user to update (QfUser object)
+     # :param text: The text to show on the submit input button
+     # :param postname: default None. Optional POST variable name.
+     # :param postvalue: default '1'. Optional POST variable value (if postname is defined).
+     # :param class: CSS class for the <form>. Can be a space-separated list (as specified in the HTML attribute).
+     # :param disabled: Whether to disable the <input type="submit"> element.
+     #}
+    <form method="post" class="linkform{% if class %} {{ class }}{% endif %}" action="{{ url_for('admin_update_user', userid=user.get_id()) }}">
         <input type="hidden" name="csrf_token" value="{{ csrf_token() }}">
-        <input type="submit" value="{{ text }}"{% if disabled %} disabled{% endif %}>
+        {% if postname %}<input type="hidden" name="{{ postname }}" value="{{ postvalue }}">{% endif %}
+        <input type="submit" value="{{ text }}"{% if disabled %} disabled{% endif %}{% if title %} title="{{ title }}"{% endif %}>
     </form>
 {%- endmacro %}

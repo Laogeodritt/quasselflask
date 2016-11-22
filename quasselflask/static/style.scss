@@ -102,6 +102,7 @@ $bg-mix-opacity: 30%;
   border: solid $bgcolor 1px;
   border-radius: $content-border-radius;
   transition: $bg-hover-transition;
+  vertical-align: middle;
 
   color: $base3;
   text-decoration: none;
@@ -114,6 +115,11 @@ $bg-mix-opacity: 30%;
   &:hover, &:active {
     background-color: lighten($bgcolor, $bg-hover-amount);
   }
+
+  &[disabled], &[disabled]:hover, &[disabled]:active {
+    opacity: 0.5;
+    background-color: $bgcolor;
+  }
 }
 
 @mixin button_color($bgcolor)
@@ -122,14 +128,15 @@ $bg-mix-opacity: 30%;
   border: solid $bgcolor 1px;
   color: $base3;
   transition: $bg-hover-transition;
+  vertical-align: middle;
 
   &:hover, &:active {
     background-color: lighten($bgcolor, $bg-hover-amount);
   }
 
   &[disabled], &[disabled]:hover, &[disabled]:active {
-    background-color: lighten($bgcolor, $bg-disabled-amount);
-    border-color: lighten($bgcolor, $border-disabled-amount);
+    opacity: 0.5;
+    background-color: $bgcolor;
   }
 }
 
@@ -454,7 +461,9 @@ table.userlist {
     color: $red;
 
     &:after {
-      content: ' SU';
+      display: inline-block;
+      margin-left: 0.6em;
+      content: 'SU';
       font-size: 60%;
     }
   }
@@ -464,8 +473,14 @@ table.userlist {
   }
 
   .email {
-    .confirmed { color: $cyan; }
-    .unconfirmed { color: $red; text-decoration: none; }
+    form.linkform, input[type="submit"] {
+      padding: 0;
+      margin: 0;
+      background-color: transparent;
+      border: none;
+    }
+    .confirmed input { color: $cyan; }
+    .unconfirmed input { color: $red; }
   }
 
   .actions {
@@ -475,12 +490,12 @@ table.userlist {
   form.linkform {
     display: inline-block;
     vertical-align: middle;
-    margin: 0  0.2em;
+    margin: 0 0.2em;
     padding: 0;
 
     input[type='submit'] {
       display: inline-block;
-      margin: 0 0.4em;
+      margin: 0;
 
       &.user-enabled {
         @include button_color($cyan);
@@ -490,9 +505,9 @@ table.userlist {
         @include button_color($red);
       }
     }
+  }
 
-    &.action-edit input[type='submit'] {
-      @include button_color($blue);
-    }
+  .actions .action-edit {
+    @include link_button($blue);
   }
 }
