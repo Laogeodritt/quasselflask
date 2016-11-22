@@ -13,25 +13,41 @@
 /* bootstrap */
 $(document).ready(function() {
     $('.animate-start-hidden[data-animate-type="width"]').animate({width:"toggle"}, 0);
+    $('.animate-start-hidden[data-animate-type="height"]').animate({height:"toggle"}, 0);
 
-    var $watchTarget = $('[data-animate-target]');
-    $watchTarget.each(function() {
-        $(this).on($(this).data('animate-event'), function() {
-            console.log("animating?");
-            if($(this).data('animate-once')) $(this).off('input'); // remove this listener after the first time
-            $('[data-animate-id="' + $(this).data('animate-target') + '"]').animate(
-                    {
-                        width: "toggle"
-                    },
-                    300,
-                    'swing',
-                    function() {
-                        $(this).hide().css('visibility', 'visible');
-                        $(this).fadeIn(300);
-                    }
-            );
-        }); // on event
+    $('[data-animate-target]').each(function() {
+        $(this).on($(this).data('animate-event'), onAnimateEvent);
     }); // each
 });
 
 /* library */
+
+/**
+ * Starts an animation. `this` must be set to the event trigger, not the animation target.
+ */
+function onAnimateEvent() {
+    // remove this listener after the first time
+    if($(this).data('animate-once') != undefined) $(this).off($(this).data('animate-event'));
+
+    var targetAnimateId = $(this).data('animate-target')
+    $('[data-animate-id="' + targetAnimateId + '"]').each(function() {
+        var animateProp;
+        switch($(this).data('animate-type')) {
+        case "width":
+            animateProp = { width: "toggle" };
+            break;
+        case "height":
+            animateProp = { height: "toggle" };
+            break;
+        }
+        $(this).animate(
+                animateProp,
+                400,
+                'swing',
+                function() {
+                    $(this).hide().css('visibility', 'visible');
+                    $(this).fadeIn(300);
+                }
+        );
+    }); // each target
+}
