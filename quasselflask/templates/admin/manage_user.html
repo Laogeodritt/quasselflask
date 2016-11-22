@@ -1,56 +1,63 @@
 {% extends 'skel_main.html' %}
-{% block title %}Manage User - USERNAME{% endblock %}
+{% block title %}Manage User - {{ user.username }}{% endblock %}
 {% block content %}
     <section>
-        {% from "flask_user/_macros.html" import render_field, render_checkbox_field, render_submit_field %}
-        <h2>{%trans%}Manage User - USERNAME{%endtrans%}</h2>
+        {% from "admin/_qf_macros.html" import user_disable_link, user_action_link %}
+        <h2>Manage User - {{ user.username }}</h2>
+        {% set is_current_user = user is sameas current_user %}
 
-        {# TODO: replace this with proper stuff #}
-        <form action="" method="POST" id="form-login" role="form" class="narrow">
-            {{ form.hidden_tag() }}
+        <div class="user-manage-row user-manage-delete">
+            {{ user_action_link(user, '# Delete', postname='delete', postvalue='1', class='delete', disabled=is_current_user) }}
+        </div>
 
-            {# Username or Email field #}
-            {% set field = form.username if user_manager.enable_username else form.email %}
-            <div class="{% if field.errors %}has-error{% endif %}">
-                {{ field(tabindex=210, placeholder='Username') }}
-            </div>
-            {% if field.errors %}
-                {% for e in field.errors %}
-                    <p class="help-block">{{ e }}</p>
-                {% endfor %}
-            {% endif %}
+        <div class="user-manage-row user-manage-status"><label>Status</label>
+            {%- if call_or_get(user.is_active) -%}
+                {{ user_action_link(user, '✓ Enabled', postname='status', postvalue='0', class='user-enabled', disabled=is_current_user) }}
+            {%- else -%}
+                {{ user_action_link(user, '✗ Disabled', postname='status', postvalue='1', class='user-disabled', disabled=is_current_user) }}
+            {%- endif -%}
 
-            {# Email field #}
-            {% if user_manager.enable_email and user_manager.enable_username %}
-                {% set field = form.email %}
-                <div class="{% if field.errors %}has-error{% endif %}">
-                    {{ field(class_='', tabindex=220, placeholder='Email') }}
-                </div>
-                {% if field.errors %}
-                    {% for e in field.errors %}
-                        <p class="help-block">{{ e }}</p>
-                    {% endfor %}
-                {% endif %}
-            {% endif %}
+            {%- if call_or_get(user.is_superuser) -%}
+                {{ user_action_link(user, '@ Superuser', postname='superuser', postvalue='0', class='user-superuser', disabled=is_current_user) }}
+            {%- else -%}
+                {{ user_action_link(user, '∗ User', postname='superuser', postvalue='1', class='user-normaluser', disabled=is_current_user) }}
+            {%- endif -%}
+        </div>
 
-            {# Password field #}
-            {% set field = form.password %}
-            <div class="{% if field.errors %}has-error{% endif %}">
-                {{ field(class_='', tabindex=230, placeholder='Password') }}
-            </div>
-            {% if field.errors %}
-                {% for e in field.errors %}
-                    <p class="help-block">{{ e }}</p>
-                {% endfor %}
-            {% endif %}
+        <div class="user-manage-row user-manage-email">
+            <label>Email</label>
+            <form class="linkform" method="post" action="{{ url_for('admin_update_user', userid=user.get_id()) }}">
+                <input type="hidden" name="csrf_token" value="{{ csrf_token() }}">
+                <input type="email" name="email" value="{{ user.email }}" data-animate-event="input" data-animate-once data-animate-target="email-submit">
+                <input type="submit" value="Save" class="animate-slide animate-start-hidden" data-animate-id="email-submit" data-animate-type="width">
+            </form>
 
-            {# Superuser checkbox #}
-            <div>
-                {{ render_checkbox_field(form.superuser, tabindex=250) }}
-            </div>
+            {%- if user.confirmed_at -%}
+                {{ user_action_link(user, '✓ Confirmed', postname='confirm_email', postvalue='0', class='confirmed', disabled=is_current_user) }}
+            {%- else -%}
+                {{ user_action_link(user, '✗ Unconfirmed', postname='confirm_email', postvalue='1', class='unconfirmed', disabled=is_current_user) }}
+            {%- endif -%}
+        </div>
 
-            {# Submit button #}
-            {{ render_submit_field(form.submit, tabindex=280) }}
+        <h3>Permissions</h3>
+        <form class="jsform" id="user-permissions-form" method="post" action="{{  url_for('admin_permissions', userid=user.get_id()) }}">
         </form>
+        <form id="user-permission-entry-form">
+            <div>
+                <input type="text" name="quasseluser" value="" placeholder="quassel user">
+                <input type="text" name="network" value="" placeholder="network">
+                <input type="text" name="buffer" value="" placeholder="channel">
+                <!-- TODO: Javascript for combo boxes (ZinoUI) -->
+            </div>
+            <div>
+                <button id="btn-permission-allow">✓ Allow</button>
+                <button id="btn-permission-deny">✗ Deny</button>
+                <button id="btn-permission-remove"># Remove</button>
+                <!-- TODO: Javascript -->
+            </div>
+        </form>
+
+        <!-- TODO: Javascript load data here -->
+        <div id="user-permission-display"></div>
     </section>
 {% endblock %}

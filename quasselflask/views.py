@@ -212,7 +212,8 @@ def admin_users():
 @app.route('/admin/users/<userid>', methods=['GET', 'POST'])
 @roles_required('superuser')
 def admin_manage_user(userid):
-    return render_template('admin/manage_user.html')  # TODO
+    user = db.session.query(QfUser).filter(QfUser.qfuserid == userid).one()
+    return render_template('admin/manage_user.html', user=user)  # TODO
 
 
 @app.route('/admin/users/<userid>/update', methods=['GET', 'POST'])

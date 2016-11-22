@@ -21,9 +21,9 @@
      # :param class: CSS class for the <form>. Can be a space-separated list (as specified in the HTML attribute).
      # :param disabled: Whether to disable the <input type="submit"> element.
      #}
-    <form method="post" class="linkform{% if class %} {{ class }}{% endif %}" action="{{ url_for('admin_update_user', userid=user.get_id()) }}">
+    <form method="post" class="linkform" action="{{ url_for('admin_update_user', userid=user.get_id()) }}">
         <input type="hidden" name="csrf_token" value="{{ csrf_token() }}">
         {% if postname %}<input type="hidden" name="{{ postname }}" value="{{ postvalue }}">{% endif %}
-        <input type="submit" value="{{ text }}"{% if disabled %} disabled{% endif %}{% if title %} title="{{ title }}"{% endif %}>
+        <input type="submit" value="{{ text }}"{% if disabled %} disabled{% endif %}{% if title %} title="{{ title }}"{% endif %}{% if class %} class="{{ class }}"{% endif %}>
     </form>
 {%- endmacro %}

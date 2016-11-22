@@ -54,6 +54,9 @@ html table.userlist tr, .light table.userlist tr {
     @include rebase_bgcolor($red, $rebase03);
   }*/
 }
+html #user-permission-display, .light #user-permission-display {
+  border: 1px solid #657b83;
+}
 
 .dark {
   background-color: #002b36;
@@ -98,6 +101,9 @@ html table.userlist tr, .light table.userlist tr {
   /*&.superuser {
     @include rebase_bgcolor($red, $rebase03);
   }*/
+}
+.dark #user-permission-display {
+  border: 1px solid #839496;
 }
 
 body {
@@ -184,11 +190,17 @@ footer {
   background-color: #9094d3;
 }
 
+.animate-start-hidden {
+  visibility: hidden;
+  display: inline-block;
+}
+
 /** Form styling **/
 form {
   display: flex;
   flex-direction: column;
   align-items: flex-end;
+  vertical-align: middle;
 }
 form#form-login .forgot-password {
   font-size: 80%;
@@ -213,6 +225,7 @@ form input, form button {
   border-radius: 10px;
   margin: 0.6em 0.4em 0;
   padding: 0.3em 0.6em;
+  vertical-align: middle;
 }
 form label, form input[type="checkbox"], form input[type="radio"] {
   margin: 0.6em 0.2em 0;
@@ -267,6 +280,116 @@ form button[type="reset"][disabled], form button[type="reset"][disabled]:hover, 
 }
 form #search-maxlines {
   max-width: 4em;
+}
+
+/* forms for single-button POST request or single-button for Javascript-based forms */
+form.linkform {
+  display: inline-block;
+  vertical-align: middle;
+  margin: 0;
+  padding: 0;
+}
+form.linkform input[type='submit'] {
+  display: inline-block;
+  margin: 0 0.3em;
+}
+form.linkform input[type='submit'].user-enabled {
+  background-color: #2aa198;
+  border: solid #2aa198 1px;
+  color: #fdf6e3;
+  transition: background-color 0.3s;
+  vertical-align: middle;
+}
+form.linkform input[type='submit'].user-enabled:hover, form.linkform input[type='submit'].user-enabled:active {
+  background-color: #35c9be;
+}
+form.linkform input[type='submit'].user-enabled[disabled], form.linkform input[type='submit'].user-enabled[disabled]:hover, form.linkform input[type='submit'].user-enabled[disabled]:active {
+  opacity: 0.5;
+  background-color: #2aa198;
+}
+form.linkform input[type='submit'].user-disabled {
+  background-color: #dc322f;
+  border: solid #dc322f 1px;
+  color: #fdf6e3;
+  transition: background-color 0.3s;
+  vertical-align: middle;
+}
+form.linkform input[type='submit'].user-disabled:hover, form.linkform input[type='submit'].user-disabled:active {
+  background-color: #e35d5b;
+}
+form.linkform input[type='submit'].user-disabled[disabled], form.linkform input[type='submit'].user-disabled[disabled]:hover, form.linkform input[type='submit'].user-disabled[disabled]:active {
+  opacity: 0.5;
+  background-color: #dc322f;
+}
+form.linkform input[type='submit'].user-superuser {
+  background-color: #cb4b16;
+  border: solid #cb4b16 1px;
+  color: #fdf6e3;
+  transition: background-color 0.3s;
+  vertical-align: middle;
+}
+form.linkform input[type='submit'].user-superuser:hover, form.linkform input[type='submit'].user-superuser:active {
+  background-color: #e8632c;
+}
+form.linkform input[type='submit'].user-superuser[disabled], form.linkform input[type='submit'].user-superuser[disabled]:hover, form.linkform input[type='submit'].user-superuser[disabled]:active {
+  opacity: 0.5;
+  background-color: #cb4b16;
+}
+form.linkform input[type='submit'].user-normaluser {
+  background-color: #6c71c4;
+  border: solid #6c71c4 1px;
+  color: #fdf6e3;
+  transition: background-color 0.3s;
+  vertical-align: middle;
+}
+form.linkform input[type='submit'].user-normaluser:hover, form.linkform input[type='submit'].user-normaluser:active {
+  background-color: #9094d3;
+}
+form.linkform input[type='submit'].user-normaluser[disabled], form.linkform input[type='submit'].user-normaluser[disabled]:hover, form.linkform input[type='submit'].user-normaluser[disabled]:active {
+  opacity: 0.5;
+  background-color: #6c71c4;
+}
+form.linkform input[type='submit'].confirmed {
+  background-color: #2aa198;
+  border: solid #2aa198 1px;
+  color: #fdf6e3;
+  transition: background-color 0.3s;
+  vertical-align: middle;
+}
+form.linkform input[type='submit'].confirmed:hover, form.linkform input[type='submit'].confirmed:active {
+  background-color: #35c9be;
+}
+form.linkform input[type='submit'].confirmed[disabled], form.linkform input[type='submit'].confirmed[disabled]:hover, form.linkform input[type='submit'].confirmed[disabled]:active {
+  opacity: 0.5;
+  background-color: #2aa198;
+}
+form.linkform input[type='submit'].unconfirmed {
+  background-color: #dc322f;
+  border: solid #dc322f 1px;
+  color: #fdf6e3;
+  transition: background-color 0.3s;
+  vertical-align: middle;
+}
+form.linkform input[type='submit'].unconfirmed:hover, form.linkform input[type='submit'].unconfirmed:active {
+  background-color: #e35d5b;
+}
+form.linkform input[type='submit'].unconfirmed[disabled], form.linkform input[type='submit'].unconfirmed[disabled]:hover, form.linkform input[type='submit'].unconfirmed[disabled]:active {
+  opacity: 0.5;
+  background-color: #dc322f;
+}
+form.linkform input[type='submit'].delete {
+  background-color: #dc322f;
+  border: solid #dc322f 1px;
+  color: #fdf6e3;
+  transition: background-color 0.3s;
+  vertical-align: middle;
+}
+form.linkform input[type='submit'].delete:hover, form.linkform input[type='submit'].delete:active {
+  background-color: #e35d5b;
+}
+form.linkform input[type='submit'].delete[disabled], form.linkform input[type='submit'].delete[disabled]:hover, form.linkform input[type='submit'].delete[disabled]:active {
+  opacity: 0.5;
+  background-color: #dc322f;
 }
 
 /** Results styling **/
@@ -507,7 +630,7 @@ html .result table.irc-log .info, html .result table.irc-log .daychange, html .r
   /* color set by the light/dark rebase above */
 }
 html .result table.irc-log .error td {
-  color: #dc322f;
+  color: #cb4b16;
 }
 html .result table.irc-log .nick {
   /* color set by the light/dark rebase above */
@@ -550,52 +673,14 @@ table.userlist .email form.linkform, table.userlist .email input[type="submit"] 
   background-color: transparent;
   border: none;
 }
-table.userlist .email .confirmed input {
+table.userlist .email form.linkform.confirmed, table.userlist .email input[type="submit"].confirmed {
   color: #2aa198;
 }
-table.userlist .email .unconfirmed input {
+table.userlist .email form.linkform.unconfirmed, table.userlist .email input[type="submit"].unconfirmed {
   color: #dc322f;
 }
 table.userlist .actions {
   text-align: center;
-}
-table.userlist form.linkform {
-  display: inline-block;
-  vertical-align: middle;
-  margin: 0 0.2em;
-  padding: 0;
-}
-table.userlist form.linkform input[type='submit'] {
-  display: inline-block;
-  margin: 0;
-}
-table.userlist form.linkform input[type='submit'].user-enabled {
-  background-color: #2aa198;
-  border: solid #2aa198 1px;
-  color: #fdf6e3;
-  transition: background-color 0.3s;
-  vertical-align: middle;
-}
-table.userlist form.linkform input[type='submit'].user-enabled:hover, table.userlist form.linkform input[type='submit'].user-enabled:active {
-  background-color: #35c9be;
-}
-table.userlist form.linkform input[type='submit'].user-enabled[disabled], table.userlist form.linkform input[type='submit'].user-enabled[disabled]:hover, table.userlist form.linkform input[type='submit'].user-enabled[disabled]:active {
-  opacity: 0.5;
-  background-color: #2aa198;
-}
-table.userlist form.linkform input[type='submit'].user-disabled {
-  background-color: #dc322f;
-  border: solid #dc322f 1px;
-  color: #fdf6e3;
-  transition: background-color 0.3s;
-  vertical-align: middle;
-}
-table.userlist form.linkform input[type='submit'].user-disabled:hover, table.userlist form.linkform input[type='submit'].user-disabled:active {
-  background-color: #e35d5b;
-}
-table.userlist form.linkform input[type='submit'].user-disabled[disabled], table.userlist form.linkform input[type='submit'].user-disabled[disabled]:hover, table.userlist form.linkform input[type='submit'].user-disabled[disabled]:active {
-  opacity: 0.5;
-  background-color: #dc322f;
 }
 table.userlist .actions .action-edit {
   display: inline-block;
@@ -619,6 +704,85 @@ table.userlist .actions .action-edit:hover, table.userlist .actions .action-edit
 table.userlist .actions .action-edit[disabled], table.userlist .actions .action-edit[disabled]:hover, table.userlist .actions .action-edit[disabled]:active {
   opacity: 0.5;
   background-color: #268bd2;
+}
+
+.user-manage-row {
+  margin-top: 0;
+  margin-bottom: 1em;
+}
+.user-manage-row * {
+  display: inline-block;
+  vertical-align: middle;
+}
+.user-manage-row form input {
+  margin-top: 0;
+  margin-bottom: 0;
+}
+.user-manage-row form input[type='email'] {
+  width: 20em;
+}
+.user-manage-row label {
+  font-size: 120%;
+}
+
+.user-manage-delete {
+  float: right;
+}
+
+#user-permission-entry-form {
+  margin-bottom: 1.5em;
+}
+#user-permission-entry-form > div {
+  margin-bottom: 0.6em;
+}
+#user-permission-entry-form #btn-permission-allow {
+  background-color: #2aa198;
+  border: solid #2aa198 1px;
+  color: #fdf6e3;
+  transition: background-color 0.3s;
+  vertical-align: middle;
+}
+#user-permission-entry-form #btn-permission-allow:hover, #user-permission-entry-form #btn-permission-allow:active {
+  background-color: #35c9be;
+}
+#user-permission-entry-form #btn-permission-allow[disabled], #user-permission-entry-form #btn-permission-allow[disabled]:hover, #user-permission-entry-form #btn-permission-allow[disabled]:active {
+  opacity: 0.5;
+  background-color: #2aa198;
+}
+#user-permission-entry-form #btn-permission-deny {
+  background-color: #cb4b16;
+  border: solid #cb4b16 1px;
+  color: #fdf6e3;
+  transition: background-color 0.3s;
+  vertical-align: middle;
+}
+#user-permission-entry-form #btn-permission-deny:hover, #user-permission-entry-form #btn-permission-deny:active {
+  background-color: #e8632c;
+}
+#user-permission-entry-form #btn-permission-deny[disabled], #user-permission-entry-form #btn-permission-deny[disabled]:hover, #user-permission-entry-form #btn-permission-deny[disabled]:active {
+  opacity: 0.5;
+  background-color: #cb4b16;
+}
+#user-permission-entry-form #btn-permission-remove {
+  background-color: #dc322f;
+  border: solid #dc322f 1px;
+  color: #fdf6e3;
+  transition: background-color 0.3s;
+  vertical-align: middle;
+}
+#user-permission-entry-form #btn-permission-remove:hover, #user-permission-entry-form #btn-permission-remove:active {
+  background-color: #e35d5b;
+}
+#user-permission-entry-form #btn-permission-remove[disabled], #user-permission-entry-form #btn-permission-remove[disabled]:hover, #user-permission-entry-form #btn-permission-remove[disabled]:active {
+  opacity: 0.5;
+  background-color: #dc322f;
+}
+
+#user-permission-display {
+  border-radius: 10px;
+  min-height: 6em;
+  margin: 0;
+  padding: 0.8em 1em;
 }
 
 /*# sourceMappingURL=style.css.map */

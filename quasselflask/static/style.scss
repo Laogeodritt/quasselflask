@@ -24,6 +24,11 @@ $blue:      #268bd2;
 $cyan:      #2aa198;
 $green:     #859900;
 
+$superuser-color: $orange;
+$normaluser-color: $violet;
+$confirmed-color: $cyan;
+$unconfirmed-color: $red;
+
 $content-border-radius: 10px;
 $small-font-size: 80%;
 $large-font-size: 120%;
@@ -81,6 +86,10 @@ $bg-mix-opacity: 30%;
     /*&.superuser {
       @include rebase_bgcolor($red, $rebase03);
     }*/
+  }
+
+  #user-permission-display {
+    border: 1px solid $rebase0;
   }
 }
 
@@ -215,12 +224,18 @@ aside, article { @extend section; }
   background-color: lighten($violet, $bg-hover-amount);
 }
 
+.animate-start-hidden {
+  visibility: hidden;
+  display: inline-block;
+}
+
 /** Form styling **/
 
 form {
   display: flex;
   flex-direction: column;
   align-items: flex-end;
+  vertical-align: middle;
 
   &#form-login {
     .forgot-password {
@@ -251,6 +266,7 @@ form {
     border-radius: $content-border-radius;
     margin: 0.6em 0.4em 0;
     padding: 0.3em 0.6em;
+    vertical-align: middle;
   }
 
   label, input[type="checkbox"], input[type="radio"] {
@@ -289,6 +305,47 @@ form {
   }
 
   #search-maxlines { max-width: 4em; }
+}
+
+/* forms for single-button POST request or single-button for Javascript-based forms */
+form.linkform {
+  display: inline-block;
+  vertical-align: middle;
+  margin: 0;
+  padding: 0;
+
+  input[type='submit'] {
+    display: inline-block;
+    margin: 0 0.3em;
+
+    &.user-enabled {
+      @include button_color($cyan);
+    }
+
+    &.user-disabled {
+      @include button_color($red);
+    }
+
+    &.user-superuser {
+      @include button_color($superuser-color);
+    }
+
+    &.user-normaluser {
+      @include button_color($normaluser-color);
+    }
+
+    &.confirmed {
+      @include button_color($confirmed-color);
+    }
+
+    &.unconfirmed {
+      @include button_color($unconfirmed-color);
+    }
+
+    &.delete {
+      @include button_color($red)
+    }
+  }
 }
 
 /** Results styling **/
@@ -428,7 +485,7 @@ html .result {
       /* color set by the light/dark rebase above */
     }
     .error {
-      td { color: $red; }
+      td { color: $superuser-color; }
     }
     .nick {
       /* color set by the light/dark rebase above */
@@ -478,36 +535,67 @@ table.userlist {
       margin: 0;
       background-color: transparent;
       border: none;
+
+      &.confirmed { color: $confirmed-color; }
+      &.unconfirmed { color: $unconfirmed-color; }
     }
-    .confirmed input { color: $cyan; }
-    .unconfirmed input { color: $red; }
   }
 
   .actions {
     text-align: center;
   }
 
-  form.linkform {
-    display: inline-block;
-    vertical-align: middle;
-    margin: 0 0.2em;
-    padding: 0;
-
-    input[type='submit'] {
-      display: inline-block;
-      margin: 0;
-
-      &.user-enabled {
-        @include button_color($cyan);
-      }
-
-      &.user-disabled {
-        @include button_color($red);
-      }
-    }
-  }
-
   .actions .action-edit {
     @include link_button($blue);
   }
+}
+
+.user-manage-row {
+  margin-top: 0;
+  margin-bottom: 1em;
+
+  * {
+    display: inline-block;
+    vertical-align: middle;
+  }
+
+  form input {
+    margin-top: 0;
+    margin-bottom: 0;
+
+    &[type='email'] { width: 20em; }
+  }
+
+  label {
+    font-size: $large-font-size;
+  }
+}
+
+.user-manage-delete {
+  float: right;
+}
+
+#user-permission-entry-form {
+  margin-bottom: 1.5em;
+
+  > div {
+    margin-bottom: 0.6em;
+  }
+
+  #btn-permission-allow {
+    @include button_color($cyan);
+  }
+  #btn-permission-deny {
+    @include button_color($orange);
+  }
+  #btn-permission-remove {
+    @include button_color($red);
+  }
+}
+
+#user-permission-display {
+  border-radius: $content-border-radius;
+  min-height: 6em;
+  margin: 0;
+  padding: 0.8em 1em;
 }
