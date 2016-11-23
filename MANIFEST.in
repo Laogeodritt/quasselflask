@@ -3,5 +3,4 @@ recursive-include static *
 
 global-exclude *.pyo
 global-exclude *.pyc
-global-exclude *.sass
 recursive-exclude instance

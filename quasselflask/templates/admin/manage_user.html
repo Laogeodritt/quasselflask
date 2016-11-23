@@ -1,7 +1,16 @@
 {% extends 'skel_main.html' %}
+{% block head %}{{ super() }}
+    <link rel="stylesheet" href="{{ url_for('static', filename='contrib/zinoui/themes/silver/zino.core.css') }}">
+    <link rel="stylesheet" href="{{ url_for('static', filename='contrib/zinoui/themes/silver/zino.combobox.css') }}">
+    <link rel="stylesheet" href="//fonts.googleapis.com/css?family=Open+Sans:400,700">
+    <script src="{{ url_for('static', filename='contrib/zinoui/zino.datasource.min.js') }}"></script>
+    <script src="{{ url_for('static', filename='contrib/zinoui/zino.combobox.min.js') }}"></script>
+{% endblock %}
+
 {% block title %}Manage User - {{ user.username }}{% endblock %}
+
 {% block content %}
-    <section>
+    <section data-page="manage-user" data-user-id="{{ user.userid }}">
         {% from "admin/_qf_macros.html" import user_disable_link, user_action_link %}
         <h2>Manage User - {{ user.username }}</h2>
         {% set is_current_user = user is sameas current_user %}
@@ -44,9 +53,9 @@
         </form>
         <form id="user-permission-entry-form">
             <div>
-                <input type="text" name="quasseluser" value="" placeholder="quassel user">
-                <input type="text" name="network" value="" placeholder="network">
-                <input type="text" name="buffer" value="" placeholder="channel">
+                <input type="text" name="quasseluser" value="" placeholder="quasseluser" id="combobox-quasseluser">
+                <input type="text" name="network" value="" placeholder="network" id="combobox-network">
+                <input type="text" name="buffer" value="" placeholder="channel" id="combobox-channel">
                 <!-- TODO: Javascript for combo boxes (ZinoUI) -->
             </div>
             <div>

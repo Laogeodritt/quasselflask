@@ -30,3 +30,10 @@ ON ANY THEORY OF LIABILITY, WHETHER IN CONTRACT, STRICT LIABILITY, OR TORT
 (INCLUDING NEGLIGENCE OR OTHERWISE) ARISING IN ANY WAY OUT OF THE USE OF THIS
 SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
 
+## ZinoUI
+
+[ZenoUI website](https://zinoui.com)
+
+Copyright (c) 2012-2015 Dimitar Ivanov.
+
+Released under the [GNU General Public License (GPL) version 3](http://www.gnu.org/copyleft/gpl.html).
