@@ -1,7 +1,7 @@
 {% extends 'skel_main.html' %}
 {% block title %}Manage Users{% endblock %}
 {% block content %}
-    <section>
+    <main>
         {% from "admin/_qf_macros.html" import user_disable_link, user_action_link %}
         <h2>{%trans%}Manage Users{%endtrans%}</h2>
 
@@ -17,7 +17,7 @@
                     </tr>
                     {% for user in users %}
                         {% set is_current_user = user is sameas current_user %}
-                    <tr class="user{% if call_or_get(user.is_superuser) %} superuser{% endif %}">
+                    <tr class="user{% if call_or_get(user.is_superuser) %} superuser{% endif %}" data-user-id="{{ user.userid }}">
                         <td class="uid">{{ user.get_id() }}</td>
                         <td class="username"{% if call_or_get(user.is_superuser) %} title="Superuser"{% endif %}>{{ user.username }}</td>
                         <td class="email">{{ user.email }} {% if user.confirmed_at -%}
@@ -36,5 +36,5 @@
                 <p>No users. How'd you even get here?! (More seriously: Probably a bug, contact your friendly neighbourhood Quasselflask developer to report it.)</p>
             {% endif %}
         </div>
-    </section>
+    </main>
 {% endblock %}

@@ -1,7 +1,7 @@
 {% extends 'skel_main.html' %}
 {% block title %}Create New User{% endblock %}
 {% block content %}
-<section>
+<main>
     {% from "flask_user/_macros.html" import render_field, render_checkbox_field, render_submit_field %}
     <h2>{%trans%}Create New User{%endtrans%}</h2>
 
@@ -40,5 +40,5 @@
         {# Submit button #}
         {{ render_submit_field(form.submit, tabindex=280) }}
     </form>
-</section>
+</main>
 {% endblock %}

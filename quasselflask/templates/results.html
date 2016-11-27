@@ -11,7 +11,7 @@
  #          as the only top-level elements.
  #}{% extends "search_form.html" %}
 {% block content_after_form %}
-<section class="result">
+<main class="result">
     <h2>Results</h2>
     <table class="irc-log">
         {% for record in records %}
@@ -23,5 +23,5 @@
             </tr>
         {% endfor %}
     </table>
-</section>
+</main>
 {% endblock %}

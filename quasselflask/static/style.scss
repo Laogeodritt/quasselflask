@@ -24,19 +24,25 @@ $blue:      #268bd2;
 $cyan:      #2aa198;
 $green:     #859900;
 
+$transition-time: 0.3s;
+
 $superuser-color: $orange;
-$normaluser-color: $violet;
-$confirmed-color: $cyan;
-$unconfirmed-color: $red;
+$normaluser-color: $cyan;
+$enable-color: $cyan;
+$disable-color: $orange;
+$delete-color: $red;
 
 $content-border-radius: 10px;
 $small-font-size: 80%;
 $large-font-size: 120%;
-$bg-hover-transition: background-color 0.3s;
+$bg-hover-transition: background-color $transition-time;
 $bg-hover-amount: 10%;
 $bg-disabled-amount: 15%;
 $border-disabled-amount: 20%;
 $bg-mix-opacity: 30%;
+
+$fg-hover-transition: color $transition-time;
+$fadein-transition: opacity $transition-time;
 
 @import 'https://fonts.googleapis.com/css?family=PT+Sans|PT+Serif';
 
@@ -44,11 +50,19 @@ $bg-mix-opacity: 30%;
 {
   background-color: $rebase02;
 
-  section, article, footer, aside { background-color: $rebase03; }
+  main, section, article, footer, aside {
+    background-color: $rebase03;
+    border-color: $rebase0;
+  }
+
+  .dijitComboBoxMenuPopup, .dijitTooltip {
+    background-color: $rebase03;
+    border-color: $rebase0 !important;
+  }
 
   color: $rebase0;
 
-  input { color:$rebase0; }
+  input { color: $rebase0; }
 
   header h1, h1, h2, h3, h4, h5, h6 { border-color: $rebase0; }
 
@@ -60,6 +74,11 @@ $bg-mix-opacity: 30%;
 
   form {
     input { background-color: $rebase03; }
+    .dijitArrowButtonContainer, .dijitValidationContainer {
+      input:hover {
+        color: $rebase01;
+      }
+    }
   }
 
   code { background-color: $rebase02; }
@@ -90,6 +109,12 @@ $bg-mix-opacity: 30%;
 
   #user-permission-display {
     border: 1px solid $rebase0;
+  }
+
+  .dijitComboBoxMenuPopup {
+    .network, .quasseluser {
+      color: $rebase01;
+    }
   }
 }
 
@@ -175,7 +200,7 @@ header h1, h1, h2, h3, h4, h5, h6 {
   padding: 0 0.5em;
 }
 
-section {
+main, section {
   border: 1px solid;
   border-radius: $content-border-radius;
   margin-top: 0.8em;
@@ -183,7 +208,7 @@ section {
   padding: 0.7em 1.5em 1.5em 1.5em;
 }
 
-section#error {
+section#error, .dijitComboBoxError, .dijitComboBoxError div, .dijitComboBoxError input {
   background-color: lighten($red, 25%);
 }
 
@@ -259,9 +284,13 @@ form {
     flex-direction: row;
     justify-content: center;
     align-items: baseline;
+
+    &.form-row-end {
+      justify-content: flex-end;
+    }
   }
 
-  input, button {
+  input, button, .dijitTextBox {
     border: 1px solid;
     border-radius: $content-border-radius;
     margin: 0.6em 0.4em 0;
@@ -274,7 +303,7 @@ form {
     padding: 0;
   }
 
-  input[type="text"], input[type="password"], input[type="number"], input[type="textarea"] {
+  input[type="text"], input[type="password"], input[type="number"], input[type="textarea"], .dijitTextBox {
     flex-grow: 1;
     text-align: center;
   }
@@ -318,12 +347,12 @@ form.linkform {
     display: inline-block;
     margin: 0 0.3em;
 
-    &.user-enabled {
-      @include button_color($cyan);
+    &.user-enabled, &.confirmed {
+      @include button_color($enable-color);
     }
 
-    &.user-disabled {
-      @include button_color($red);
+    &.user-disabled, &.unconfirmed {
+      @include button_color($disable-color);
     }
 
     &.user-superuser {
@@ -332,14 +361,6 @@ form.linkform {
 
     &.user-normaluser {
       @include button_color($normaluser-color);
-    }
-
-    &.confirmed {
-      @include button_color($confirmed-color);
-    }
-
-    &.unconfirmed {
-      @include button_color($unconfirmed-color);
     }
 
     &.delete {
@@ -536,8 +557,8 @@ table.userlist {
       background-color: transparent;
       border: none;
 
-      &.confirmed { color: $confirmed-color; }
-      &.unconfirmed { color: $unconfirmed-color; }
+      &.confirmed { color: $enable-color; }
+      &.unconfirmed { color: $disable-color; }
     }
   }
 
@@ -581,16 +602,6 @@ table.userlist {
   > div {
     margin-bottom: 0.6em;
   }
-
-  #btn-permission-allow {
-    @include button_color($cyan);
-  }
-  #btn-permission-deny {
-    @include button_color($orange);
-  }
-  #btn-permission-remove {
-    @include button_color($red);
-  }
 }
 
 #user-permission-display {
@@ -598,4 +609,84 @@ table.userlist {
   min-height: 6em;
   margin: 0;
   padding: 0.8em 1em;
+
+  .btn-perm {
+    &:before { margin-right: 0.4em; }
+  }
+}
+
+#btn-permission-allow, #user-permission-display [data-permission-access="allow"] {
+  @include button_color($enable-color);
+  &:before { content: "✓"; }
+}
+#btn-permission-deny, #user-permission-display [data-permission-access="deny"] {
+  @include button_color($disable-color);
+  &:before { content: "✗"; }
+}
+
+/* Dojo/Dijit stuff */
+.dijitReset {
+  padding: 0;
+  margin: 0;
+  border: 0;
+}
+
+.dijitComboBox {
+  display: flex;
+  flex-flow: row-reverse nowrap;
+  justify-content: space-between;
+  align-items: center;
+  align-content: center;
+
+  > div * {
+    vertical-align: middle;
+  }
+
+  .dijitArrowButtonContainer, .dijitValidationContainer {
+    float: right;
+
+    input {
+      width: 1.5em;
+      transition: $fg-hover-transition;
+      &:hover { cursor: pointer; }
+    }
+  }
+  .dijitValidationContainer {
+    visibility: hidden;
+    opacity: 0;
+    transition: $fadein-transition;
+  }
+
+  .dijitInputField {
+    flex-grow: 1;
+    input { width: 100%; }
+  }
+}
+
+.dijitHover, .dijitFocused {
+  .dijitValidationContainer {
+    opacity: 1;
+    visibility: visible;
+  }
+}
+
+.dijitTooltip {
+  position: absolute;
+  border: 1px solid !important;
+  border-radius: $content-border-radius;
+  padding: 0.3em 1em;
+}
+
+.dijitComboBoxMenuPopup {
+  @extend .dijitTooltip;
+
+  .dijitMenuItem { cursor: pointer; }
+  .quasseluser, .network {
+    font-size: $small-font-size;
+    &:before { content: " "; }
+  }
+  .quasseluser + .network:before,
+  .network + .quasseluser:before {
+    content: " | ";
+  }
 }

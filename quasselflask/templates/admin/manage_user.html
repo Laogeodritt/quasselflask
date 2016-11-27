@@ -1,16 +1,16 @@
 {% extends 'skel_main.html' %}
 {% block head %}{{ super() }}
-    <link rel="stylesheet" href="{{ url_for('static', filename='contrib/zinoui/themes/silver/zino.core.css') }}">
-    <link rel="stylesheet" href="{{ url_for('static', filename='contrib/zinoui/themes/silver/zino.combobox.css') }}">
-    <link rel="stylesheet" href="//fonts.googleapis.com/css?family=Open+Sans:400,700">
-    <script src="{{ url_for('static', filename='contrib/zinoui/zino.datasource.min.js') }}"></script>
-    <script src="{{ url_for('static', filename='contrib/zinoui/zino.combobox.min.js') }}"></script>
+    <script src="//ajax.googleapis.com/ajax/libs/dojo/1.11.2/dojo/dojo.js" data-dojo-config="async: true"></script>
+    <script src="{{ url_for('static', filename='qf_manage_user.js') }}"></script>
+    <script>
+        PERMISSION_DATA = {{ permission_data|tojson }};
+    </script>
 {% endblock %}
 
 {% block title %}Manage User - {{ user.username }}{% endblock %}
 
 {% block content %}
-    <section data-page="manage-user" data-user-id="{{ user.userid }}">
+    <main data-page="manage-user" data-user-id="{{ user.get_id() }}">
         {% from "admin/_qf_macros.html" import user_disable_link, user_action_link %}
         <h2>Manage User - {{ user.username }}</h2>
         {% set is_current_user = user is sameas current_user %}
@@ -55,18 +55,17 @@
             <div>
                 <input type="text" name="quasseluser" value="" placeholder="quasseluser" id="combobox-quasseluser">
                 <input type="text" name="network" value="" placeholder="network" id="combobox-network">
-                <input type="text" name="buffer" value="" placeholder="channel" id="combobox-channel">
-                <!-- TODO: Javascript for combo boxes (ZinoUI) -->
+                <input type="text" name="buffer" value="" placeholder="channel" id="combobox-buffer">
             </div>
-            <div>
-                <button id="btn-permission-allow">✓ Allow</button>
-                <button id="btn-permission-deny">✗ Deny</button>
-                <button id="btn-permission-remove"># Remove</button>
+            <div class="form-row-end">
+                <button type="button" id="btn-permission-allow">Allow</button>
+                <button type="button" id="btn-permission-deny">Deny</button>
+                <button type="reset" id="btn-permission-reset">Clear</button>
                 <!-- TODO: Javascript -->
             </div>
         </form>
 
         <!-- TODO: Javascript load data here -->
-        <div id="user-permission-display"></div>
-    </section>
+        <div id="user-permission-display"><button type="button" data-permission-access="allow" class="btn-perm">asdf</button></div>
+    </main>
 {% endblock %}

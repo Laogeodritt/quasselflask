@@ -1,3 +1,4 @@
+@charset "UTF-8";
 /******************************************************************************
  * File: style.css - Main stylesheet
  * QuasselFlask - Log Search Utility for Quassel Postgresql Database
@@ -11,8 +12,13 @@ html, .light {
   background-color: #eee8d5;
   color: #657b83;
 }
-html section, html footer, html aside, html article, html article, html footer, html aside, .light section, .light footer, .light aside, .light article, .light article, .light footer, .light aside {
+html main, html section, html footer, html aside, html article, html article, html footer, html aside, .light main, .light section, .light footer, .light aside, .light article, .light article, .light footer, .light aside {
   background-color: #fdf6e3;
+  border-color: #657b83;
+}
+html .dijitComboBoxMenuPopup, html .dijitTooltip, html .dijitComboBoxMenuPopup, .light .dijitComboBoxMenuPopup, .light .dijitTooltip, .light .dijitComboBoxMenuPopup {
+  background-color: #fdf6e3;
+  border-color: #657b83 !important;
 }
 html input, .light input {
   color: #657b83;
@@ -28,6 +34,9 @@ html section#error, html footer#error, html aside#error, html article#error, htm
 }
 html form input, .light form input {
   background-color: #fdf6e3;
+}
+html form .dijitArrowButtonContainer input:hover, html form .dijitValidationContainer input:hover, .light form .dijitArrowButtonContainer input:hover, .light form .dijitValidationContainer input:hover {
+  color: #93a1a1;
 }
 html code, .light code {
   background-color: #eee8d5;
@@ -57,13 +66,21 @@ html table.userlist tr, .light table.userlist tr {
 html #user-permission-display, .light #user-permission-display {
   border: 1px solid #657b83;
 }
+html .dijitComboBoxMenuPopup .network, html .dijitComboBoxMenuPopup .quasseluser, .light .dijitComboBoxMenuPopup .network, .light .dijitComboBoxMenuPopup .quasseluser {
+  color: #93a1a1;
+}
 
 .dark {
   background-color: #002b36;
   color: #839496;
 }
-.dark section, .dark footer, .dark aside, .dark article, .dark article, .dark footer, .dark aside {
+.dark main, .dark section, .dark footer, .dark aside, .dark article, .dark article, .dark footer, .dark aside {
   background-color: #073642;
+  border-color: #839496;
+}
+.dark .dijitComboBoxMenuPopup, .dark .dijitTooltip, .dark .dijitComboBoxMenuPopup {
+  background-color: #073642;
+  border-color: #839496 !important;
 }
 .dark input {
   color: #839496;
@@ -79,6 +96,9 @@ html #user-permission-display, .light #user-permission-display {
 }
 .dark form input {
   background-color: #073642;
+}
+.dark form .dijitArrowButtonContainer input:hover, .dark form .dijitValidationContainer input:hover {
+  color: #586e75;
 }
 .dark code {
   background-color: #002b36;
@@ -105,6 +125,9 @@ html #user-permission-display, .light #user-permission-display {
 .dark #user-permission-display {
   border: 1px solid #839496;
 }
+.dark .dijitComboBoxMenuPopup .network, .dark .dijitComboBoxMenuPopup .quasseluser {
+  color: #586e75;
+}
 
 body {
   max-width: 1156px;
@@ -124,7 +147,7 @@ header h1, h1, h2, h3, h4, h5, h6 {
   padding: 0 0.5em;
 }
 
-section, footer, aside, article {
+main, section, footer, aside, article {
   border: 1px solid;
   border-radius: 10px;
   margin-top: 0.8em;
@@ -132,7 +155,7 @@ section, footer, aside, article {
   padding: 0.7em 1.5em 1.5em 1.5em;
 }
 
-section#error, footer#error, aside#error, article#error {
+section#error, footer#error, aside#error, article#error, .dijitComboBoxError, .dijitComboBoxError div, .dijitComboBoxError input {
   background-color: #ee9e9c;
 }
 
@@ -220,7 +243,10 @@ form > div {
   justify-content: center;
   align-items: baseline;
 }
-form input, form button {
+form > div.form-row-end {
+  justify-content: flex-end;
+}
+form input, form button, form .dijitTextBox {
   border: 1px solid;
   border-radius: 10px;
   margin: 0.6em 0.4em 0;
@@ -231,7 +257,7 @@ form label, form input[type="checkbox"], form input[type="radio"] {
   margin: 0.6em 0.2em 0;
   padding: 0;
 }
-form input[type="text"], form input[type="password"], form input[type="number"], form input[type="textarea"] {
+form input[type="text"], form input[type="password"], form input[type="number"], form input[type="textarea"], form .dijitTextBox {
   flex-grow: 1;
   text-align: center;
 }
@@ -293,33 +319,33 @@ form.linkform input[type='submit'] {
   display: inline-block;
   margin: 0 0.3em;
 }
-form.linkform input[type='submit'].user-enabled {
+form.linkform input[type='submit'].user-enabled, form.linkform input[type='submit'].confirmed {
   background-color: #2aa198;
   border: solid #2aa198 1px;
   color: #fdf6e3;
   transition: background-color 0.3s;
   vertical-align: middle;
 }
-form.linkform input[type='submit'].user-enabled:hover, form.linkform input[type='submit'].user-enabled:active {
+form.linkform input[type='submit'].user-enabled:hover, form.linkform input[type='submit'].user-enabled:active, form.linkform input[type='submit'].confirmed:hover, form.linkform input[type='submit'].confirmed:active {
   background-color: #35c9be;
 }
-form.linkform input[type='submit'].user-enabled[disabled], form.linkform input[type='submit'].user-enabled[disabled]:hover, form.linkform input[type='submit'].user-enabled[disabled]:active {
+form.linkform input[type='submit'].user-enabled[disabled], form.linkform input[type='submit'].user-enabled[disabled]:hover, form.linkform input[type='submit'].user-enabled[disabled]:active, form.linkform input[type='submit'].confirmed[disabled], form.linkform input[type='submit'].confirmed[disabled]:hover, form.linkform input[type='submit'].confirmed[disabled]:active {
   opacity: 0.5;
   background-color: #2aa198;
 }
-form.linkform input[type='submit'].user-disabled {
-  background-color: #dc322f;
-  border: solid #dc322f 1px;
+form.linkform input[type='submit'].user-disabled, form.linkform input[type='submit'].unconfirmed {
+  background-color: #cb4b16;
+  border: solid #cb4b16 1px;
   color: #fdf6e3;
   transition: background-color 0.3s;
   vertical-align: middle;
 }
-form.linkform input[type='submit'].user-disabled:hover, form.linkform input[type='submit'].user-disabled:active {
-  background-color: #e35d5b;
+form.linkform input[type='submit'].user-disabled:hover, form.linkform input[type='submit'].user-disabled:active, form.linkform input[type='submit'].unconfirmed:hover, form.linkform input[type='submit'].unconfirmed:active {
+  background-color: #e8632c;
 }
-form.linkform input[type='submit'].user-disabled[disabled], form.linkform input[type='submit'].user-disabled[disabled]:hover, form.linkform input[type='submit'].user-disabled[disabled]:active {
+form.linkform input[type='submit'].user-disabled[disabled], form.linkform input[type='submit'].user-disabled[disabled]:hover, form.linkform input[type='submit'].user-disabled[disabled]:active, form.linkform input[type='submit'].unconfirmed[disabled], form.linkform input[type='submit'].unconfirmed[disabled]:hover, form.linkform input[type='submit'].unconfirmed[disabled]:active {
   opacity: 0.5;
-  background-color: #dc322f;
+  background-color: #cb4b16;
 }
 form.linkform input[type='submit'].user-superuser {
   background-color: #cb4b16;
@@ -336,46 +362,18 @@ form.linkform input[type='submit'].user-superuser[disabled], form.linkform input
   background-color: #cb4b16;
 }
 form.linkform input[type='submit'].user-normaluser {
-  background-color: #6c71c4;
-  border: solid #6c71c4 1px;
-  color: #fdf6e3;
-  transition: background-color 0.3s;
-  vertical-align: middle;
-}
-form.linkform input[type='submit'].user-normaluser:hover, form.linkform input[type='submit'].user-normaluser:active {
-  background-color: #9094d3;
-}
-form.linkform input[type='submit'].user-normaluser[disabled], form.linkform input[type='submit'].user-normaluser[disabled]:hover, form.linkform input[type='submit'].user-normaluser[disabled]:active {
-  opacity: 0.5;
-  background-color: #6c71c4;
-}
-form.linkform input[type='submit'].confirmed {
   background-color: #2aa198;
   border: solid #2aa198 1px;
   color: #fdf6e3;
   transition: background-color 0.3s;
   vertical-align: middle;
 }
-form.linkform input[type='submit'].confirmed:hover, form.linkform input[type='submit'].confirmed:active {
+form.linkform input[type='submit'].user-normaluser:hover, form.linkform input[type='submit'].user-normaluser:active {
   background-color: #35c9be;
 }
-form.linkform input[type='submit'].confirmed[disabled], form.linkform input[type='submit'].confirmed[disabled]:hover, form.linkform input[type='submit'].confirmed[disabled]:active {
+form.linkform input[type='submit'].user-normaluser[disabled], form.linkform input[type='submit'].user-normaluser[disabled]:hover, form.linkform input[type='submit'].user-normaluser[disabled]:active {
   opacity: 0.5;
   background-color: #2aa198;
-}
-form.linkform input[type='submit'].unconfirmed {
-  background-color: #dc322f;
-  border: solid #dc322f 1px;
-  color: #fdf6e3;
-  transition: background-color 0.3s;
-  vertical-align: middle;
-}
-form.linkform input[type='submit'].unconfirmed:hover, form.linkform input[type='submit'].unconfirmed:active {
-  background-color: #e35d5b;
-}
-form.linkform input[type='submit'].unconfirmed[disabled], form.linkform input[type='submit'].unconfirmed[disabled]:hover, form.linkform input[type='submit'].unconfirmed[disabled]:active {
-  opacity: 0.5;
-  background-color: #dc322f;
 }
 form.linkform input[type='submit'].delete {
   background-color: #dc322f;
@@ -677,7 +675,7 @@ table.userlist .email form.linkform.confirmed, table.userlist .email input[type=
   color: #2aa198;
 }
 table.userlist .email form.linkform.unconfirmed, table.userlist .email input[type="submit"].unconfirmed {
-  color: #dc322f;
+  color: #cb4b16;
 }
 table.userlist .actions {
   text-align: center;
@@ -735,54 +733,116 @@ table.userlist .actions .action-edit[disabled], table.userlist .actions .action-
 #user-permission-entry-form > div {
   margin-bottom: 0.6em;
 }
-#user-permission-entry-form #btn-permission-allow {
-  background-color: #2aa198;
-  border: solid #2aa198 1px;
-  color: #fdf6e3;
-  transition: background-color 0.3s;
-  vertical-align: middle;
-}
-#user-permission-entry-form #btn-permission-allow:hover, #user-permission-entry-form #btn-permission-allow:active {
-  background-color: #35c9be;
-}
-#user-permission-entry-form #btn-permission-allow[disabled], #user-permission-entry-form #btn-permission-allow[disabled]:hover, #user-permission-entry-form #btn-permission-allow[disabled]:active {
-  opacity: 0.5;
-  background-color: #2aa198;
-}
-#user-permission-entry-form #btn-permission-deny {
-  background-color: #cb4b16;
-  border: solid #cb4b16 1px;
-  color: #fdf6e3;
-  transition: background-color 0.3s;
-  vertical-align: middle;
-}
-#user-permission-entry-form #btn-permission-deny:hover, #user-permission-entry-form #btn-permission-deny:active {
-  background-color: #e8632c;
-}
-#user-permission-entry-form #btn-permission-deny[disabled], #user-permission-entry-form #btn-permission-deny[disabled]:hover, #user-permission-entry-form #btn-permission-deny[disabled]:active {
-  opacity: 0.5;
-  background-color: #cb4b16;
-}
-#user-permission-entry-form #btn-permission-remove {
-  background-color: #dc322f;
-  border: solid #dc322f 1px;
-  color: #fdf6e3;
-  transition: background-color 0.3s;
-  vertical-align: middle;
-}
-#user-permission-entry-form #btn-permission-remove:hover, #user-permission-entry-form #btn-permission-remove:active {
-  background-color: #e35d5b;
-}
-#user-permission-entry-form #btn-permission-remove[disabled], #user-permission-entry-form #btn-permission-remove[disabled]:hover, #user-permission-entry-form #btn-permission-remove[disabled]:active {
-  opacity: 0.5;
-  background-color: #dc322f;
-}
 
 #user-permission-display {
   border-radius: 10px;
   min-height: 6em;
   margin: 0;
   padding: 0.8em 1em;
+}
+#user-permission-display .btn-perm:before {
+  margin-right: 0.4em;
+}
+
+#btn-permission-allow, #user-permission-display [data-permission-access="allow"] {
+  background-color: #2aa198;
+  border: solid #2aa198 1px;
+  color: #fdf6e3;
+  transition: background-color 0.3s;
+  vertical-align: middle;
+}
+#btn-permission-allow:hover, #btn-permission-allow:active, #user-permission-display [data-permission-access="allow"]:hover, #user-permission-display [data-permission-access="allow"]:active {
+  background-color: #35c9be;
+}
+#btn-permission-allow[disabled], #btn-permission-allow[disabled]:hover, #btn-permission-allow[disabled]:active, #user-permission-display [data-permission-access="allow"][disabled], #user-permission-display [data-permission-access="allow"][disabled]:hover, #user-permission-display [data-permission-access="allow"][disabled]:active {
+  opacity: 0.5;
+  background-color: #2aa198;
+}
+#btn-permission-allow:before, #user-permission-display [data-permission-access="allow"]:before {
+  content: "✓";
+}
+
+#btn-permission-deny, #user-permission-display [data-permission-access="deny"] {
+  background-color: #cb4b16;
+  border: solid #cb4b16 1px;
+  color: #fdf6e3;
+  transition: background-color 0.3s;
+  vertical-align: middle;
+}
+#btn-permission-deny:hover, #btn-permission-deny:active, #user-permission-display [data-permission-access="deny"]:hover, #user-permission-display [data-permission-access="deny"]:active {
+  background-color: #e8632c;
+}
+#btn-permission-deny[disabled], #btn-permission-deny[disabled]:hover, #btn-permission-deny[disabled]:active, #user-permission-display [data-permission-access="deny"][disabled], #user-permission-display [data-permission-access="deny"][disabled]:hover, #user-permission-display [data-permission-access="deny"][disabled]:active {
+  opacity: 0.5;
+  background-color: #cb4b16;
+}
+#btn-permission-deny:before, #user-permission-display [data-permission-access="deny"]:before {
+  content: "✗";
+}
+
+/* Dojo/Dijit stuff */
+.dijitReset {
+  padding: 0;
+  margin: 0;
+  border: 0;
+}
+
+.dijitComboBox {
+  display: flex;
+  flex-flow: row-reverse nowrap;
+  justify-content: space-between;
+  align-items: center;
+  align-content: center;
+}
+.dijitComboBox > div * {
+  vertical-align: middle;
+}
+.dijitComboBox .dijitArrowButtonContainer, .dijitComboBox .dijitValidationContainer {
+  float: right;
+}
+.dijitComboBox .dijitArrowButtonContainer input, .dijitComboBox .dijitValidationContainer input {
+  width: 1.5em;
+  transition: color 0.3s;
+}
+.dijitComboBox .dijitArrowButtonContainer input:hover, .dijitComboBox .dijitValidationContainer input:hover {
+  cursor: pointer;
+}
+.dijitComboBox .dijitValidationContainer {
+  visibility: hidden;
+  opacity: 0;
+  transition: opacity 0.3s;
+}
+.dijitComboBox .dijitInputField {
+  flex-grow: 1;
+}
+.dijitComboBox .dijitInputField input {
+  width: 100%;
+}
+
+.dijitHover .dijitValidationContainer, .dijitFocused .dijitValidationContainer {
+  opacity: 1;
+  visibility: visible;
+}
+
+.dijitTooltip, .dijitComboBoxMenuPopup {
+  position: absolute;
+  border: 1px solid !important;
+  border-radius: 10px;
+  padding: 0.3em 1em;
+}
+
+.dijitComboBoxMenuPopup .dijitMenuItem {
+  cursor: pointer;
+}
+.dijitComboBoxMenuPopup .quasseluser, .dijitComboBoxMenuPopup .network {
+  font-size: 80%;
+}
+.dijitComboBoxMenuPopup .quasseluser:before, .dijitComboBoxMenuPopup .network:before {
+  content: " ";
+}
+.dijitComboBoxMenuPopup .quasseluser + .network:before,
+.dijitComboBoxMenuPopup .network + .quasseluser:before {
+  content: " | ";
 }
 
 /*# sourceMappingURL=style.css.map */

@@ -10,8 +10,13 @@
  * <https://www.gnu.org/licenses/gpl-3.0.en.html>
  *****************************************************************************/
 
-/* bootstrap */
+/*
+ * Bootstrap
+ */
 $(document).ready(function() {
+    /*
+     * Generic slide animations
+     */
     $('.animate-start-hidden[data-animate-type="width"]').animate({width:"toggle"}, 0);
     $('.animate-start-hidden[data-animate-type="height"]').animate({height:"toggle"}, 0);
 

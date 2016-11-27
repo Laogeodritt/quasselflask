@@ -8,8 +8,9 @@ import sqlalchemy.orm
 from sqlalchemy import desc, asc, and_, or_
 
 from quasselflask import app
-from quasselflask.models import Backlog, Buffer, Sender, QfUser
+from quasselflask.models import QuasselUser, Network, Backlog, Buffer, Sender, QfUser
 from quasselflask.parsing.form import convert_glob_to_like, escape_like
+from quasselflask.parsing.irclog import BufferType
 from quasselflask.parsing.query import BooleanQuery
 
 
@@ -103,4 +104,40 @@ def query_all_qf_users(session) -> sqlalchemy.orm.query.Query:
     :return: SQLAlchemy results
     """
     query = session.query(QfUser).order_by(asc(QfUser.qfuserid))  # type: sqlalchemy.orm.query.Query
+    return query
+
+
+def query_quasselusers(session) -> sqlalchemy.orm.query.Query:
+    """
+    Query the database for all Quassel users.
+    :param session: Database session (SQLAlchemy)
+    :return:
+    """
+    query = session.query(QuasselUser).order_by(asc(QuasselUser.username))  # type: sqlalchemy.orm.query.Query
+    return query
+
+
+def query_networks(session) -> sqlalchemy.orm.query.Query:
+    """
+    Query the database for all Quassel networks.
+    :param session: Database session (SQLAlchemy)
+    :return:
+    """
+    query = session.query(Network).order_by(asc(Network.networkname))  # type: sqlalchemy.orm.query.Query
+    return query
+
+
+def query_buffers(session, buffertypes=None) -> sqlalchemy.orm.query.Query:
+    """
+    Query the database for all Quassel buffers of the specified type.
+    :param session: Database session (SQLAlchemy)
+    :param buffertypes: Buffer type or list of buffer types to retrieve (if None, query everything)
+    :return:
+    """
+    query = session.query(Buffer)  # type: sqlalchemy.orm.query.Query
+    if isinstance(buffertypes, BufferType):
+        query = query.filter(Buffer.bufferType == buffertypes)
+    elif buffertypes:
+        query = query.filter(Buffer.buffertype.in_(buffertypes))
+    query = query.order_by(asc(Buffer.buffertype), asc(Buffer.buffername))
     return query

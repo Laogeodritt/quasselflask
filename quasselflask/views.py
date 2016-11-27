@@ -7,7 +7,8 @@ Project: QuasselFlask
 import os
 import time
 
-from flask import request, g, render_template, redirect, url_for, flash
+from flask import request, g, render_template, make_response, url_for, flash
+from flask import redirect, jsonify
 from flask_sqlalchemy import get_debug_queries
 from flask_user import login_required, roles_required
 
@@ -15,6 +16,7 @@ import quasselflask
 from quasselflask import app, db, userman
 from quasselflask.parsing.form import process_search_params
 from quasselflask.parsing.irclog import DisplayBacklog
+from quasselflask.parsing.data_convert import convert_permissions_lists
 from quasselflask.querying import *
 from quasselflask.util import random_string, safe_redirect
 
@@ -212,8 +214,25 @@ def admin_users():
 @app.route('/admin/users/<userid>', methods=['GET', 'POST'])
 @roles_required('superuser')
 def admin_manage_user(userid):
+    """
+    Returns page to manage a specified user's profile and permissions.
+
+    Includes data on all permissions (quasseluser, network, buffer/channel) that can be set. The structure is
+    identical to that returned by the `admin_list_permissions_json` endpoint.
+
+    :param userid: User to manage
+    :return:
+    """
+    # get current user to manage
     user = db.session.query(QfUser).filter(QfUser.qfuserid == userid).one()
-    return render_template('admin/manage_user.html', user=user)  # TODO
+
+    # get all possible permissions - for setting permissions
+    db_quasselusers = query_quasselusers(db.session)
+    db_networks = query_networks(db.session)
+    db_buffers = query_buffers(db.session, [BufferType.channel_buffer, BufferType.query_buffer])
+    permission_data = convert_permissions_lists(db_quasselusers, db_networks, db_buffers)
+
+    return render_template('admin/manage_user.html', user=user, permission_data=permission_data)
 
 
 @app.route('/admin/users/<userid>/update', methods=['GET', 'POST'])
@@ -291,7 +310,7 @@ def admin_list_permissions_json():
 
     .. code-block:: json
         {
-          "quasseluser": [
+          "quasselusers": [
             {
               "id": 0,
               "name": "user0"
@@ -317,7 +336,7 @@ def admin_list_permissions_json():
             {
               "id": 0,
               "networkid": 0,
-              "name": "#worldbuilding"
+              "name": "#techsupport"
             },
             {
               "id": 4,
@@ -327,7 +346,10 @@ def admin_list_permissions_json():
           ]
         }
     """
-    return 'update permissions'  # TODO
+    db_quasselusers = query_quasselusers(db.session)
+    db_networks = query_networks(db.session)
+    db_buffers = query_buffers(db.session, [BufferType.channel_buffer, BufferType.query_buffer])
+    return jsonify(convert_permissions_lists(db_quasselusers, db_networks, db_buffers))
 
 
 if os.environ.get('QF_ALLOW_TEST_PAGES'):
