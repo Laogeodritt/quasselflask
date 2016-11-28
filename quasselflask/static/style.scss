@@ -7,6 +7,8 @@
  * <https://www.gnu.org/licenses/gpl-3.0.en.html>
  *****************************************************************************/
 
+/* This is a total mess. Sorry! */
+
 $base03:    #002b36;
 $base02:    #073642;
 $base01:    #586e75;
@@ -35,16 +37,23 @@ $delete-color: $red;
 $content-border-radius: 10px;
 $small-font-size: 80%;
 $large-font-size: 120%;
-$bg-hover-transition: background-color $transition-time;
 $bg-hover-amount: 10%;
 $bg-disabled-amount: 15%;
 $border-disabled-amount: 20%;
 $bg-mix-opacity: 30%;
 
+$color-transition: color $transition-time, background-color $transition-time;
+$bg-hover-transition: background-color $transition-time;
 $fg-hover-transition: color $transition-time;
 $fadein-transition: opacity $transition-time;
 
 @import 'https://fonts.googleapis.com/css?family=PT+Sans|PT+Serif';
+
+.dijitReset {
+  padding: 0;
+  margin: 0;
+  border: 0;
+}
 
 @mixin rebase($rebase03,$rebase02,$rebase01,$rebase00,$rebase0,$rebase1,$rebase2,$rebase3)
 {
@@ -81,6 +90,19 @@ $fadein-transition: opacity $transition-time;
     }
   }
 
+  table.userlist .email form.linkform {
+    input[type="submit"] {
+      &.confirmed:hover, &.confirmed:active {
+        background-color: $enable-color;
+        color: $rebase02;
+      }
+      &.unconfirmed:hover, &.unconfirmed:active {
+        background-color: $disable-color;
+        color: $rebase02;
+      }
+    }
+  }
+
   code { background-color: $rebase02; }
 
   footer { color: $rebase01; border-color: $rebase0; }
@@ -111,10 +133,8 @@ $fadein-transition: opacity $transition-time;
     border: 1px solid $rebase0;
   }
 
-  .dijitComboBoxMenuPopup {
-    .network, .quasseluser {
-      color: $rebase01;
-    }
+  .label-extra {
+    color: $rebase01;
   }
 }
 
@@ -135,7 +155,7 @@ $fadein-transition: opacity $transition-time;
   background-color: $bgcolor;
   border: solid $bgcolor 1px;
   border-radius: $content-border-radius;
-  transition: $bg-hover-transition;
+  transition: $color-transition;
   vertical-align: middle;
 
   color: $base3;
@@ -161,7 +181,7 @@ $fadein-transition: opacity $transition-time;
   background-color: $bgcolor;
   border: solid $bgcolor 1px;
   color: $base3;
-  transition: $bg-hover-transition;
+  transition: $color-transition;
   vertical-align: middle;
 
   &:hover, &:active {
@@ -246,7 +266,7 @@ aside, article { @extend section; }
 }
 
 .links-bar a:hover, .links-bar a:active {
-  background-color: lighten($violet, $bg-hover-amount);
+  background-color: lighten($blue, $bg-hover-amount);
 }
 
 .animate-start-hidden {
@@ -290,33 +310,12 @@ form {
     }
   }
 
-  input, button, .dijitTextBox {
-    border: 1px solid;
-    border-radius: $content-border-radius;
-    margin: 0.6em 0.4em 0;
-    padding: 0.3em 0.6em;
-    vertical-align: middle;
-  }
-
-  label, input[type="checkbox"], input[type="radio"] {
-    margin: 0.6em 0.2em 0;
-    padding: 0;
-  }
-
   input[type="text"], input[type="password"], input[type="number"], input[type="textarea"], .dijitTextBox {
     flex-grow: 1;
-    text-align: center;
-  }
-
-  input[type="text"], input[type="number"] { text-align: center; }
-
-  > div.has-error input {
-    border-color: $red;
-    background-color: lighten($red, 30%)
   }
 
   .help-block {
-    margin: 0.2em 0.4em 0;
+    margin: 0 0.4em 0.2em;
     color: $red;
     font-size: $small-font-size;
   }
@@ -325,15 +324,40 @@ form {
     text-align: left;
   }
 
-  button, input[type="submit"] {
-    @include button_color($blue);
-  }
-
-  button[type="reset"], input[type="reset"] {
-    @include button_color($violet);
-  }
-
   #search-maxlines { max-width: 4em; }
+}
+
+
+input, button, .dijitTextBox {
+  border: 1px solid;
+  border-radius: $content-border-radius;
+  margin: 0 0.4em 0.6em;
+  padding: 0.3em 0.6em;
+  vertical-align: middle;
+}
+
+label, input[type="checkbox"], input[type="radio"] {
+  margin: 0 0.2em 0.6em;
+  padding: 0;
+}
+
+input[type="text"], input[type="password"], input[type="number"], input[type="textarea"], .dijitTextBox {
+  text-align: center;
+}
+
+input[type="text"], input[type="number"] { text-align: center; }
+
+> div.has-error input {
+  border-color: $red;
+  background-color: lighten($red, 30%)
+}
+
+button, input[type="submit"] {
+  @include button_color($blue);
+}
+
+button[type="reset"], input[type="reset"] {
+  @include button_color($violet);
 }
 
 /* forms for single-button POST request or single-button for Javascript-based forms */
@@ -536,7 +560,7 @@ table.userlist {
   }
 
   tr.superuser .username {
-    color: $red;
+    color: $superuser-color;
 
     &:after {
       display: inline-block;
@@ -619,17 +643,13 @@ table.userlist {
   @include button_color($enable-color);
   &:before { content: "✓"; }
 }
+
 #btn-permission-deny, #user-permission-display [data-permission-access="deny"] {
   @include button_color($disable-color);
   &:before { content: "✗"; }
 }
 
-/* Dojo/Dijit stuff */
-.dijitReset {
-  padding: 0;
-  margin: 0;
-  border: 0;
-}
+/* Dojo/Dijit stuff (also mixed into some blocks above) */
 
 .dijitComboBox {
   display: flex;
@@ -647,7 +667,7 @@ table.userlist {
 
     input {
       width: 1.5em;
-      transition: $fg-hover-transition;
+      transition: $color-transition;
       &:hover { cursor: pointer; }
     }
   }
@@ -681,12 +701,10 @@ table.userlist {
   @extend .dijitTooltip;
 
   .dijitMenuItem { cursor: pointer; }
-  .quasseluser, .network {
-    font-size: $small-font-size;
-    &:before { content: " "; }
-  }
-  .quasseluser + .network:before,
-  .network + .quasseluser:before {
-    content: " | ";
-  }
+}
+
+.label-extra {
+  font-size: $small-font-size;
+  margin: 0 0.8em;
+  &+ .label-extra:before { content: "|";}
 }

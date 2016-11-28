@@ -26,6 +26,7 @@ require([
     Memory = m;
     preprocessPermissionData();
     bootstrapPermissionSelect();
+    bootstrapPermissionForm();
 });
 
 
@@ -55,12 +56,12 @@ function findPermissionById(key, id) {
  */
 function preprocessPermissionData() {
     PERMISSION_DATA.networks.forEach(function(network) {
-        network.label = network.name + '<span class="quasseluser">' +
+        network.label = network.name + '<span class="label-extra quasseluser">' +
                         findPermissionById('quasselusers', network.quasseluserid).name + '</span>';
     });
     PERMISSION_DATA.buffers.forEach(function(buffer) {
         buffer.quasseluserid = findPermissionById('networks', buffer.networkid).quasseluserid;
-        buffer.label = buffer.name + '<span class="network">' +
+        buffer.label = buffer.name + '<span class="label-extra network">' +
                 findPermissionById('networks', buffer.networkid).name + '</span><span class="quasseluser">' +
                 findPermissionById('quasselusers', buffer.quasseluserid).name + '</span>';
     });
@@ -140,6 +141,16 @@ function bootstrapPermissionSelect() {
     fsBuffer.startup();
     fsNetwork.startup();
     fsQuasseluser.startup();
+
+    $('[widgetid="combobox-quasseluser"] .dijitValidationIcon').on('click', function() {
+        fsQuasseluser.set("value", null);
+    });
+    $('[widgetid="combobox-network"] .dijitValidationIcon').on('click', function() {
+        fsNetwork.set("value", null);
+    });
+    $('[widgetid="combobox-buffer"] .dijitValidationIcon').on('click', function() {
+        fsBuffer.set("value", null);
+    });
 }
 
 
@@ -220,4 +231,8 @@ function onChangeQuasselUser(quasseluser) {
     if(bufferbox.item && quasseluser && bufferbox.item.quasseluserid !== quasseluser.id) {
         bufferbox.set("value", null);
     }
+}
+
+function bootstrapPermissionForm() {
+
 }
