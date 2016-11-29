@@ -145,7 +145,7 @@ class QfPermission(db.Model):
         db.CheckConstraint("""
         (type = 'user' AND userid IS NOT NULL AND networkid IS NULL AND bufferid IS NULL) OR
         (type = 'network' AND userid IS NULL and networkid IS NOT NULL and bufferid IS NULL) OR
-        (type = 'buffer' AND userid IS NULL AND networkid IS NOT NULL and bufferid IS NULL)
+        (type = 'buffer' AND userid IS NULL AND networkid IS NULL and bufferid IS NOT NULL)
         """, name='typeCheck'),
     )
     qfpermid = db.Column(db.Integer, primary_key=True)
@@ -168,7 +168,7 @@ class QfPermission(db.Model):
     bufferid = db.Column(db.Integer, db.ForeignKey('buffer.bufferid', ondelete='CASCADE'), nullable=True)
     buffer = db.relationship(Buffer)
 
-    def __init__(self, access: PermissionAccess, type_: PermissionType, id_: int=None):
+    def __init__(self, access: PermissionAccess, type_: PermissionType, id_: int):
         """
         Create a new permission. Add this to the ``QfUser.permissions`` list for the user.
         :param access:
@@ -183,9 +183,22 @@ class QfPermission(db.Model):
             self.networkid = id_
         elif self.type == PermissionType.buffer:
             self.bufferid = id_
-        elif self.type == PermissionType.all:
-            if id_ is not None:
-                raise TypeError("id must not be passed for type=all")
+        else:
+            raise ValueError("Invalid `type` passed: " + repr(type_))
+
+    def get_id(self) -> int:
+        """
+        Gets the ID corresponding to the permission's `type`.
+        :return:
+        """
+        if self.type == PermissionType.user:
+            return self.userid
+        elif self.type == PermissionType.network:
+            return self.networkid
+        elif self.type == PermissionType.buffer:
+            return self.bufferid
+        else:
+            raise ValueError("Invalid `type`: " + repr(self.type))
 
     def __repr__(self):
         if self.type == PermissionType.user:

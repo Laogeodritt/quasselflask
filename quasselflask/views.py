@@ -7,7 +7,7 @@ Project: QuasselFlask
 import os
 import time
 
-from flask import request, g, render_template, make_response, url_for, flash
+from flask import request, g, render_template, url_for, flash
 from flask import redirect, jsonify
 from flask_sqlalchemy import get_debug_queries
 from flask_user import login_required, roles_required
@@ -16,7 +16,7 @@ import quasselflask
 from quasselflask import app, db, userman
 from quasselflask.parsing.form import process_search_params
 from quasselflask.parsing.irclog import DisplayBacklog
-from quasselflask.parsing.data_convert import convert_permissions_lists
+from quasselflask.parsing.data_convert import convert_permissions_lists, convert_user_permissions
 from quasselflask.querying import *
 from quasselflask.util import random_string, safe_redirect
 
@@ -111,7 +111,6 @@ def search():
     return render_template('results.html', records=[DisplayBacklog(result) for result in results], **render_args)
 
 # TODO: look at flask_users/views.py login() endpoint - security issue with 'next' GET parameter?
-# TODO: create user permissions page
 # TODO: user permissions "copy from" functionality
 # TODO: remember me token - don't use user id
 # TODO: send email to admin on registration
@@ -220,6 +219,23 @@ def admin_manage_user(userid):
     Includes data on all permissions (quasseluser, network, buffer/channel) that can be set. The structure is
     identical to that returned by the `admin_list_permissions_json` endpoint.
 
+    A Javascript variable USER_PERMISSIONS is included on the returned page, to be processed by Javascript, containing
+    the following structure:
+
+    .. code-block:: json
+        {
+            "permissions": [
+                {
+                    "qfpermid": 343,
+                    "access": "allow|deny",
+                    "type": "user|network|buffer",
+                    "id": 7,
+                },
+                { ... }
+            ],
+            "default": "allow|deny"
+        }
+
     :param userid: User to manage
     :return:
     """
@@ -231,8 +247,12 @@ def admin_manage_user(userid):
     db_networks = query_networks(db.session)
     db_buffers = query_buffers(db.session, [BufferType.channel_buffer, BufferType.query_buffer])
     permission_data = convert_permissions_lists(db_quasselusers, db_networks, db_buffers)
+    user_permissions = convert_user_permissions(user)
 
-    return render_template('admin/manage_user.html', user=user, permission_data=permission_data)
+    return render_template('admin/manage_user.html',
+                           user=user,
+                           permission_data=permission_data,
+                           user_permissions=user_permissions)
 
 
 @app.route('/admin/users/<userid>/update', methods=['GET', 'POST'])
@@ -268,31 +288,31 @@ def admin_update_user(userid):
 @roles_required('superuser')
 def admin_permissions(userid):
     """
-    On GET request, return a user's currently set permissions. Structure similar to the below. The client should use
-    the `admin_list_permissions_json` endpoint to retrieve display data.
-
-    .. code-block:: json
-        {
-          "default": "allow|deny",
-          "quasseluser_allow": [1, 2, 3],
-          "quasseluser_deny": [4, 5, 6],
-          "network_allow": [1, 2, 3],
-          "network_deny": [4, 5, 6],
-          "buffer_allow": [1, 2, 3],
-          "buffer_deny": [4, 5, 6],
-        }
-
     On POST request, update a user's permissions. Redirects to the user management page.
 
     POST parameters:
 
-    * `default`: 'allow' or 'deny'. Required.
-    * `quasseluser_allow`: ID of allowed Quassel user. Optional. Multiple permitted.
-    * `quasseluser_deny`: ID of denied Quassel user. Optional. Multiple permitted.
-    * `network_allow`: ID of allowed network. Optional. Multiple permitted.
-    * `network_deny`: ID of denied network. Optional. Multiple permitted.
-    * `buffer_allow`: ID of allowed buffer. Optional. Multiple permitted.
-    * `buffer_deny`: ID of denied buffer. Optional. Multiple permitted.
+    * `permissions`: data in the following structure:
+
+        .. code-block:: json
+            {
+                "permissions": [
+                    {
+                        "action": "add|remove",
+                        "access": "allow|deny",
+                        "type": "user|network|buffer",
+                        "id": 0,
+                        "qfpermid": 0
+                    },
+                    { ... }
+                ],
+                "default": "allow|deny"
+            }
+
+        ``id`` represents the quasseluser, network or buffer ID. ``qfpermid`` is the ID of an existing record and
+        only applies if "action" is "remove" (this is used for efficiency; if the permission ID does not correspond to
+        the rest of the information in the object, an error is returned).
+
 
     :param userid: The user ID to modify.
     :return:

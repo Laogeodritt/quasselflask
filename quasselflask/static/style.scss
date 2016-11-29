@@ -131,6 +131,7 @@ $fadein-transition: opacity $transition-time;
 
   #user-permission-display {
     border: 1px solid $rebase0;
+    .label-extra { color: $rebase02; }
   }
 
   .label-extra {
@@ -639,13 +640,15 @@ table.userlist {
   }
 }
 
-#btn-permission-allow, #user-permission-display [data-permission-access="allow"] {
+#btn-permission-allow, #user-permission-display .permission-access-allow {
   @include button_color($enable-color);
+  transition: $color-transition;
   &:before { content: "✓"; }
 }
 
-#btn-permission-deny, #user-permission-display [data-permission-access="deny"] {
+#btn-permission-deny, #user-permission-display .permission-access-deny {
   @include button_color($disable-color);
+  transition: $color-transition;
   &:before { content: "✗"; }
 }
 
@@ -705,6 +708,6 @@ table.userlist {
 
 .label-extra {
   font-size: $small-font-size;
-  margin: 0 0.8em;
-  &+ .label-extra:before { content: "|";}
+  padding: 0 0.5em;
+  &+ .label-extra:before { content: "|"; position: relative; left: -0.5em; }
 }

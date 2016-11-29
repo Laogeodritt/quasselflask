@@ -81,6 +81,9 @@ html table.userlist tr, .light table.userlist tr {
 html #user-permission-display, .light #user-permission-display {
   border: 1px solid #657b83;
 }
+html #user-permission-display .label-extra, .light #user-permission-display .label-extra {
+  color: #eee8d5;
+}
 html .label-extra, .light .label-extra {
   color: #93a1a1;
 }
@@ -147,6 +150,9 @@ html .label-extra, .light .label-extra {
 }
 .dark #user-permission-display {
   border: 1px solid #839496;
+}
+.dark #user-permission-display .label-extra {
+  color: #002b36;
 }
 .dark .label-extra {
   color: #586e75;
@@ -776,39 +782,41 @@ table.userlist .actions .action-edit[disabled], table.userlist .actions .action-
   margin-right: 0.4em;
 }
 
-#btn-permission-allow, #user-permission-display [data-permission-access="allow"] {
+#btn-permission-allow, #user-permission-display .permission-access-allow {
   background-color: #2aa198;
   border: solid #2aa198 1px;
   color: #fdf6e3;
   transition: color 0.3s, background-color 0.3s;
   vertical-align: middle;
+  transition: color 0.3s, background-color 0.3s;
 }
-#btn-permission-allow:hover, #btn-permission-allow:active, #user-permission-display [data-permission-access="allow"]:hover, #user-permission-display [data-permission-access="allow"]:active {
+#btn-permission-allow:hover, #btn-permission-allow:active, #user-permission-display .permission-access-allow:hover, #user-permission-display .permission-access-allow:active {
   background-color: #35c9be;
 }
-#btn-permission-allow[disabled], #btn-permission-allow[disabled]:hover, #btn-permission-allow[disabled]:active, #user-permission-display [data-permission-access="allow"][disabled], #user-permission-display [data-permission-access="allow"][disabled]:hover, #user-permission-display [data-permission-access="allow"][disabled]:active {
+#btn-permission-allow[disabled], #btn-permission-allow[disabled]:hover, #btn-permission-allow[disabled]:active, #user-permission-display .permission-access-allow[disabled], #user-permission-display .permission-access-allow[disabled]:hover, #user-permission-display .permission-access-allow[disabled]:active {
   opacity: 0.5;
   background-color: #2aa198;
 }
-#btn-permission-allow:before, #user-permission-display [data-permission-access="allow"]:before {
+#btn-permission-allow:before, #user-permission-display .permission-access-allow:before {
   content: "✓";
 }
 
-#btn-permission-deny, #user-permission-display [data-permission-access="deny"] {
+#btn-permission-deny, #user-permission-display .permission-access-deny {
   background-color: #cb4b16;
   border: solid #cb4b16 1px;
   color: #fdf6e3;
   transition: color 0.3s, background-color 0.3s;
   vertical-align: middle;
+  transition: color 0.3s, background-color 0.3s;
 }
-#btn-permission-deny:hover, #btn-permission-deny:active, #user-permission-display [data-permission-access="deny"]:hover, #user-permission-display [data-permission-access="deny"]:active {
+#btn-permission-deny:hover, #btn-permission-deny:active, #user-permission-display .permission-access-deny:hover, #user-permission-display .permission-access-deny:active {
   background-color: #e8632c;
 }
-#btn-permission-deny[disabled], #btn-permission-deny[disabled]:hover, #btn-permission-deny[disabled]:active, #user-permission-display [data-permission-access="deny"][disabled], #user-permission-display [data-permission-access="deny"][disabled]:hover, #user-permission-display [data-permission-access="deny"][disabled]:active {
+#btn-permission-deny[disabled], #btn-permission-deny[disabled]:hover, #btn-permission-deny[disabled]:active, #user-permission-display .permission-access-deny[disabled], #user-permission-display .permission-access-deny[disabled]:hover, #user-permission-display .permission-access-deny[disabled]:active {
   opacity: 0.5;
   background-color: #cb4b16;
 }
-#btn-permission-deny:before, #user-permission-display [data-permission-access="deny"]:before {
+#btn-permission-deny:before, #user-permission-display .permission-access-deny:before {
   content: "✗";
 }
 
@@ -863,10 +871,12 @@ table.userlist .actions .action-edit[disabled], table.userlist .actions .action-
 
 .label-extra {
   font-size: 80%;
-  margin: 0 0.8em;
+  padding: 0 0.5em;
 }
 .label-extra + .label-extra:before {
   content: "|";
+  position: relative;
+  left: -0.5em;
 }
 
 /*# sourceMappingURL=style.css.map */

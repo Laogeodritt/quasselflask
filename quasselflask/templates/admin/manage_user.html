@@ -4,6 +4,7 @@
     <script src="{{ url_for('static', filename='qf_manage_user.js') }}"></script>
     <script>
         PERMISSION_DATA = {{ permission_data|tojson }};
+        USER_PERMISSIONS = {{ user_permissions|tojson }};
     </script>
 {% endblock %}
 
@@ -49,8 +50,6 @@
         </div>
 
         <h3>Permissions</h3>
-        <form class="jsform" id="user-permissions-form" method="post" action="{{  url_for('admin_permissions', userid=user.get_id()) }}">
-        </form>
         <form id="user-permission-entry-form">
             <div>
                 <input type="text" name="quasseluser" value="" placeholder="quasseluser" id="combobox-quasseluser">
@@ -64,8 +63,13 @@
                 <!-- TODO: Javascript -->
             </div>
         </form>
+        <form id="user-permissions-form" method="post" action="{{  url_for('admin_permissions', userid=user.get_id()) }}">
+            <input type="hidden" id="user-permissions-json">
+            <button type="submit" id="user-permissions-submit">Save All</button>
+        </form>
 
         <!-- TODO: Javascript load data here -->
-        <div id="user-permission-display"><button type="button" data-permission-access="allow" class="btn-perm">asdf</button></div>
+        <!-- TODO: Disabled if superuser -->
+        <div id="user-permission-display"><p>Loading...</p></div>
     </main>
 {% endblock %}
