@@ -9,7 +9,7 @@ from datetime import datetime, timedelta
 
 from wtforms import ValidationError
 
-from quasselflask import app
+import quasselflask
 from quasselflask.parsing.query import BooleanQuery
 
 
@@ -36,9 +36,9 @@ def process_search_params(in_args) -> dict:
     # Unique arguments
     out_args['query_wildcard'] = bool(in_args.get('query_wildcard', None, int))
 
-    out_args['limit'] = in_args.get('limit', app.config['RESULTS_NUM_DEFAULT'], int)
-    if out_args['limit'] > app.config['RESULTS_NUM_MAX']:
-        out_args['limit'] = app.config['RESULTS_NUM_MAX']
+    out_args['limit'] = in_args.get('limit', quasselflask.app.config['RESULTS_NUM_DEFAULT'], int)
+    if out_args['limit'] > quasselflask.app.config['RESULTS_NUM_MAX']:
+        out_args['limit'] = quasselflask.app.config['RESULTS_NUM_MAX']
 
     out_args['order'] = in_args.get('order')
     if out_args['order'] not in ('newest', 'oldest'):
@@ -64,7 +64,7 @@ def process_search_params(in_args) -> dict:
     out_args['usermasks'] = extract_glob_list(in_args.get('usermask', ''))
 
     # fulltext string
-    out_args['query'] = BooleanQuery(in_args.get('query', ''), app.logger)
+    out_args['query'] = BooleanQuery(in_args.get('query', ''), quasselflask.app.logger)
     out_args['query'].tokenize()
     out_args['query'].parse()
 

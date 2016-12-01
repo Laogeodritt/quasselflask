@@ -18,19 +18,39 @@ class DummyObject:
     Dummy object that provides a helpful error message on attempting to access or call attributes/methods.
     """
     error_format = 'Cannot access {}.{}: quasselflask.init_app() has not been called.'
+    post_init_error_format = 'Cannot access {}.{}: the calling module is imported during init_app and appears to ' \
+                             'have been misconfigured. Modules imported during init_app must be careful to ' \
+                             '`import quasselflask` and not `from quasselflask import app` (for the variables ' \
+                             'available directly at the module level; sub-modules are OK), and must not assign ' \
+                             '`quasselflask.app` and similar to other variables at the module level, to avoid ' \
+                             'getting this dummy object before init_app has run.'
+
+    _dummies = []
+
+    @classmethod
+    def set_all_init(cls):
+        for dummy in cls._dummies:
+            dummy.set_init()
 
     def __init__(self, name='component'):
         self.name = name
+        DummyObject._dummies.append(self)
 
     def __getattr__(self, item):
-        error_msg = self.error_format.format(self.name, item)
+        if not self._is_init:
+            error_msg = self.error_format.format(self.name, item)
+        else:
+            error_msg = self.post_init_error_format.format(self.name, item)
         raise RuntimeError(error_msg)
 
     def __setattr__(self, key, value):
-        if key == 'name':
+        if key == 'name' or key == '_is_init':
             super().__setattr__(key, value)
         else:
             self.__getattr__(key)
+
+    def set_init(self):
+        self._is_init = True
 
 
 def init_app(instance_path=None):
@@ -41,6 +61,11 @@ def init_app(instance_path=None):
     Does not create Quasselflask-specific tables - need to call ``init_db()``.
     :return:
     """
+
+    # flag the dummy as during/after init_app call - just to be nice to devs who misconfigure sensitive modules!
+    # Need to do this before the import calls to allow them to be flagged if issues exist at the module level
+    DummyObject.set_all_init()
+
     import quasselflask
     from quasselflask.base_config import DefaultConfig, InternalConfig
     from quasselflask.parsing.irclog import DisplayBacklog

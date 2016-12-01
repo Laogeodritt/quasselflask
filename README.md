@@ -221,3 +221,4 @@ Query parameters (all optional):
 
 # Things to document
 * QF_ALLOW_TEST_PAGES
+* Development standard - things imported in init_app should not `from quasselflask import [...]`
