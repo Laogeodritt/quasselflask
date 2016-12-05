@@ -11,16 +11,13 @@
  * <https://www.gnu.org/licenses/gpl-3.0.en.html>
  *****************************************************************************/
 
-/*
- * Bootstrap
- */
+/***********************
+ * BOOTSTRAP
+ ***********************/
 var FilteringSelect;
 var Memory;
 var fsBuffer, fsNetwork, fsQuasseluser;
-var current_permissions = {
-    "permissions": [],
-    "default": ""
-};
+var permissionData, userPermissions;
 
 require([
         'dijit/form/FilteringSelect',
@@ -28,77 +25,301 @@ require([
 ], function(fs, m) {
     FilteringSelect = fs;
     Memory = m;
-    preprocessPermissionData();
+    permissionData = new PermissionData(PERMISSION_DATA);
     bootstrapPermissionSelect();
     bootstrapPermissionForm();
 });
 
 
-/*
- * Permission Data
- */
-
+/***********************
+ * CLASSES
+ ***********************/
 /**
- * Find a permission datum by its id.
- * @param perm_type "quasselusers", "networks" or "channels"
- * @param id Numeric ID to search for.
- * @returns {object} Result, or undefined if no results.
- */
-function findPermissionDataById(perm_type, id) {
-    return $.grep(PERMISSION_DATA[perm_type], function(o) { return o.id === id; })[0];
-}
-
-/**
- * Finds a current user permission datum by its type and ID.
- * @param perm_type "quasselusers", "networks" or "channels"
- * @param id Numeric ID to search for.
- * @returns {int} The index (in current_permissions.permissions) of the found object, or -1 if none found.
- */
-function indexOfUserPermissionById(perm_type, id) {
-    var indices = $.map(current_permissions.permissions, function(o, index) {
-        if (o.type == perm_type && o.id == id) return index;
-    });
-
-    if (indices.length > 0) return indices[0];
-    else return -1;
-}
-
-
-/**
- * Preprocess permission data.
+ * Preprocessor and interface for permission UI data.
  *
- * This denormalises foreign key references in PERMISSION_DATA, e.g.
+ * The constructor denormalises foreign key references in PERMISSION_DATA, e.g.
  * by including the quasseluserid in the buffers data, because the dijit.form.FilteringSelect
  * widget does not have simple filtering functionality on normalised data.
  *
- * This function also generates HTML labels for each item.
+ * The constructor also generates HTML labels for each item.
+ *
+ * @param data The data structure as provided by the server. See documentation for views.admin_manage_user on the
+ * server side.
+ * @constructor
  */
-function preprocessPermissionData() {
-    PERMISSION_DATA.quasselusers.forEach(function(quasseluser) {
+function PermissionData(data) {
+    // properties
+    this._data = data;
+    this._type_subst = {
+        'buffer': 'buffers',
+        'channel': 'buffers',
+        'channels': 'buffers',
+        'network': 'networks',
+        'user': 'quasselusers',
+        'quasseluser': 'quasselusers'
+    };
+
+    // methods
+
+    /**
+     * Given a type string, return the property supported by this._data.
+     * @param type_ An input type string.
+     * @returns {string}
+     * @private
+     */
+    this._getCanonicalType = function(type_) {
+        return type_ in this._type_subst ? this._type_subst[type_] : type_;
+    };
+
+    /**
+     *
+     * @param type_
+     * @returns {{id: number, name: string, label: string, quasseluserid: number, networkid: number}|null}
+     */
+    this.getType = function(type_) {
+        var typeProp = this._getCanonicalType(type_);
+        return (typeProp in this._data) ? this._data[typeProp] : null;
+    };
+
+    /**
+     * Find a permission datum by its id. Returns one result, or null if no results. Result properties 'quasseluserid'
+     * and 'networkid' do not exist for quasseluser perm_type; 'networkid' does not exist for network perm_type.
+     * @param perm_type "quasselusers", "networks" or "channels"
+     * @param id_ Numeric ID to search for.
+     * @returns {{id: number, name: string, label: string, quasseluserid: number, networkid: number}|null}
+     */
+    this.findById = function(perm_type, id_) {
+        var typeProp = this._getCanonicalType(perm_type);
+        if(typeProp in this._data && typeof id_ !== 'undefined' && id_ !== null) {
+            var results = $.grep(this._data[typeProp], function(o, index) { return o.id === id_; });
+            return (results.length > 0) ? results[0] : null;
+        }
+        else {
+            console.error('permissionData.findById: invalid arguments: ' + perm_type + ", " + id_);
+            return null;
+        }
+    };
+
+    /**
+     * Same as findById, but returns the index of the permission data within its type list.
+     * @param perm_type
+     * @param id_
+     * @returns {number|null}
+     */
+    this.findIndexById = function(perm_type, id_) {
+        var typeProp = this._getCanonicalType(perm_type);
+        if(typeProp in this._data && typeof id_ !== 'undefined' && id_ !== null) {
+            var results = $.map(this._data[typeProp], function(o, index) { if (o.id === id_) return index; });
+            return (results.length > 0) ? results[0] : null;
+        }
+        else {
+            console.error('permissionData.findIndexById: invalid arguments: ' + perm_type + ", " + id_);
+            return null;
+        }
+    };
+
+    // constructor
+    if (!('quasselusers' in this._data && 'networks' in this._data && 'buffers' in this._data)) {
+        throw new Error('PermissionData(): missing property in data');
+    }
+
+    // preprocess - preparation of server-provided data for use here
+    this._data.quasselusers.forEach(function(quasseluser) {
         quasseluser.label = quasseluser.name;
-    });
-    PERMISSION_DATA.networks.forEach(function(network) {
+    }, this);
+    this._data.networks.forEach(function(network) {
         network.label = network.name + '<span class="label-extra quasseluser">' +
-                        findPermissionDataById('quasselusers', network.quasseluserid).name + '</span>';
-    });
-    PERMISSION_DATA.buffers.forEach(function(buffer) {
-        buffer.quasseluserid = findPermissionDataById('networks', buffer.networkid).quasseluserid;
+                this.findById('quasselusers', network.quasseluserid).name + '</span>';
+    }, this);
+    this._data.buffers.forEach(function(buffer) {
+        buffer.quasseluserid = this.findById('networks', buffer.networkid).quasseluserid;
         buffer.label = buffer.name + '<span class="label-extra network">' +
-                findPermissionDataById('networks', buffer.networkid).name + '</span><span class="label-extra quasseluser">' +
-                findPermissionDataById('quasselusers', buffer.quasseluserid).name + '</span>';
-    });
+                this.findById('networks', buffer.networkid).name + '</span><span class="label-extra quasseluser">' +
+                this.findById('quasselusers', buffer.quasseluserid).name + '</span>';
+    }, this);
 }
 
+/**
+ * Backend representation of user permissions. Does not handle UI functions.
+ *
+ * @param data The data object provided by the server. Stored by reference, not copied.
+ * @constructor
+ */
+function UserPermissions(data) {
+    var this_ = this;
+    if (!('default' in data && 'permissions' in data)) {
+        throw new Error('UserPermissions: invalid argument object, missing properties');
+    }
+
+    // properties
+    this._default = data.default;
+    this._perms = data.permissions;
+
+    // methods
+    /**
+     * Default access.
+     * @returns {string} 'allow' or 'deny'
+     */
+    this.getDefault = function() { return this._default; };
+
+    /**
+     * Get a permission by index.
+     * @param index Index
+     * @returns {*}
+     */
+    this.get = function(index) { return this._perms[index]; };
+
+    Object.defineProperty(this, "length", {
+        get: function() { return this_._perms.length; }
+    });
+
+    Object.defineProperty(this, "perms", {
+        get: function() { return this_._perms; }
+    });
+
+    Object.defineProperty(this, "default", {
+        get: function() { return this_._default; }
+    });
+
+    /**
+     * Iterate and call a method on all permission records (except default).
+     * This is a wrapper for Javascript's Array.forEach().
+     * @param callback Function, same as Array.forEach
+     * @param this_reference The `this` keyword will be set to this when calling the callback.
+     */
+    this.forEach = function(callback, this_reference) { this._perms.forEach(callback, this_reference); };
+
+    /**
+     * Finds an active (action property is not "removed") user permission record by type and ID. If multiple are found,
+     * a warning is logged and the first result is returned.
+     * @param type_ "quasselusers", "networks" or "channels"
+     * @param id_ Numeric ID to search for.
+     * @returns {number} Index (in current_permissions.permissions) of the found object, or -1 if none found.
+     */
+    this.find = function(type_, id_) {
+        var indices = $.map(this._perms, function(o, index) {
+            if (o.type == type_ && o.id == id_ && o.action !== 'remove') return index;
+        });
+        if(indices.length > 1) console.warn('find(' + type_ + ', ' + id_ + '): multiple results');
+        return (indices.length > 0) ? indices[0] : -1;
+    };
+
+    /**
+     * Finds all current user permission records by type and ID. This includes action:"removed" records.
+     * @param type_ "quasselusers", "networks" or "channels"
+     * @param id_ Numeric ID to search for.
+     * @returns {number[]} List of indices of the found object. Can be empty.
+     */
+    this.findAll = function(type_, id_) {
+        return $.map(this._perms, function(o, index) {
+            if (o.type == type_ && o.id == id_) return index;
+        });
+    };
+
+    /**
+     * Convenience method. Toggles the default access value from allow to deny or vice-versa.
+     * (If the current value is invalid, sets 'deny').
+     */
+    this.toggleDefault = function() {
+        if(this.getDefault() == 'deny') this.setDefault('allow');
+        else this.setDefault('deny');
+    };
+
+    this.setDefault = function(access) {
+        if(access !== 'allow' && access !== 'deny') {
+            throw new Error('Invalid value for "access": ' + access);
+        }
+        this._default = access;
+    };
+
+    this.add = function(addPerm) {
+        userPermissions.remove(addPerm.type, addPerm.id);
+        this._perms.push(addPerm);
+        this._perms.sort(UserPermissions.compare);
+    };
+
+    /**
+     * Remove permission from the current set
+     * @param type_ One of "buffer", "network", or "quasseluser".
+     * @param id_ ID of the buffer/network/user.
+     */
+    this.remove = function(type_, id_) {
+        var indices = this.findAll(type_, id_);
+        indices.forEach(function(index) {
+            if(this._perms[index].action == 'add') {
+                this._perms[index] = null; // can't modify in-place, will break found indices
+            }
+            else {
+                this._perms[index].action = 'remove';
+            }
+        }, this);
+        this._removeNullPermissions();
+    };
+
+    this._removeNullPermissions = function() {
+        var nullIndex = this._perms.indexOf(null);
+        while(nullIndex !== -1) {
+            this._perms.splice(nullIndex, 1);
+            nullIndex = this._perms.indexOf(null);
+        }
+    };
+
+    // constructor
+
+    this._perms.forEach(function(perm) {
+        perm.action = "";
+    });
+    this._perms.sort(UserPermissions.compare);
+
+}
+
+/**
+ * Compare two permission objects. Sorting is by type  ("buffer", "network", "quasseluser"), then by name (case-
+ * insensitive, excludes special characters e.g. #).
+ *
+ * Note that this method may involve a lookup of permission data to obtain the names of each argument.
+ *
+ * @param a
+ * @param b
+ * @returns {number} -1 if a comes before b; +1 if a comes after b; 0 if equal sort.
+ */
+UserPermissions.compare = function(a, b) {
+    var typeSort = ['buffer', 'network', 'quasseluser'];
+    if (a.type == b.type) {
+        var aData = permissionData.findById(a.type, a.id);
+        var bData = permissionData.findById(b.type, b.id);
+
+        var cmpNameA = aData.name.replace(/\W/g, '').toUpperCase();
+        var cmpNameB = bData.name.replace(/\W/g, '').toUpperCase();
+        return (cmpNameA < cmpNameB) ? -1 : +1;
+    }
+    else {
+        var aTypeSort = typeSort.indexOf(a.type);
+        var bTypeSort = typeSort.indexOf(b.type);
+        if (aTypeSort == -1) {
+            console.log("Invalid type " + a.type + " for qfpermid " + a.qfpermid);
+            return +1;
+        }
+        else if (bTypeSort == -1) {
+            console.log("Invalid type " + b.type + " for qfpermid " + b.qfpermid);
+            return -1;
+        }
+        else return aTypeSort - bTypeSort;
+    }
+};
 
 /*
  * Permission selector
  */
 
+/**
+ * Bootstrap the permission selector.
+ */
 function bootstrapPermissionSelect() {
     var bufferStore = new Memory({
         identifier: 'id',
         label: 'label',
-        data: PERMISSION_DATA.buffers
+        data: permissionData.getType('buffers')
     });
     fsBuffer = new FilteringSelect({
         id: "combobox-buffer",
@@ -119,7 +340,7 @@ function bootstrapPermissionSelect() {
     var networkStore = new Memory({
         identifier: 'id',
         label: 'name',
-        data: PERMISSION_DATA.networks
+        data: permissionData.getType('networks')
     });
     fsNetwork = new FilteringSelect({
         id: "combobox-network",
@@ -140,7 +361,7 @@ function bootstrapPermissionSelect() {
     var quasseluserStore = new Memory({
         identifier: 'id',
         label: 'name',
-        data: PERMISSION_DATA.quasselusers
+        data: permissionData.getType('quasselusers')
     });
     fsQuasseluser = new FilteringSelect({
         id: "combobox-quasseluser",
@@ -255,58 +476,81 @@ function onChangeQuasselUser(quasseluser) {
     }
 }
 
-function bootstrapPermissionForm() {
-    $("#user-permissions-submit").on("click", submitPermissions);
-    $("#btn-default-allow").on("click", setAllowDefault);
-    $("#btn-default-deny").on("click", setDenyDefault);
-    current_permissions = USER_PERMISSIONS;
-    current_permissions.permissions.forEach(function(perm) {
-        perm.action = "";
-    });
-    showPermissions();
+/**
+ * Get a permission object from the selector. Note that 'access' will be returned blank.
+ * @returns {{action: string, access: string, type: (string|string|string), id: *, qfpermid: number}|null}
+ */
+function getSelectorPermission() {
+    var type, id;
+
+    // find the selector current value
+    if(fsBuffer.isValid() && fsBuffer.value !== "") {
+        type = 'buffer';
+        id = fsBuffer.value;
+    }
+    else if(fsNetwork.isValid() && fsNetwork.value !== "") {
+        type = 'network';
+        id = fsNetwork.value;
+    }
+    else if(fsQuasseluser.isValid() && fsQuasseluser.value !== "") {
+        type = 'quasseluser';
+        id = fsQuasseluser.value;
+    }
+    else {
+        console.warn("getSelectorPermission: no selection");
+        return null;
+    }
+
+    // Build the object to add
+    return {
+        'action': 'add',
+        'access': '',
+        'type': type,
+        'id': id,
+        'qfpermid': -1
+    };
 }
+
+function clearPermissionSelector() {
+    fsQuasseluser.set("value", null);
+    fsNetwork.set("value", null);
+    fsBuffer.set("value", null);
+}
+
+/***********************
+ * User Permissions form
+ ***********************/
 
 /**
- * In-place permission sort. Sorts by type ("channel", "network", "quasseluser"), then
- * by ID.
- *
- * @param perms Permissions object with property 'permissions', containing a list of permissions
- * objects.
+ * Bootstrap the main user permissions controls.
  */
-function sortPermissions(perms) {
-    var typeSort = ['buffer', 'network', 'quasseluser'];
-    perms.permissions.sort(function(a, b) {
-        if (a.type == b.type) {
-            return a.id - b.id;
-        }
-        else {
-            var aTypeSort = typeSort.indexOf(a.type);
-            var bTypeSort = typeSort.indexOf(b.type);
-            if (aTypeSort == -1) {
-                console.log("Invalid type " + a.type + " for qfpermid " + a.qfpermid);
-                return +1;
-            }
-            else if (bTypeSort == -1) {
-                console.log("Invalid type " + b.type + " for qfpermid " + b.qfpermid);
-                return -1;
-            }
-            else return aTypeSort - bTypeSort;
-        }
-    });
+function bootstrapPermissionForm() {
+    $("#user-permissions-submit").on("click", submitPermissions);
+    $("#btn-permission-allow").on("click", addAllowPermissionFromSelector);
+    $("#btn-permission-deny").on("click", addDenyPermissionFromSelector);
+    userPermissions = new UserPermissions(USER_PERMISSIONS);
+    setupPermissionButtons();
 }
 
-function showPermissions() {
+function submitPermissions() {
+    console.log("submitPermissions"); // TODO: submitPermissions
+}
+
+
+/**
+ * Create the permission buttons and display them on the page.
+ */
+function setupPermissionButtons() {
     var $target = $("#user-permission-display");
     $target.empty();
-    sortPermissions(current_permissions);
-    current_permissions.permissions.forEach(function(perm) {
+    userPermissions.forEach(function(perm) {
         if(perm.action == 'remove') return; // do nothing
-        console.log("showPermissions: " + perm.access + " " + perm.type + " " + perm.id);
+        console.log("setupPermissionButtons: " + perm.access + " " + perm.type + " " + perm.id);
         var $permButton = createPermissionButton(perm.qfpermid, perm.type, perm.id, perm.access);
         $target.append($permButton);
     });
 
-    var $defaultButton = createPermissionButton(null, 'default', null, current_permissions.default);
+    var $defaultButton = createPermissionButton(null, 'default', null, userPermissions.default);
     $target.append($defaultButton);
 }
 
@@ -317,10 +561,10 @@ function showPermissions() {
  * @param access "allow" or "deny".
  */
 function createPermissionButton(qfpermid, type, id, access) {
-    if (qfpermid === 'undefined' || qfpermid === null) {
+    if (typeof qfpermid === 'undefined' || qfpermid === null) {
         qfpermid = -1;
     }
-    if(id === 'undefined' || id === null) {
+    if(typeof id === 'undefined' || id === null) {
         id = -1;
     }
     var $button = $('<button>');
@@ -330,7 +574,7 @@ function createPermissionButton(qfpermid, type, id, access) {
     $button.addClass('permission-access-' + access);
 
     if(type !== 'default') {
-        var permData = findPermissionDataById(type + 's', id);
+        var permData = permissionData.findById(type, id);
         $button.html(permData.label);
     }
     else {
@@ -342,53 +586,133 @@ function createPermissionButton(qfpermid, type, id, access) {
     $button.addClass('permission-type-' + type);
     $button.data('permission-id', id);
     $button.addClass('permission-id-' + id);
-    if(type != 'default') $button.on('click', removePermissionFromButton);
-    else                  $button.on('click', toggleDefault);
+    if(type != 'default') $button.on('click', onButtonClickRemovePermission);
+    else                  $button.on('click', onDefaultButtonClick);
     return $button;
 }
 
-function setAllowDefault() {
-    setDefault('allow');
+/**
+ * Called when the 'default' permission button is clicked. Toggles the default access and updates the UI button.
+ */
+function onDefaultButtonClick() {
+    userPermissions.toggleDefault();
+    updateDefaultButton();
 }
 
-function setDenyDefault() {
-    setDefault('deny');
-}
-
-function toggleDefault() {
-    var access;
-    if(current_permissions.default == 'deny') current_permissions.default = 'allow';
-    else current_permissions.default = 'deny';
-    setDefault(current_permissions.default);
-}
-
-function setDefault(access) {
-    if (access !== 'allow' && access !== 'deny' && access != null && access !== 'undefined') {
-        console.error('Invalid value for "access": ' + access);
-        return;
-    }
-
-    current_permissions.default = access;
-
+function updateDefaultButton() {
     var $target = $('#user-permission-display');
+    var access = userPermissions.getDefault();
     $target.find('.permission-type-default')
             .removeClass('permission-access-allow permission-access-deny')
             .addClass('permission-access-' + access)
             .data('permission-access', access);
 }
 
-function removePermissionFromButton() {
-    var $this = $(this);
-    var index = indexOfUserPermissionById($this.data('permission-type'), $this.data('permission-id'));
-    if (index >= 0) {
-        current_permissions.permissions[index].action = 'remove';
-    }
-    $this.fadeOut(function() {
-        $this.remove();
-    });
-    // TODO: load into the permission selector
+function addAllowPermissionFromSelector() {
+    var addPerm = getSelectorPermission();
+    if(addPerm === null) return;
+    addPerm.access = 'allow';
+    addPermission(addPerm);
 }
 
-function submitPermissions() {
-    console.log("submitPermissions");
+function addDenyPermissionFromSelector() {
+    var addPerm = getSelectorPermission();
+    if(addPerm === null) return;
+    addPerm.access = 'deny';
+    addPermission(addPerm);
+}
+
+function addPermission(addPerm) {
+    userPermissions.add(addPerm);
+    addPermissionToButtons(addPerm);
+    clearPermissionSelector();
+}
+
+function addPermissionToButtons(addPerm) {
+    // add the button to the UI
+    var $target = $('#user-permission-display');
+
+    // first possibility: button for this perm exists, want to trigger a colour transition if changing ID
+    var $existingButton = $target.find('.permission-type-' + addPerm.type + '.permission-id-' + addPerm.id);
+    if($existingButton.length > 0) {
+        var newClass = 'permission-access-' + addPerm.access;
+        if($existingButton.hasClass(newClass))
+        {
+            flashClass($existingButton, 'state-flashing-on', ANIMATE_FLASH_REPEAT, ANIMATE_FLASH_DELAY);
+        }
+        else
+        {
+            $existingButton.removeClass('permission-access-allow permission-access-deny')
+                    .addClass('permission-access-' + addPerm.access)
+                    .data('permission-access', addPerm.access);
+        }
+    }
+    // second possibility: button doesn't exist for this permission
+    else {
+        // find where the new button goes
+        var $allButtons = $target.children();
+        var btnAddIndex = $allButtons.length;
+        $allButtons.each(function(index, button) {
+            var $button = $(button);
+            var buttonPerm = {
+                'type': $button.data('permission-type'),
+                'id': $button.data('permission-id'),
+                'access': $button.data('permission-access'),
+                'qfpermid': $button.data('permission-qfpermid')
+            };
+
+            if(UserPermissions.compare(addPerm, buttonPerm) < 0) {
+                btnAddIndex = index;
+                return false;
+            }
+        });
+
+        // prepare to insert and animate the new button in
+        var $button = createPermissionButton(addPerm.qfpermid, addPerm.type, addPerm.id, addPerm.access);
+
+        if($allButtons.length > btnAddIndex) {
+            $allButtons.eq(btnAddIndex).before($button);
+            addAnimation($button, 'width', 'perm-btn-' + addPerm.type + '-' + addPerm.id, true, true, 'state-flashing-on');
+            animateTarget($button);
+        }
+        else {
+            console.error("Cannot insert button at index " + btnAddIndex + ": only " + $allButtons.length + " buttons");
+        }
+    }
+}
+
+function onButtonClickRemovePermission() {
+    var $this = $(this);
+    var type_ = $this.data('permission-type');
+    var id_ = $this.data('permission-id');
+
+    userPermissions.remove(type_, id_);
+    removePermissionButton(type_, id_);
+
+    var perm = permissionData.findById(type_, id_);
+
+    if(perm !== null)
+    {
+        fsBuffer.set("value", null);
+        fsNetwork.set("value", null);
+        fsQuasseluser.set("value", null);
+
+        var targetSelector;
+        if(type_ == 'buffer') targetSelector = fsBuffer;
+        else if(type_ == 'network') targetSelector = fsNetwork;
+        else if(type_ == 'quasseluser') targetSelector = fsQuasseluser;
+        else throw new Error('Invalid type value: ' + type_);
+
+        targetSelector.set("value", perm.id);
+    }
+    else
+    {
+        console.warn("onButtonClickRemovePermission: cannot find permission data to load into selector");
+    }
+}
+
+function removePermissionButton(type, id) {
+    var $target = $('#user-permission-display').find('.permission-type-' + type + '.permission-id-' + id);
+    addAnimation($target, 'width', 'perm-btn-' + type + '-' + id, true, false);
+    animateHideTarget($target, function() { $(this).remove(); });
 }

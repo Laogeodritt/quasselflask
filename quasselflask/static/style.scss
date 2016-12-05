@@ -42,7 +42,7 @@ $bg-disabled-amount: 15%;
 $border-disabled-amount: 20%;
 $bg-mix-opacity: 30%;
 
-$color-transition: color $transition-time, background-color $transition-time;
+$color-transition: color $transition-time, background-color $transition-time, border-color $transition-time;
 $bg-hover-transition: background-color $transition-time;
 $fg-hover-transition: color $transition-time;
 $fadein-transition: opacity $transition-time;
@@ -167,7 +167,7 @@ $fadein-transition: opacity $transition-time;
     text-decoration: none;
   }
 
-  &:hover, &:active {
+  &:hover, &:active, &.state-flashing-on {
     background-color: lighten($bgcolor, $bg-hover-amount);
   }
 
@@ -185,7 +185,7 @@ $fadein-transition: opacity $transition-time;
   transition: $color-transition;
   vertical-align: middle;
 
-  &:hover, &:active {
+  &:hover, &:active, &.state-flashing-on {
     background-color: lighten($bgcolor, $bg-hover-amount);
   }
 
@@ -226,7 +226,7 @@ main, section {
   border-radius: $content-border-radius;
   margin-top: 0.8em;
   margin-bottom: 1.5em;
-  padding: 0.7em 1.5em 1.5em 1.5em;
+  padding: 1.0em 1.5em 1.5em 1.5em;
 }
 
 section#error, .dijitComboBoxError, .dijitComboBoxError div, .dijitComboBoxError input {
@@ -634,22 +634,18 @@ table.userlist {
   min-height: 6em;
   margin: 0;
   padding: 0.8em 1em;
-
-  .btn-perm {
-    &:before { margin-right: 0.4em; }
-  }
 }
 
 #btn-permission-allow, #user-permission-display .permission-access-allow {
   @include button_color($enable-color);
   transition: $color-transition;
-  &:before { content: "✓"; }
+  &:before { content: "✓"; margin-right: 0.4em; }
 }
 
 #btn-permission-deny, #user-permission-display .permission-access-deny {
   @include button_color($disable-color);
   transition: $color-transition;
-  &:before { content: "✗"; }
+  &:before { content: "✗"; margin-right: 0.4em; }
 }
 
 /* Dojo/Dijit stuff (also mixed into some blocks above) */

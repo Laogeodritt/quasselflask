@@ -39,7 +39,7 @@
             <form class="linkform" method="post" action="{{ url_for('admin_update_user', userid=user.get_id()) }}">
                 <input type="hidden" name="csrf_token" value="{{ csrf_token() }}">
                 <input type="email" name="email" value="{{ user.email }}" data-animate-event="input" data-animate-once data-animate-target="email-submit">
-                <input type="submit" value="Save" class="animate-slide animate-start-hidden" data-animate-id="email-submit" data-animate-type="width">
+                <input type="submit" value="Save" class="animate-slide animate-start-hidden" data-animate-id="email-submit" data-animate-type="width" data-animate-highlight-class="state-flashing-on">
             </form>
 
             {%- if user.confirmed_at -%}
@@ -51,25 +51,24 @@
 
         <h3>Permissions</h3>
         <form id="user-permission-entry-form">
-            <div>
-                <input type="text" name="quasseluser" value="" placeholder="quasseluser" id="combobox-quasseluser">
-                <input type="text" name="network" value="" placeholder="network" id="combobox-network">
-                <input type="text" name="buffer" value="" placeholder="channel" id="combobox-buffer">
-            </div>
             <div class="form-row-end">
                 <button type="button" id="btn-permission-allow">Allow</button>
                 <button type="button" id="btn-permission-deny">Deny</button>
                 <button type="reset" id="btn-permission-reset">Clear</button>
                 <!-- TODO: Javascript -->
             </div>
+            <div>
+                <input type="text" name="quasseluser" value="" placeholder="quasseluser" id="combobox-quasseluser">
+                <input type="text" name="network" value="" placeholder="network" id="combobox-network">
+                <input type="text" name="buffer" value="" placeholder="channel" id="combobox-buffer">
+            </div>
         </form>
+
+        <!-- TODO: Disabled if superuser -->
         <form id="user-permissions-form" method="post" action="{{  url_for('admin_permissions', userid=user.get_id()) }}">
             <input type="hidden" id="user-permissions-json">
             <button type="submit" id="user-permissions-submit">Save All</button>
         </form>
-
-        <!-- TODO: Javascript load data here -->
-        <!-- TODO: Disabled if superuser -->
         <div id="user-permission-display"><p>Loading...</p></div>
     </main>
 {% endblock %}
