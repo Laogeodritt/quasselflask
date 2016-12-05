@@ -25,9 +25,12 @@ require([
 ], function(fs, m) {
     FilteringSelect = fs;
     Memory = m;
-    permissionData = new PermissionData(PERMISSION_DATA);
-    bootstrapPermissionSelect();
-    bootstrapPermissionForm();
+    if(typeof QF_MANAGE_USER_PERMISSION_DISABLED === 'undefined' && !QF_MANAGE_USER_PERMISSION_DISABLED)
+    {
+        permissionData = new PermissionData(PERMISSION_DATA);
+        bootstrapPermissionSelect();
+        bootstrapPermissionForm();
+    }
 });
 
 

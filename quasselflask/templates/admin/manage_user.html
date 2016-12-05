@@ -50,6 +50,7 @@
         </div>
 
         <h3>Permissions</h3>
+    {% if not call_or_get(user.is_superuser) %}
         <form id="user-permission-entry-form">
             <div class="form-row-end">
                 <button type="button" id="btn-permission-allow">Allow</button>
@@ -64,11 +65,17 @@
             </div>
         </form>
 
-        <!-- TODO: Disabled if superuser -->
         <form id="user-permissions-form" method="post" action="{{  url_for('admin_permissions', userid=user.get_id()) }}">
             <input type="hidden" id="user-permissions-json">
             <button type="submit" id="user-permissions-submit">Save All</button>
         </form>
         <div id="user-permission-display"><p>Loading...</p></div>
+    {% else %}
+        <script>
+            QF_MANAGE_USER_PERMISSION_DISABLED = true;
+        </script>
+        <p>Superuser permissions cannot be set.</p>
+        <div id="user-permission-display" class="disabled"><button class="btn-perm permission-access-allow permission-type-default" type="button" disabled>(Default)</button></div>
+    {% endif %}
     </main>
 {% endblock %}

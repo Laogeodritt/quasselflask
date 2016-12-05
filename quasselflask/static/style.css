@@ -774,7 +774,6 @@ table.userlist .actions .action-edit[disabled], table.userlist .actions .action-
 
 #user-permission-display {
   border-radius: 10px;
-  min-height: 6em;
   margin: 0;
   padding: 0.8em 1em;
 }
