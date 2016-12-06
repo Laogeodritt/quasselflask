@@ -1,129 +1,21 @@
 """
-Flask endpoints for this application.
+Flask endpoints for admin area.
 
-Project: QuasselFlask
+Project: Quasselflask
 """
 
-import os
-import time
 from datetime import datetime
 
-from werkzeug.exceptions import BadRequest, NotFound
-from flask import request, g, render_template, url_for, flash
-from flask import redirect, jsonify
-from flask_sqlalchemy import get_debug_queries
-from flask_user import login_required, roles_required, current_user
+from flask import request, url_for, flash, redirect, render_template
+from flask.ext.login import current_user
+from flask.ext.user import roles_required
 from itsdangerous import BadSignature
+from werkzeug.exceptions import BadRequest
 
-import quasselflask
-from quasselflask import app, db, userman
-from quasselflask.parsing.form import process_search_params
-from quasselflask.parsing.irclog import DisplayBacklog
+from quasselflask import app, userman, db
 from quasselflask.parsing.data_convert import convert_permissions_lists, convert_user_permissions
 from quasselflask.querying import *
 from quasselflask.util import random_string, safe_redirect, get_next_url
-
-
-@app.before_first_request
-def flask_user_redirect_patch():
-    """
-    HACK: Replace werkzeug redirect() with a safe version globally at runtime
-
-    This is a workaround for Flask-User <0.6.8, which upon login, logout, etc. will redirect according to the 'next'
-    GET parameter without validating it and thus presents an open redirect security risk. As a solution, we will
-    globally replace the redirect() function in werkzeug with a safety-checked one.
-
-    The original method is available as werkzeug.util.unsafe_redirect.
-    """
-    import flask_user.views
-    flask_user.views.unsafe_redirect = flask_user.views.redirect
-    flask_user.views.redirect = flask_user.views.safe_redirect = safe_redirect
-
-
-@app.before_request
-def globals_init():
-    g.start_time = time.time()
-    g.get_request_time = lambda: "{:.3f}s".format(time.time() - g.start_time)
-    g.display_version = quasselflask.__version__
-
-
-@app.route('/')
-@login_required
-def home():
-    return render_template('search_form.html')
-
-
-@app.route('/search')
-@login_required
-def search():
-    # TODO: permissions
-
-    # some helpful constants for the request argument processing
-    # type of extraction/processing - this is more documentation as it's not used to process at the moment
-    unique_args = {'start', 'end', 'limit', 'query_wildcard'}
-    list_wildcard_args = {'channel', 'usermask'}  # space-separated lists; if any arg repeated, list is concatenated
-    query_args = {'query'}  # requires query parsing
-    search_args = unique_args | list_wildcard_args | query_args
-
-    form_args = request.args
-    available_args = search_args & set(form_args.keys())
-
-    # if no arguments passed, we can just redirect to the home
-    if not available_args:
-        return redirect(url_for('home'))
-
-    # For rendering in templates - will be updated after processing search params (if successful) before render
-    render_args = {
-        'search_channel': form_args.get('channel'),
-        'search_usermask': form_args.get('usermask'),
-        'search_start': form_args.get('start'),
-        'search_end': form_args.get('end'),
-        'search_query': form_args.get('query'),
-        'search_query_wildcard': form_args.get('search_query_wildcard', int),
-        'search_limit': form_args.get('limit', app.config['RESULTS_NUM_DEFAULT'], int),
-        'search_order': form_args.get('order')
-    }
-
-    # Process and parse the args
-    try:
-        sql_args = process_search_params(form_args)
-    except ValueError as e:
-        errtext = e.args[0]
-        return render_template('search_form.html', error=errtext, **render_args)
-
-    app.logger.debug("Args|SQL-processed: limit=%i order=%s channel%s usermask%s start[%s] end[%s] query%s %s",
-                     sql_args['limit'], sql_args['order'], sql_args['channels'], sql_args['usermasks'],
-                     sql_args['start'].isoformat() if sql_args['start'] else '',
-                     sql_args['end'].isoformat() if sql_args['end'] else '',
-                     sql_args['query'].get_parsed(), '[wildcard]' if sql_args['query_wildcard'] else '[no_wildcard]')
-
-    # update after processing params
-    render_args['search_query_wildcard'] = sql_args.get('query_wildcard')
-    render_args['search_limit'] = sql_args.get('limit')
-    render_args['search_order'] = sql_args.get('order')
-
-    # build and execute the query
-    results = build_db_search_query(db.session, sql_args).all()
-
-    if sql_args['order'] == 'newest':
-        results = reversed(results)
-
-    if (app.debug or app.testing) and get_debug_queries():
-        info = get_debug_queries()[0]
-        app.logger.debug("SQL: {}\nParameters: {}\nDuration: {:.3f}s".format(
-                info.statement, repr(info.parameters), info.duration))
-
-    return render_template('results.html', records=[DisplayBacklog(result) for result in results], **render_args)
-
-# TODO: look at flask_users/views.py login() endpoint - security issue with 'next' GET parameter?
-# TODO: remember me token - don't use user id
-# TODO: send email to admin on registration
-
-
-@app.route('/context/<int:post_id>/<int:num_context>')
-@login_required
-def context(post_id, num_context):
-    pass  # TODO context endpoint
 
 
 @app.route('/admin/create-user', methods=['GET', 'POST'])
@@ -220,8 +112,45 @@ def admin_manage_user(userid):
     """
     Returns page to manage a specified user's profile and permissions.
 
-    Includes data on all permissions (quasseluser, network, buffer/channel) that can be set. The structure is
-    identical to that returned by the `admin_list_permissions_json` endpoint.
+    Includes data on all permissions (quasseluser, network, buffer/channel) that can be set. Structure:
+
+    .. code-block:: json
+        {
+            "quasselusers": [
+                {
+                    "id": 0,
+                    "name": "user0"
+                },
+                {
+                    "id": 1,
+                    "name": "user1"
+                }
+            ],
+            "networks": [
+                {
+                    "id": 0,
+                    "quasseluserid": 0,
+                    "name": "Snoonet"
+                },
+                {
+                    "id": 1,
+                    "quasseluserid": 1,
+                    "name": "Freenode"
+                }
+            ],
+            "channels": [
+                {
+                    "id": 0,
+                    "networkid": 0,
+                    "name": "#techsupport"
+                },
+                {
+                    "id": 4,
+                    "networkid": 1,
+                    "name": "#debian"
+                }
+            ]
+        }
 
     A Javascript variable USER_PERMISSIONS is included on the returned page, to be processed by Javascript, containing
     the following structure:
@@ -242,7 +171,7 @@ def admin_manage_user(userid):
 
     :param userid: User to manage
     :return:
-    """
+"""
     # get current user to manage
     user = query_qfuser(userid)
 
@@ -303,7 +232,7 @@ def admin_update_user(userid):
         raise BadRequest("Multiple commands to user update API endpoint")
 
     if not user_valid:
-        flash('Cannot update current user: requested change would disable the current user', 'error')
+        flash("Oops! You can't make changes that would disable yourself.", "error")
         return safe_redirect(get_next_url('POST'))
 
     # Valid - let's process it
@@ -416,11 +345,3 @@ def admin_permissions(userid):
     :return:
     """
     return 'update permissions'  # TODO
-
-
-if os.environ.get('QF_ALLOW_TEST_PAGES'):
-    @app.route('/test/parse')
-    def test_parse():
-        pass  # TODO: test_parse endpoint
-
-

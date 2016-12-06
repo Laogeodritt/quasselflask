@@ -34,6 +34,7 @@ class DummyObject:
 
     def __init__(self, name='component'):
         self.name = name
+        self._is_init = False
         DummyObject._dummies.append(self)
 
     def __getattr__(self, item):
