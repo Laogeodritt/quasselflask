@@ -17,7 +17,11 @@
         {% set is_current_user = user is sameas current_user %}
 
         <div class="user-manage-row user-manage-delete">
-            {{ user_action_link(user, '# Delete', postname='delete', postvalue='1', class='delete', disabled=is_current_user, next_url=request.url) }}
+            <form method="post" class="linkform" action="{{ url_for('admin_delete_user', userid=user.get_id()) }}">
+                <input type="hidden" name="csrf_token" value="{{ csrf_token() }}">
+                <input type="hidden" name="next" value="{{ request.url }}">
+                <input type="submit" value="# Delete"{% if is_current_user %} disabled{% endif %} class="delete">
+            </form>
         </div>
 
         <div class="user-manage-row user-manage-status"><label>Status</label>

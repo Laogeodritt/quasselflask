@@ -4,8 +4,8 @@
  # Parameters:
  #
  # :param user: QfUser object for the user to modify
- # :param property: The property to change, as passed via POST to /admin/user/<userid>/update (see views/core.py endpoint)
- # :param value: Value of the property to set.
+ # :param target: target URL
+ # :param action: text describing the action to confirm
  # :param next_url: URL to redirect to after handling this confirmation.
  # :param confirm_key: Confirmation key (see `quasselflask.forms.get_user_update_confirm_key`)
  #}
@@ -13,10 +13,10 @@
 {% block title %}Confirm user update{% endblock %}
 {% block content %}
 <main>
-    <h2>Confirm user update</h2>
+    <h2>Confirm user action</h2>
 
-    <form action="{{ url_for('admin_update_user', userid=user.qfuserid) }}" method="POST" id="form-confirm" role="form" class="narrow">
-        <div><p>Confirm update for user {{ user.username }}: set {{ property }} to {{ 'True' if value == '1' else 'False' }}?</p></div>
+    <form action="{{ target }}" method="POST" id="form-confirm" role="form" class="narrow">
+        <div><p>Confirm {{ action }} for user {{ user.username }} ({{ user.qfuserid }})?</p></div>
         <input type="hidden" name="csrf_token" value="{{ csrf_token() }}">
         <input type="hidden" name="next" value="{{ next_url }}">
         <input type="hidden" name="confirm_token" value="{{ confirm_key }}">

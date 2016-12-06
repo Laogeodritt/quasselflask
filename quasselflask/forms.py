@@ -12,15 +12,20 @@ from wtforms import BooleanField, HiddenField, PasswordField, SubmitField, Strin
 from wtforms import validators, ValidationError
 
 
-# for use for signing or creating security keys - not needed for CSRF (handled by WTForms)
-signer = URLSafeTimedSerializer(current_app.secret_key, signer_kwargs={'key_derivation': 'hmac'})
+signer = None
 
 
-def get_user_update_confirm_key(userid, update, value):
-    return signer.dumps({'userid': userid, 'update': update, 'value': value}, salt='admin_user_update')
+def make_signer():
+    # for use for signing or creating security keys - not needed for CSRF (handled by WTForms)
+    global signer
+    signer = URLSafeTimedSerializer(current_app.secret_key, signer_kwargs={'key_derivation': 'hmac'})
 
 
-def check_user_update_confirm_key(key: str) -> dict:
+def generate_confirm_key(data: dict, salt: str):
+    return signer.dumps(data, salt=salt)
+
+
+def check_confirm_key(key: str, salt: str) -> dict:
     """
     Check the confirmation key. Automatically uses app.config.QF_ADMIN_CONFIRM_TIME.
 
@@ -28,9 +33,10 @@ def check_user_update_confirm_key(key: str) -> dict:
     https://pythonhosted.org/itsdangerous/
 
     :param key: Key to check
+    :param salt: signer salt (relate to the endpoint/action usually)
     :return: {'userid': userid, 'update': update, 'value': value}
     """
-    return signer.loads(key, max_age=current_app.config.get('QF_ADMIN_CONFIRM_TIME'), salt='admin_user_update')
+    return signer.loads(key, max_age=current_app.config.get('QF_ADMIN_CONFIRM_TIME'), salt=salt)
 
 
 class CreateUserForm(Form):

@@ -15,9 +15,16 @@ from werkzeug.exceptions import BadRequest
 from quasselflask import app, userman, db
 from quasselflask.parsing.data_convert import convert_permissions_lists, convert_user_permissions
 from quasselflask.querying import *
+from quasselflask import forms
 from quasselflask.util import random_string, safe_redirect, get_next_url
 
 import logging
+
+
+@app.before_first_request
+def setup_signer():
+    forms.make_signer()
+
 
 logger = app.logger  # type: logging.Logger
 
@@ -236,7 +243,7 @@ def admin_manage_user(userid):
 @roles_required('superuser')
 def admin_update_user(userid):
     """
-    Update the current user's information. Any fields not included will remain unchanged.
+    Update a user's information. Any fields not included will remain unchanged.
 
     Some actions return a confirmation page. It is necessary to submit the confirmation form to complete the action.
 
@@ -247,7 +254,6 @@ def admin_update_user(userid):
 
     * `status`: 1 (enabled) or 0 (disabled). Other values treated as 0.
     * `superuser`: 1 (superuser) or 0 (normal user). Other values treated as 0. Returns a confirmation page.
-    * `delete`: 1. Returns a confirmation page.
     * `confirm_token`: Confirmation token. Only applies to superuser/delete requests.
     * `email`: new email address. Can only be combined with the `confirm_email` parameter.
     * `confirm_email`: 1 (confirm) or 0 (unconfirm). Force the email confirmation status. Other values are treated as 0.
@@ -265,7 +271,7 @@ def admin_update_user(userid):
 
     logger.info(_log_access())
 
-    commands = frozenset(('status', 'superuser', 'delete', 'email', 'confirm_email', 'confirm_token'))
+    commands = frozenset(('status', 'superuser', 'email', 'confirm_email', 'confirm_token'))
     request_commands = set(request.form.keys()) & commands
 
     # validate
@@ -285,96 +291,90 @@ def admin_update_user(userid):
     user = query_qfuser(userid)
 
     if 'status' in request.form:
-        status_arg = request.form.get('status', '0')
-        status_val = bool(status_arg == '1')
-        user.active = status_val
-        db.session.commit()
-        flash(('Enabled' if status_val else 'Disabled') + ' user {}'.format(user.username), 'notice')
-        logger.info(_log_action('update user', ('user', _get_qfuser_log(user)),
-                                ('set', 'status'), ('to', repr(user.active))))
-        return safe_redirect(get_next_url('POST'))
-
-    elif 'superuser' in request.form or 'delete' in request.form:  # non-confirmed
-        if 'superuser' in request.form:
-            request_property = 'superuser'
-            request_value = '1' if request.form.get(request_property, '0') == '1' else '0'
-        elif 'delete' in request.form:
-            request_property = 'delete'
-            if not request.form.get(request_property) == '1':
-                logger.error(_log_action_error('update user', 'delete value is not "1"',
-                                               ('user', _get_qfuser_log(user))))
-                logger.debug('request.form=' + repr(request.form))
-                raise BadRequest("Delete value must be '1'")
-            request_value = '1'
-        else:
-            logger.error(_log_action_error('update user', 'WTF happened? superuser/delete non-confirmed handler',
-                                           ('user', _get_qfuser_log(user))))
-            logger.debug('request.form=' + repr(request.form))
-            raise BadRequest('Well, this is unfortunate. No idea how you got here. Huh. Might want to contact the devs '
-                             'about this very... odd... bug. It\'s in the superuser/delete commands handler.')
-
-        confirm_key = forms.get_user_update_confirm_key(userid, request_property, request_value)
-        return render_template('admin/update_user_confirm.html',
-                               user=user, property=request_property, value=request_value, next_url=get_next_url('POST'),
-                               confirm_key=confirm_key)
-
+        return admin_update_user_status(user)
+    elif 'superuser' in request.form:  # non-confirmed
+        return admin_update_user_superuser_confirm(user)
     elif 'confirm_token' in request.form:  # confirm superuser/delete
-        try:
-            data = forms.check_user_update_confirm_key(request.form.get('confirm_token'))
-        except BadSignature:
-            logger.error(_log_action_error('update user', 'invalid confirmation key', ('user', _get_qfuser_log(user))))
-            logger.debug('request.form=' + repr(request.form))
-            raise BadRequest('Invalid confirmation key.')
-
-        request_userid = data['userid']
-        request_property = data['update']
-        request_value = data['value']
-        valid_request = request_userid == userid and \
-            ((request_property == 'superuser' and request_value in ['1', '0']) or
-             (request_property == 'delete' and request_value == '1'))
-        if not valid_request:
-            logger.error(_log_action_error('update user', 'invalid confirmation key', ('user', _get_qfuser_log(user))))
-            logger.debug('confirmation data=' + repr(data))
-            logger.debug('request.form=' + repr(request.form))
-            raise BadRequest('Invalid confirmation key.')
-
-        if request_property == 'superuser':
-            user.superuser = bool(request_value == '1')
-            flash('Set user {} as {}'.format(user.username, 'superuser' if user.superuser else 'normal user'), 'notice')
-            db.session.commit()
-            logger.info(_log_action('update user', ('user', _get_qfuser_log(user)),
-                                    ('set', 'superuser'), ('to', repr(user.superuser))))
-            return safe_redirect(get_next_url('POST'))
-        elif request_property == 'delete':  # request_value should have been validated in valid_request
-            db.session.delete(user)
-            flash('Deleted user {}'.format(user.username))
-            db.session.commit()
-            logger.info(_log_action('delete user', ('user', _get_qfuser_log(user))))
-            return redirect(url_for('admin_users'))
-        db.session.commit()
-        return safe_redirect(get_next_url('POST'))
-
+        return admin_update_user_superuser(user)
     elif 'email' in request.form or 'confirm_email' in request.form:
-        if 'email' in request.form:
-            user.email = request.form.get('email')
-        if request.form.get('confirm_email', '0') == '1':
-            user.confirmed_at = datetime.now()
-        else:
-            user.confirmed_at = None
-        db.session.commit()
-        flash('User {user} updated with email {email} ({confirm})'
-              .format(user=user.username,
-                      email=user.email,
-                      confirm='must confirm' if user.confirmed_at is None else 'confirmed'),
-              'notice')
-        logger.info(_log_action('update user', ('user', _get_qfuser_log(user)),
-                                ('set', 'superuser'), ('to', repr(user.superuser))))
-        return safe_redirect(get_next_url('POST'))
+        return admin_update_user_email(user)
 
     flash("Something happened. You shouldn't have gotten this far.", "error")
     logger.error(_log_action_error('update user', 'should have returned earlier in code - bug?',
                                    ('user', _get_qfuser_log(user))))
     logger.debug('request.form=' + repr(request.form))
+    return safe_redirect(get_next_url('POST'))
+
+
+def admin_update_user_status(user: QfUser):
+    status_arg = request.form.get('status', '0')
+    status_val = bool(status_arg == '1')
+    user.active = status_val
+    db.session.commit()
+    flash(('Enabled' if status_val else 'Disabled') + ' user {}'.format(user.username), 'notice')
+    logger.info(_log_action('update user', ('user', _get_qfuser_log(user)),
+                            ('set', 'status'), ('to', repr(user.active))))
+    return safe_redirect(get_next_url('POST'))
+
+
+def admin_update_user_superuser_confirm(user: QfUser):
+    from quasselflask import forms
+    update_key = 'superuser'
+    update_value = '1' if request.form.get('superuser', '0') == '1' else '0'
+    confirm_key = forms.generate_confirm_key(
+        {
+            'target_user': user.qfuserid,
+            'current_user': current_user.qfuserid,
+            'update': update_key,
+            'value': update_value
+        },
+        'admin_update_user')
+    return render_template('admin/update_user_confirm.html',
+                           target=url_for('admin_update_user', userid=user.qfuserid),
+                           user=user, action='set superuser' if update_value == '1' else 'set as normal user',
+                           next_url=get_next_url('POST'), confirm_key=confirm_key)
+
+
+def admin_update_user_superuser(user):
+    try:
+        data = forms.check_confirm_key(request.form.get('confirm_token'), 'admin_update_user')
+    except BadSignature:
+        logger.error(_log_action_error('update user', 'invalid confirmation key', ('user', _get_qfuser_log(user))))
+        logger.debug('request.form=' + repr(request.form))
+        raise BadRequest('Invalid confirmation key.')
+
+    valid_request = user.qfuserid == data['target_user'] and \
+        current_user.qfuserid == data['current_user'] and \
+        'superuser' == data['update']
+    if not valid_request:
+        logger.error(_log_action_error('update user', 'invalid confirmation data', ('user', _get_qfuser_log(user))))
+        logger.debug('confirmation data=' + repr(data))
+        logger.debug('request.form=' + repr(request.form))
+        raise BadRequest('Invalid confirmation key.')
+
+    user.superuser = bool(data.get('value', '0') == '1')
+    flash('Set user {} as {}'.format(user.username, 'superuser' if user.superuser else 'normal user'), 'notice')
+    db.session.commit()
+    logger.info(_log_action('update user', ('user', _get_qfuser_log(user)),
+                            ('set', 'superuser'), ('to', repr(user.superuser))))
+    return safe_redirect(get_next_url('POST'))
+
+
+def admin_update_user_email(user):
+    if 'email' in request.form:
+        user.email = request.form.get('email')
+    if request.form.get('confirm_email', '0') == '1':
+        user.confirmed_at = datetime.now()
+    else:
+        user.confirmed_at = None
+    db.session.commit()
+    flash('User {user} updated with email {email} ({confirm})'
+          .format(user=user.username,
+                  email=user.email,
+                  confirm='must confirm' if user.confirmed_at is None else 'confirmed'),
+          'notice')
+    logger.info(_log_action('update user', ('user', _get_qfuser_log(user)),
+                            ('set', 'superuser'), ('to', repr(user.superuser))))
     return safe_redirect(get_next_url('POST'))
 
 
@@ -413,3 +413,73 @@ def admin_permissions(userid):
     """
     logger.info(_log_access())
     return 'update permissions'  # TODO
+
+
+@app.route('/admin/users/<userid>/delete', methods=['POST'])
+@roles_required('superuser')
+def admin_delete_user(userid):
+    """
+    Delete a user. Any fields not included will remain unchanged.
+
+    This action return a confirmation page. It is necessary to submit the confirmation form to complete the action.
+
+    If acting on the current user, only the email address may be updated.  This prevents the current user from locking
+    themselves out of the application or removing a sole superuser.
+
+    POST command parameters:
+
+    * `confirm_token`: Confirmation token. Only applies to superuser/delete requests. Optional (returns the confirmation
+        page if not present).
+    * `next`: URL, the URL to return to after the update.
+
+    :param userid: The user ID to modify.
+    :return:
+    """
+
+    from quasselflask import forms
+
+    from quasselflask.forms import signer
+
+    logger.info(_log_access())
+
+    # validate
+    if userid == current_user.qfuserid:
+        flash("Oops! You can't delete yourself.", "error")
+        return safe_redirect(get_next_url('POST'))
+
+    # Valid - let's process it
+    user = query_qfuser(userid)
+
+    # check if confirmed
+    is_confirmed = False
+    data = {}
+    if 'confirm_token' in request.form:
+        try:
+            data = forms.check_confirm_key(request.form.get('confirm_token'), 'admin_user_delete')
+            is_confirmed = True
+        except BadSignature:
+            logger.error(_log_action_error('update user', 'invalid confirmation key', ('user', _get_qfuser_log(user))))
+            logger.debug('request.form=' + repr(request.form))
+            is_confirmed = False
+
+    if not is_confirmed:
+        confirm_key = forms.generate_confirm_key({'current_user': current_user.qfuserid, 'target_user': user.qfuserid},
+                                                 'admin_user_delete')
+        return render_template('admin/update_user_confirm.html',
+                               target=url_for('admin_delete_user', userid=userid),
+                               user=user, action='delete', next_url=get_next_url('POST'),
+                               confirm_key=confirm_key)
+    else:
+        valid_request = data.get('target_user', -1) == user.qfuserid and \
+                        data.get('current_user', -1) == current_user.qfuserid
+        if not valid_request:
+            logger.error(_log_action_error('update user', 'invalid confirmation key', ('user', _get_qfuser_log(user))))
+            logger.debug('confirmation data=' + repr(data))
+            logger.debug('request.form=' + repr(request.form))
+            raise BadRequest('Invalid confirmation key.')
+
+        db.session.delete(user)
+        flash('Deleted user {}'.format(user.username))
+        db.session.commit()
+        logger.info(_log_action('delete user', ('user', _get_qfuser_log(user))))
+        return redirect(url_for('admin_users'))
