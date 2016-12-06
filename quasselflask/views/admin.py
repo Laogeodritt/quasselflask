@@ -17,6 +17,39 @@ from quasselflask.parsing.data_convert import convert_permissions_lists, convert
 from quasselflask.querying import *
 from quasselflask.util import random_string, safe_redirect, get_next_url
 
+import logging
+
+logger = app.logger  # type: logging.Logger
+
+
+def _log_access():
+    return 'ACCESS [QFUSER={user.qfuserid:d} {user.username}] {endpoint}' \
+                .format(user=current_user, endpoint=request.endpoint)
+
+
+def _log_action(action: str, *args: tuple):
+    if args:
+        str_params = ', '.join(('{}={}'.format(key, value) for key, value in args))
+    else:
+        str_params = ''
+    logmsg = 'ACTION [QFUSER={user.qfuserid:d} {user.username}] {action} {params}'\
+        .format(user=current_user, action=action, params=str_params)
+    return logmsg
+
+
+def _log_action_error(action: str, msg: str, *args: tuple):
+    if args:
+        str_params = ', '.join(('{}={}'.format(key, value) for key, value in args))
+    else:
+        str_params = ''
+    logmsg = 'ERROR [QFUSER={user.qfuserid:d} {user.username}] {action} {params}: {errmsg}' \
+        .format(user=current_user, action=action, params=str_params, errmsg=msg)
+    return logmsg
+
+
+def _get_qfuser_log(user):
+    return '[QFUSER={user.qfuserid:d} {user.username}]'.format(user=user)
+
 
 @app.route('/admin/create-user', methods=['GET', 'POST'])
 @roles_required('superuser')
@@ -29,6 +62,8 @@ def admin_create_user():
 
     from flask_user import emails
     from quasselflask.forms import CreateUserForm
+
+    logger.info(_log_access())
 
     db_adapter = userman.db_adapter
 
@@ -88,11 +123,16 @@ def admin_create_user():
             else:
                 flash('User {user} created.'.format(user=user.username), 'success')
 
-        except Exception:
+        except Exception as e:
+            logger.error(_log_action_error('error while creating user', repr(e.args),
+                              ('id', user.qfuserid), ('name', user.username),
+                              ('email', user.email), ('superuser', repr(user.superuser))))
             db_adapter.delete_object(user)
             db_adapter.commit()
             raise
 
+        logger.info(_log_action('create user', ('id', user.qfuserid), ('name', user.username),
+                    ('email', user.email), ('superuser', repr(user.superuser))))
         return redirect(url_for('admin_manage_user', userid=user.qfuserid))
 
     # Process GET or invalid POST
@@ -102,6 +142,7 @@ def admin_create_user():
 @app.route('/admin/users', methods=['GET'])
 @roles_required('superuser')
 def admin_users():
+    logger.info(_log_access())
     users = query_all_qf_users(db.session)
     return render_template('admin/user_list.html', users=users)
 
@@ -172,6 +213,9 @@ def admin_manage_user(userid):
     :param userid: User to manage
     :return:
 """
+
+    logger.info(_log_access())
+
     # get current user to manage
     user = query_qfuser(userid)
 
@@ -219,6 +263,8 @@ def admin_update_user(userid):
 
     from quasselflask import forms
 
+    logger.info(_log_access())
+
     commands = frozenset(('status', 'superuser', 'delete', 'email', 'confirm_email', 'confirm_token'))
     request_commands = set(request.form.keys()) & commands
 
@@ -229,7 +275,7 @@ def admin_update_user(userid):
                   ('email' in request_commands and request.form.get('confirm_email', '0') == '1'))
 
     if not request_valid:
-        raise BadRequest("Multiple commands to user update API endpoint")
+        raise BadRequest("No command or multiple commands to user update API endpoint")
 
     if not user_valid:
         flash("Oops! You can't make changes that would disable yourself.", "error")
@@ -244,6 +290,8 @@ def admin_update_user(userid):
         user.active = status_val
         db.session.commit()
         flash(('Enabled' if status_val else 'Disabled') + ' user {}'.format(user.username), 'notice')
+        logger.info(_log_action('update user', ('user', _get_qfuser_log(user)),
+                                ('set', 'status'), ('to', repr(user.active))))
         return safe_redirect(get_next_url('POST'))
 
     elif 'superuser' in request.form or 'delete' in request.form:  # non-confirmed
@@ -253,9 +301,15 @@ def admin_update_user(userid):
         elif 'delete' in request.form:
             request_property = 'delete'
             if not request.form.get(request_property) == '1':
+                logger.error(_log_action_error('update user', 'delete value is not "1"',
+                                               ('user', _get_qfuser_log(user))))
+                logger.debug('request.form=' + repr(request.form))
                 raise BadRequest("Delete value must be '1'")
             request_value = '1'
         else:
+            logger.error(_log_action_error('update user', 'WTF happened? superuser/delete non-confirmed handler',
+                                           ('user', _get_qfuser_log(user))))
+            logger.debug('request.form=' + repr(request.form))
             raise BadRequest('Well, this is unfortunate. No idea how you got here. Huh. Might want to contact the devs '
                              'about this very... odd... bug. It\'s in the superuser/delete commands handler.')
 
@@ -267,7 +321,9 @@ def admin_update_user(userid):
     elif 'confirm_token' in request.form:  # confirm superuser/delete
         try:
             data = forms.check_user_update_confirm_key(request.form.get('confirm_token'))
-        except BadSignature as e:
+        except BadSignature:
+            logger.error(_log_action_error('update user', 'invalid confirmation key', ('user', _get_qfuser_log(user))))
+            logger.debug('request.form=' + repr(request.form))
             raise BadRequest('Invalid confirmation key.')
 
         request_userid = data['userid']
@@ -277,17 +333,23 @@ def admin_update_user(userid):
             ((request_property == 'superuser' and request_value in ['1', '0']) or
              (request_property == 'delete' and request_value == '1'))
         if not valid_request:
+            logger.error(_log_action_error('update user', 'invalid confirmation key', ('user', _get_qfuser_log(user))))
+            logger.debug('confirmation data=' + repr(data))
+            logger.debug('request.form=' + repr(request.form))
             raise BadRequest('Invalid confirmation key.')
 
         if request_property == 'superuser':
             user.superuser = bool(request_value == '1')
             flash('Set user {} as {}'.format(user.username, 'superuser' if user.superuser else 'normal user'), 'notice')
             db.session.commit()
+            logger.info(_log_action('update user', ('user', _get_qfuser_log(user)),
+                                    ('set', 'superuser'), ('to', repr(user.superuser))))
             return safe_redirect(get_next_url('POST'))
         elif request_property == 'delete':  # request_value should have been validated in valid_request
             db.session.delete(user)
             flash('Deleted user {}'.format(user.username))
             db.session.commit()
+            logger.info(_log_action('delete user', ('user', _get_qfuser_log(user))))
             return redirect(url_for('admin_users'))
         db.session.commit()
         return safe_redirect(get_next_url('POST'))
@@ -305,10 +367,15 @@ def admin_update_user(userid):
                       email=user.email,
                       confirm='must confirm' if user.confirmed_at is None else 'confirmed'),
               'notice')
+        logger.info(_log_action('update user', ('user', _get_qfuser_log(user)),
+                                ('set', 'superuser'), ('to', repr(user.superuser))))
         return safe_redirect(get_next_url('POST'))
 
-    else:
-        return safe_redirect(get_next_url('POST'))
+    flash("Something happened. You shouldn't have gotten this far.", "error")
+    logger.error(_log_action_error('update user', 'should have returned earlier in code - bug?',
+                                   ('user', _get_qfuser_log(user))))
+    logger.debug('request.form=' + repr(request.form))
+    return safe_redirect(get_next_url('POST'))
 
 
 @app.route('/admin/users/<userid>/permissions', methods=['POST'])
@@ -344,4 +411,5 @@ def admin_permissions(userid):
     :param userid: The user ID to modify.
     :return:
     """
+    logger.info(_log_access())
     return 'update permissions'  # TODO

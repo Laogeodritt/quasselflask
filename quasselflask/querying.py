@@ -142,6 +142,7 @@ def query_buffers(session, buffertypes=None) -> sqlalchemy.orm.query.Query:
     query = query.order_by(asc(Buffer.buffertype), asc(Buffer.buffername))
     return query
 
+
 def query_qfuser(qfuserid) -> QfUser:
     """
     Find a user.
