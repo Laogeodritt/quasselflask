@@ -1,0 +1,31 @@
+{#
+ # Confirm sensitive user changes.
+ #
+ # Parameters:
+ #
+ # :param user: QfUser object for the user to modify
+ # :param property: The property to change, as passed via POST to /admin/user/<userid>/update (see views.py endpoint)
+ # :param value: Value of the property to set.
+ # :param next_url: URL to redirect to after handling this confirmation.
+ # :param confirm_key: Confirmation key (see `quasselflask.forms.get_user_update_confirm_key`)
+ #}
+{% extends 'skel_main.html' %}
+{% block title %}Confirm user update{% endblock %}
+{% block content %}
+<main>
+    <h2>Confirm user update</h2>
+
+    <form action="{{ url_for('admin_update_user', userid=user.qfuserid) }}" method="POST" id="form-confirm" role="form" class="narrow">
+        <div><p>Confirm update for user {{ user.username }}: set {{ property }} to {{ 'True' if value == '1' else 'False' }}?</p></div>
+        <input type="hidden" name="csrf_token" value="{{ csrf_token() }}">
+        <input type="hidden" name="next" value="{{ next_url }}">
+        <input type="hidden" name="confirm_token" value="{{ confirm_key }}">
+        <div class="form-row-end">
+            <input type="reset" class="btn btn-default btn-primary" value="Cancel"
+               tabindex="170" onclick='window.location.href = {{ next_url|tojson|safe }}; return false'>
+            <input type="submit" class="btn btn-default btn-primary" value="Confirm"
+               tabindex="180">
+        </div>
+    </form>
+</main>
+{% endblock %}

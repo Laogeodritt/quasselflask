@@ -16,6 +16,7 @@ setup(
                     'SQLAlchemy>=1.1',
                     'psycopg2',  # PostgreSQL
                     'crcmod>=1.7',
+                    'itsdangerous'
                     ],
     include_package_data=True,
     zip_safe=False,

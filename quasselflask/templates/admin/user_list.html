@@ -21,12 +21,12 @@
                         <td class="uid">{{ user.get_id() }}</td>
                         <td class="username"{% if call_or_get(user.is_superuser) %} title="Superuser"{% endif %}>{{ user.username }}</td>
                         <td class="email">{{ user.email }} {% if user.confirmed_at -%}
-                            {{ user_action_link(user, '✓', postname='confirm_email', postvalue='0', class='confirmed', title="Confirmed (click to unconfirm)") }}
+                            {{ user_action_link(user, '✓', postname='confirm_email', postvalue='0', class='confirmed', title="Confirmed (click to unconfirm)", next_url=request.url) }}
                         {%- else -%}
-                            {{ user_action_link(user, '✗', postname='confirm_email', postvalue='1', class='unconfirmed', title="Unconfirmed (click to confirm)") }}
+                            {{ user_action_link(user, '✗', postname='confirm_email', postvalue='1', class='unconfirmed', title="Unconfirmed (click to confirm)", next_url=request.url) }}
                         {% endif %}</td>
                         <td class="actions">
-                            {% if call_or_get(user.is_active) %}{{ user_disable_link(user, is_current_user) }}{% endif %}
+                            {{ user_disable_link(user, is_current_user, next_url=request.url) }}
                             <a href="{{ url_for('admin_manage_user', userid=user.get_id()) }}" class="action-edit">edit</a>
                         </td>
                     </tr>

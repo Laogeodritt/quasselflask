@@ -17,20 +17,20 @@
         {% set is_current_user = user is sameas current_user %}
 
         <div class="user-manage-row user-manage-delete">
-            {{ user_action_link(user, '# Delete', postname='delete', postvalue='1', class='delete', disabled=is_current_user) }}
+            {{ user_action_link(user, '# Delete', postname='delete', postvalue='1', class='delete', disabled=is_current_user, next_url=request.url) }}
         </div>
 
         <div class="user-manage-row user-manage-status"><label>Status</label>
             {%- if call_or_get(user.is_active) -%}
-                {{ user_action_link(user, '✓ Enabled', postname='status', postvalue='0', class='user-enabled', disabled=is_current_user) }}
+                {{ user_action_link(user, '✓ Enabled', postname='status', postvalue='0', class='user-enabled', disabled=is_current_user, next_url=request.url) }}
             {%- else -%}
-                {{ user_action_link(user, '✗ Disabled', postname='status', postvalue='1', class='user-disabled', disabled=is_current_user) }}
+                {{ user_action_link(user, '✗ Disabled', postname='status', postvalue='1', class='user-disabled', disabled=is_current_user, next_url=request.url) }}
             {%- endif -%}
 
             {%- if call_or_get(user.is_superuser) -%}
-                {{ user_action_link(user, '@ Superuser', postname='superuser', postvalue='0', class='user-superuser', disabled=is_current_user) }}
+                {{ user_action_link(user, '@ Superuser', postname='superuser', postvalue='0', class='user-superuser', disabled=is_current_user, next_url=request.url) }}
             {%- else -%}
-                {{ user_action_link(user, '∗ User', postname='superuser', postvalue='1', class='user-normaluser', disabled=is_current_user) }}
+                {{ user_action_link(user, '∗ User', postname='superuser', postvalue='1', class='user-normaluser', disabled=is_current_user, next_url=request.url) }}
             {%- endif -%}
         </div>
 
@@ -38,14 +38,16 @@
             <label>Email</label>
             <form class="linkform" method="post" action="{{ url_for('admin_update_user', userid=user.get_id()) }}">
                 <input type="hidden" name="csrf_token" value="{{ csrf_token() }}">
+                <input type="hidden" name="next" value="{{ request.url }}">
+                <input type="hidden" name="confirm_email" value="{{ '0' if user is not sameas current_user else '1' }}">
                 <input type="email" name="email" value="{{ user.email }}" data-animate-event="input" data-animate-once data-animate-target="email-submit">
                 <input type="submit" value="Save" class="animate-slide animate-start-hidden" data-animate-id="email-submit" data-animate-type="width" data-animate-highlight-class="state-flashing-on">
             </form>
 
             {%- if user.confirmed_at -%}
-                {{ user_action_link(user, '✓ Confirmed', postname='confirm_email', postvalue='0', class='confirmed', disabled=is_current_user) }}
+                {{ user_action_link(user, '✓ Confirmed', postname='confirm_email', postvalue='0', class='confirmed', disabled=is_current_user, next_url=request.url) }}
             {%- else -%}
-                {{ user_action_link(user, '✗ Unconfirmed', postname='confirm_email', postvalue='1', class='unconfirmed', disabled=is_current_user) }}
+                {{ user_action_link(user, '✗ Unconfirmed', postname='confirm_email', postvalue='1', class='unconfirmed', disabled=is_current_user, next_url=request.url) }}
             {%- endif -%}
         </div>
 
@@ -56,7 +58,6 @@
                 <button type="button" id="btn-permission-allow">Allow</button>
                 <button type="button" id="btn-permission-deny">Deny</button>
                 <button type="reset" id="btn-permission-reset">Clear</button>
-                <!-- TODO: Javascript -->
             </div>
             <div>
                 <input type="text" name="quasseluser" value="" placeholder="quasseluser" id="combobox-quasseluser">

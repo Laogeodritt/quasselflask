@@ -6,11 +6,14 @@ Project: QuasselFlask
 
 import os
 import time
+from datetime import datetime
 
+from werkzeug.exceptions import BadRequest, NotFound
 from flask import request, g, render_template, url_for, flash
 from flask import redirect, jsonify
 from flask_sqlalchemy import get_debug_queries
-from flask_user import login_required, roles_required
+from flask_user import login_required, roles_required, current_user
+from itsdangerous import BadSignature
 
 import quasselflask
 from quasselflask import app, db, userman
@@ -18,7 +21,7 @@ from quasselflask.parsing.form import process_search_params
 from quasselflask.parsing.irclog import DisplayBacklog
 from quasselflask.parsing.data_convert import convert_permissions_lists, convert_user_permissions
 from quasselflask.querying import *
-from quasselflask.util import random_string, safe_redirect
+from quasselflask.util import random_string, safe_redirect, get_next_url
 
 
 @app.before_first_request
@@ -53,6 +56,8 @@ def home():
 @app.route('/search')
 @login_required
 def search():
+    # TODO: permissions
+
     # some helpful constants for the request argument processing
     # type of extraction/processing - this is more documentation as it's not used to process at the moment
     unique_args = {'start', 'end', 'limit', 'query_wildcard'}
@@ -111,7 +116,6 @@ def search():
     return render_template('results.html', records=[DisplayBacklog(result) for result in results], **render_args)
 
 # TODO: look at flask_users/views.py login() endpoint - security issue with 'next' GET parameter?
-# TODO: user permissions "copy from" functionality
 # TODO: remember me token - don't use user id
 # TODO: send email to admin on registration
 
@@ -197,7 +201,7 @@ def admin_create_user():
             db_adapter.commit()
             raise
 
-        return redirect(url_for('admin_manage_user', username=user.username))
+        return redirect(url_for('admin_manage_user', userid=user.qfuserid))
 
     # Process GET or invalid POST
     return render_template('admin/create_user.html', form=create_form, register_form=create_form)
@@ -240,7 +244,7 @@ def admin_manage_user(userid):
     :return:
     """
     # get current user to manage
-    user = db.session.query(QfUser).filter(QfUser.qfuserid == userid).one()
+    user = query_qfuser(userid)
 
     # get all possible permissions - for setting permissions
     db_quasselusers = query_quasselusers(db.session)
@@ -255,7 +259,7 @@ def admin_manage_user(userid):
                            user_permissions=user_permissions)
 
 
-@app.route('/admin/users/<userid>/update', methods=['GET', 'POST'])
+@app.route('/admin/users/<userid>/update', methods=['POST'])
 @roles_required('superuser')
 def admin_update_user(userid):
     """
@@ -266,25 +270,119 @@ def admin_update_user(userid):
     If acting on the current user, only the email address may be updated.  This prevents the current user from locking
     themselves out of the application or removing a sole superuser.
 
-    POST parameters (all optional):
+    POST command parameter (exactly one required, except email and confirm_email may appear together):
 
     * `status`: 1 (enabled) or 0 (disabled). Other values treated as 0.
-    * `superuser`: 1 (superuser) or 0 (normal user). Cannot be used in combination with other parameters. Returns a
-        confirmation page.
-    * `delete`: 1. Cannot be used in combination with other parameters. Returns a confirmation page.
-    * `confirm_token`: Confirmation token for superuser or delete.
-    * `email`: new email address.
-    * `confirm_email`: 1 (confirm) or 0 (unconfirm). Force the email confirmation status.
+    * `superuser`: 1 (superuser) or 0 (normal user). Other values treated as 0. Returns a confirmation page.
+    * `delete`: 1. Returns a confirmation page.
+    * `confirm_token`: Confirmation token. Only applies to superuser/delete requests.
+    * `email`: new email address. Can only be combined with the `confirm_email` parameter.
+    * `confirm_email`: 1 (confirm) or 0 (unconfirm). Force the email confirmation status. Other values are treated as 0.
+            Can only be combined with the `email` parameter.
+
+    Other POST parameters, common to all requests:
+
+    * `next`: URL, the URL to return to after the update.
 
     :param userid: The user ID to modify.
     :return:
     """
-    # TODO: confirm: delete, superuser. Token for confirmation.
-    # TODO: disallow: enable/disable, superuser/nosuperuser, confirm/unconfirm, delete current user
-    return render_template('admin/manage_user.html')  # TODO
+
+    from quasselflask import forms
+
+    commands = frozenset(('status', 'superuser', 'delete', 'email', 'confirm_email', 'confirm_token'))
+    request_commands = set(request.form.keys()) & commands
+
+    # validate
+    request_valid = len(request_commands) == 1 or \
+        (len(request_commands) == 2 and 'email' in request_commands and 'confirm_email' in request_commands)
+    user_valid = (userid != current_user.qfuserid or
+                  ('email' in request_commands and request.form.get('confirm_email', '0') == '1'))
+
+    if not request_valid:
+        raise BadRequest("Multiple commands to user update API endpoint")
+
+    if not user_valid:
+        flash('Cannot update current user: requested change would disable the current user', 'error')
+        return safe_redirect(get_next_url('POST'))
+
+    # Valid - let's process it
+    user = query_qfuser(userid)
+
+    if 'status' in request.form:
+        status_arg = request.form.get('status', '0')
+        status_val = bool(status_arg == '1')
+        user.active = status_val
+        db.session.commit()
+        flash(('Enabled' if status_val else 'Disabled') + ' user {}'.format(user.username), 'notice')
+        return safe_redirect(get_next_url('POST'))
+
+    elif 'superuser' in request.form or 'delete' in request.form:  # non-confirmed
+        if 'superuser' in request.form:
+            request_property = 'superuser'
+            request_value = '1' if request.form.get(request_property, '0') == '1' else '0'
+        elif 'delete' in request.form:
+            request_property = 'delete'
+            if not request.form.get(request_property) == '1':
+                raise BadRequest("Delete value must be '1'")
+            request_value = '1'
+        else:
+            raise BadRequest('Well, this is unfortunate. No idea how you got here. Huh. Might want to contact the devs '
+                             'about this very... odd... bug. It\'s in the superuser/delete commands handler.')
+
+        confirm_key = forms.get_user_update_confirm_key(userid, request_property, request_value)
+        return render_template('admin/update_user_confirm.html',
+                               user=user, property=request_property, value=request_value, next_url=get_next_url('POST'),
+                               confirm_key=confirm_key)
+
+    elif 'confirm_token' in request.form:  # confirm superuser/delete
+        try:
+            data = forms.check_user_update_confirm_key(request.form.get('confirm_token'))
+        except BadSignature as e:
+            raise BadRequest('Invalid confirmation key.')
+
+        request_userid = data['userid']
+        request_property = data['update']
+        request_value = data['value']
+        valid_request = request_userid == userid and \
+            ((request_property == 'superuser' and request_value in ['1', '0']) or
+             (request_property == 'delete' and request_value == '1'))
+        if not valid_request:
+            raise BadRequest('Invalid confirmation key.')
+
+        if request_property == 'superuser':
+            user.superuser = bool(request_value == '1')
+            flash('Set user {} as {}'.format(user.username, 'superuser' if user.superuser else 'normal user'), 'notice')
+            db.session.commit()
+            return safe_redirect(get_next_url('POST'))
+        elif request_property == 'delete':  # request_value should have been validated in valid_request
+            db.session.delete(user)
+            flash('Deleted user {}'.format(user.username))
+            db.session.commit()
+            return redirect(url_for('admin_users'))
+        db.session.commit()
+        return safe_redirect(get_next_url('POST'))
+
+    elif 'email' in request.form or 'confirm_email' in request.form:
+        if 'email' in request.form:
+            user.email = request.form.get('email')
+        if request.form.get('confirm_email', '0') == '1':
+            user.confirmed_at = datetime.now()
+        else:
+            user.confirmed_at = None
+        db.session.commit()
+        flash('User {user} updated with email {email} ({confirm})'
+              .format(user=user.username,
+                      email=user.email,
+                      confirm='must confirm' if user.confirmed_at is None else 'confirmed'),
+              'notice')
+        return safe_redirect(get_next_url('POST'))
+
+    else:
+        return safe_redirect(get_next_url('POST'))
 
 
-@app.route('/admin/users/<userid>/permissions/json', methods=['GET', 'POST'])
+@app.route('/admin/users/<userid>/permissions', methods=['POST'])
 @roles_required('superuser')
 def admin_permissions(userid):
     """
@@ -318,58 +416,6 @@ def admin_permissions(userid):
     :return:
     """
     return 'update permissions'  # TODO
-
-
-@app.route('/admin/list/permissions/json')
-@roles_required('superuser')
-def admin_list_permissions_json():
-    """
-    Return all possible permission values (quassel user, network, buffer) as JSON structure.
-
-    The JSON response structure is as follows (example with two elements for each permission type):
-
-    .. code-block:: json
-        {
-          "quasselusers": [
-            {
-              "id": 0,
-              "name": "user0"
-            },
-            {
-              "id": 1,
-              "name": "user1"
-            }
-          ],
-          "networks": [
-            {
-              "id": 0,
-              "quasseluserid": 0,
-              "name": "Snoonet"
-            },
-            {
-              "id": 1,
-              "quasseluserid": 1,
-              "name": "Freenode"
-            }
-          ],
-          "channels": [
-            {
-              "id": 0,
-              "networkid": 0,
-              "name": "#techsupport"
-            },
-            {
-              "id": 4,
-              "networkid": 1,
-              "name": "#debian"
-            }
-          ]
-        }
-    """
-    db_quasselusers = query_quasselusers(db.session)
-    db_networks = query_networks(db.session)
-    db_buffers = query_buffers(db.session, [BufferType.channel_buffer, BufferType.query_buffer])
-    return jsonify(convert_permissions_lists(db_quasselusers, db_networks, db_buffers))
 
 
 if os.environ.get('QF_ALLOW_TEST_PAGES'):

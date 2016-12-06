@@ -141,3 +141,17 @@ def query_buffers(session, buffertypes=None) -> sqlalchemy.orm.query.Query:
         query = query.filter(Buffer.buffertype.in_(buffertypes))
     query = query.order_by(asc(Buffer.buffertype), asc(Buffer.buffername))
     return query
+
+def query_qfuser(qfuserid) -> QfUser:
+    """
+    Find a user.
+    :param qfuserid:
+    :return: QfUser
+    :raise NotFound: User not found.
+    """
+    from quasselflask import db
+    from werkzeug.exceptions import NotFound
+    try:
+        return db.session.query(QfUser).filter(QfUser.qfuserid == qfuserid).one()
+    except sqlalchemy.orm.exc.NoResultFound as e:
+        raise NotFound("No such user.")

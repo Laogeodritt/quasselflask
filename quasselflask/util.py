@@ -54,6 +54,9 @@ def safe_redirect(location, *args, **kwargs):
 
     Used for a dirty hack, because Flask-User 0.6.8 doesn't implement secure redirects.
 
+    If you want to redirect to an external domain, use quasselflask.util.unsafe_redirect instead (equivalent to the
+    original werkzeug.utils.redirect).
+
     The method used is described at: http://flask.pocoo.org/snippets/62/
 
     :raise ValueError: redirect URL is unsafe
@@ -64,9 +67,7 @@ def safe_redirect(location, *args, **kwargs):
     if not response.headers.get('Location', None) or is_safe_url(response.headers.get('Location')):
         return response
     else:
-        raise ValueError("Unsafe redirect blocked: redirect must be to same hostname as current website. "
-                         "Use quasselflask.util.unsafe_redirect() (equivalent to werkzeug.utils.redirect()) if you "
-                         "want to redirect to an external domain.")
+        raise ValueError("Unsafe redirect blocked: redirect must be to same hostname.")
 
 
 def is_safe_url(target):
@@ -82,3 +83,18 @@ def is_safe_url(target):
     test_url = urlparse(urljoin(request.host_url, target))
     return test_url.scheme in ('http', 'https') and ref_url.netloc == test_url.netloc
 
+
+def get_next_url(method='GET', default='home'):
+    """
+    Get the 'next' URL to redirect to after completing an operation. Returns the 'next' parameter, HTTP referer or the
+    specified default endpoint, in order of priority.
+
+    :param method: If 'GET', search for the 'next' parameter in query args. If 'POST', search in POST parameters.
+    :param default: Name of the default endpoint.
+    :return:
+    """
+    from flask import url_for
+    if method == 'GET':
+        return request.args.get('next', request.referrer or url_for(default))
+    else:
+        return request.form.get('next', request.referrer or url_for(default))

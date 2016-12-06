@@ -28,6 +28,7 @@ def convert_user_permissions(user: QfUser):
         } for perm in user.permissions]
     }
 
+
 def convert_quasselusers(db_quasselusers: sqlalchemy.orm.query.Query):
     """
     Convert Quasseluser database records into a list of dicts:

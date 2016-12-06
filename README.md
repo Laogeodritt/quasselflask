@@ -218,6 +218,8 @@ Query parameters (all optional):
     * https://pythonhosted.org/Flask-User/recipes.html#account-tracking
     * Dependency for signals: https://pythonhosted.org/Flask-User/signals.html
 * Switch dark/light theme
+* Permissions management "copy from <user>"
+* User management: send email to user when user email changed (either as confirmed or not) or forced unconfirmed
 
 # Things to document
 * QF_ALLOW_TEST_PAGES

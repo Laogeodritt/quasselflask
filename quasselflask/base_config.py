@@ -28,6 +28,12 @@ class DefaultConfig:
     QF_PASSWORD_MSG = 'must be at least 12 characters long, and contain at least one uppercase letter, '\
                       'one lowercase letter and one digit.'
 
+    QF_ADMIN_CONFIRM_TIME = 600  # seconds - max time for admin user to respond to a confirm dialog for some actions
+
+    USER_PASSWORD_HASH = 'sha512_crypt'
+    USER_CONFIRM_EMAIL_EXPIRATION = 3*24*3600  # seconds
+    USER_RESET_PASSWORD_EXPIRATION = 24*3600  # seconds
+
     # MAIL_USERNAME = 'email@example.com'  # SMTP username (for user account-related emails)
     # MAIL_PASSWORD = 'password'  # SMTP password (for user account-related emails)
     # MAIL_DEFAULT_SENDER = '"Sender" <noreply@example.com>'  # 'From' address (for user account-related emails)
@@ -61,10 +67,7 @@ class InternalConfig:
     USER_ENABLE_USERNAME = True
 
     USER_AUTO_LOGIN_AFTER_CONFIRM = False
-    USER_CONFIRM_EMAIL_EXPIRATION = 3*24*3600  # seconds
     USER_INVITE_EXPIRATION = 7*24*3600  # seconds
-    USER_PASSWORD_HASH = 'sha512_crypt'
-    USER_RESET_PASSWORD_EXPIRATION = 24*3600  # seconds
     USER_SEND_PASSWORD_CHANGED_EMAIL = True
     USER_SEND_REGISTERED_EMAIL = True
     USER_SHOW_USERNAME_EMAIL_DOES_NOT_EXIST = False
