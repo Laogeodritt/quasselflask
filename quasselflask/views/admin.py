@@ -5,6 +5,7 @@ Project: Quasselflask
 """
 
 from datetime import datetime
+import json
 
 from flask import request, url_for, flash, redirect, render_template
 from flask.ext.login import current_user
@@ -13,10 +14,11 @@ from itsdangerous import BadSignature
 from werkzeug.exceptions import BadRequest
 
 from quasselflask import app, userman, db
+from quasselflask.models import PermissionAccess, PermissionType, QfPermission
 from quasselflask.parsing.data_convert import convert_permissions_lists, convert_user_permissions
 from quasselflask.querying import *
 from quasselflask import forms
-from quasselflask.util import random_string, safe_redirect, get_next_url
+from quasselflask.util import random_string, safe_redirect, get_next_url, repr_user_input
 
 import logging
 
@@ -267,8 +269,6 @@ def admin_update_user(userid):
     :return:
     """
 
-    from quasselflask import forms
-
     logger.info(_log_access())
 
     commands = frozenset(('status', 'superuser', 'email', 'confirm_email', 'confirm_token'))
@@ -302,7 +302,7 @@ def admin_update_user(userid):
     flash("Something happened. You shouldn't have gotten this far.", "error")
     logger.error(_log_action_error('update user', 'should have returned earlier in code - bug?',
                                    ('user', _get_qfuser_log(user))))
-    logger.debug('request.form=' + repr(request.form))
+    logger.debug('request.form=' + repr_user_input(request.form))
     return safe_redirect(get_next_url('POST'))
 
 
@@ -340,7 +340,7 @@ def admin_update_user_superuser(user):
         data = forms.check_confirm_key(request.form.get('confirm_token'), 'admin_update_user')
     except BadSignature:
         logger.error(_log_action_error('update user', 'invalid confirmation key', ('user', _get_qfuser_log(user))))
-        logger.debug('request.form=' + repr(request.form))
+        logger.debug('request.form=' + repr_user_input(request.form))
         raise BadRequest('Invalid confirmation key.')
 
     valid_request = user.qfuserid == data['target_user'] and \
@@ -348,8 +348,8 @@ def admin_update_user_superuser(user):
         'superuser' == data['update']
     if not valid_request:
         logger.error(_log_action_error('update user', 'invalid confirmation data', ('user', _get_qfuser_log(user))))
-        logger.debug('confirmation data=' + repr(data))
-        logger.debug('request.form=' + repr(request.form))
+        logger.debug('confirmation data=' + repr_user_input(data))
+        logger.debug('request.form=' + repr_user_input(request.form))
         raise BadRequest('Invalid confirmation key.')
 
     user.superuser = bool(data.get('value', '0') == '1')
@@ -374,7 +374,8 @@ def admin_update_user_email(user):
                   confirm='must confirm' if user.confirmed_at is None else 'confirmed'),
           'notice')
     logger.info(_log_action('update user', ('user', _get_qfuser_log(user)),
-                            ('set', 'superuser'), ('to', repr(user.superuser))))
+                            ('set', 'email'), ('email', user.email),
+                            ('confirmed', 'True' if user.confirmed_at else 'False')))
     return safe_redirect(get_next_url('POST'))
 
 
@@ -386,33 +387,71 @@ def admin_permissions(userid):
 
     POST parameters:
 
-    * `permissions`: data in the following structure:
+    * `permissions`: new permissions to set. Data in the following structure:
 
         .. code-block:: json
             {
                 "permissions": [
                     {
-                        "action": "add|remove",
                         "access": "allow|deny",
                         "type": "user|network|buffer",
-                        "id": 0,
-                        "qfpermid": 0
+                        "id": 0
                     },
                     { ... }
                 ],
                 "default": "allow|deny"
             }
 
-        ``id`` represents the quasseluser, network or buffer ID. ``qfpermid`` is the ID of an existing record and
-        only applies if "action" is "remove" (this is used for efficiency; if the permission ID does not correspond to
-        the rest of the information in the object, an error is returned).
+        ``id`` represents the quasseluser, network or buffer ID, depending on the set `type` value.
 
 
     :param userid: The user ID to modify.
     :return:
     """
+
     logger.info(_log_access())
-    return 'update permissions'  # TODO
+    user = query_qfuser(userid)
+    try:
+        perm_data = json.loads(request.form.get('permissions'))
+    except json.JSONDecodeError:
+        logger.error(_log_action_error('update permissions', 'invalid JSON', ('user', _get_qfuser_log(user))))
+        logger.debug('request.form=' + repr_user_input(request.form))
+        raise BadRequest('Invalid permissions data.')
+
+    try:
+        logger.debug(_log_action('old permissions', ('user', _get_qfuser_log(user)),
+                                 ('default', user.access), ('permissions', user.permissions)))
+        user.access = PermissionAccess.from_name(perm_data['default'])
+
+        # If any permissions for this user, delete them first
+        if user.permissions:
+            del user.permissions[:]
+
+        # Add the new permissions. Validations:
+        # access, type: from_name validates against enum python-side; db columns are enums
+        # ID: foreign key constraint, database will complain if non-existent for the given type
+        # All: If not present in in_perm (malformed permission object), KeyError raised
+        # TODO: figure out what kind of SQLAlchemy exceptions can be thrown here to throw in with Invalid permissions
+        for in_perm in perm_data['permissions']:
+            user.permissions.append(QfPermission(
+                PermissionAccess.from_name(in_perm['access']),
+                PermissionType.from_name(in_perm['type']),
+                in_perm['id']
+            ))
+
+        db.session.commit()
+
+        logger.info(_log_action('update permissions', ('user', _get_qfuser_log(user)),
+                                ('default', user.access), ('permissions', user.permissions)))
+
+    except (KeyError, TypeError, ValueError, sqlalchemy.exc.NoReferencedColumnError):
+        logger.error(_log_action_error('update permissions', 'invalid perm data', ('user', _get_qfuser_log(user))))
+        logger.debug('perm_data=' + repr_user_input(perm_data), exc_info=True, stack_info=True)
+        db.session.rollback()
+        raise BadRequest('Invalid permissions data.')
+    # other SQLAlchemy errors are not caught: legitimate server error (HTTP 500), let Flask handle it
+
+    return safe_redirect(get_next_url('POST'))
 
 
 @app.route('/admin/users/<userid>/delete', methods=['POST'])
@@ -438,8 +477,6 @@ def admin_delete_user(userid):
 
     from quasselflask import forms
 
-    from quasselflask.forms import signer
-
     logger.info(_log_access())
 
     # validate
@@ -459,7 +496,7 @@ def admin_delete_user(userid):
             is_confirmed = True
         except BadSignature:
             logger.error(_log_action_error('update user', 'invalid confirmation key', ('user', _get_qfuser_log(user))))
-            logger.debug('request.form=' + repr(request.form))
+            logger.debug('request.form=' + repr_user_input(request.form))
             is_confirmed = False
 
     if not is_confirmed:
@@ -474,8 +511,8 @@ def admin_delete_user(userid):
                         data.get('current_user', -1) == current_user.qfuserid
         if not valid_request:
             logger.error(_log_action_error('update user', 'invalid confirmation key', ('user', _get_qfuser_log(user))))
-            logger.debug('confirmation data=' + repr(data))
-            logger.debug('request.form=' + repr(request.form))
+            logger.debug('confirmation data=' + repr_user_input(data))
+            logger.debug('request.form=' + repr_user_input(request.form))
             raise BadRequest('Invalid confirmation key.')
 
         db.session.delete(user)

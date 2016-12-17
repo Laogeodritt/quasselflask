@@ -71,7 +71,9 @@
         </form>
 
         <form id="user-permissions-form" method="post" action="{{  url_for('admin_permissions', userid=user.get_id()) }}">
-            <input type="hidden" id="user-permissions-json">
+            <input type="hidden" name="csrf_token" value="{{ csrf_token() }}">
+            <input type="hidden" name="permissions" id="user-permissions-json">
+            <input type="hidden" name="next" value="{{ request.url }}">
             <button type="submit" id="user-permissions-submit">Save All</button>
         </form>
         <div id="user-permission-display"><p>Loading...</p></div>

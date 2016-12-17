@@ -41,11 +41,21 @@ class PermissionAccess(Enum):
     deny = 0
     allow = 1
 
+    @classmethod
+    def from_name(cls, name: str):
+        """ Get the PermissionAccess object corresponding to the name. Raises KeyError on failure."""
+        return cls.__members__[name]
+
 
 class PermissionType(Enum):
     user = 0
     network = 1
     buffer = 2
+
+    @classmethod
+    def from_name(cls, name: str):
+        """ Get the PermissionType object corresponding to the name. Raises KeyError on failure."""
+        return cls.__members__[name]
 
 
 class QfUser(db.Model, UserMixin):

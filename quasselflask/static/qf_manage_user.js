@@ -535,8 +535,21 @@ function bootstrapPermissionForm() {
     setupPermissionButtons();
 }
 
+
 function submitPermissions() {
-    console.log("submitPermissions"); // TODO: submitPermissions
+    /**
+     * API server-side used to require a delta---but this could break with concurrent superusers editing the
+     * permissions. This was changed to take the full current permission list to update to,
+     * so this is a quick hack to do this - only send action 'add' and blank.
+     */
+    var permissions = $.grep(userPermissions.perms, function(el) {
+        return (el.action !== 'remove');
+    });
+    var submitObject =  {
+        "default": userPermissions.default,
+        "permissions": permissions
+    };
+    $("#user-permissions-json").prop('value', JSON.stringify(submitObject));
 }
 
 
