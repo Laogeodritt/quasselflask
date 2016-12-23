@@ -4,8 +4,9 @@ Flask endpoints for admin area.
 Project: Quasselflask
 """
 
-from datetime import datetime
 import json
+import logging
+from datetime import datetime
 
 from flask import request, url_for, flash, redirect, render_template
 from flask.ext.login import current_user
@@ -13,14 +14,10 @@ from flask.ext.user import roles_required
 from itsdangerous import BadSignature
 from werkzeug.exceptions import BadRequest
 
-from quasselflask import app, userman, db
-from quasselflask.models import PermissionAccess, PermissionType, QfPermission
-from quasselflask.parsing.data_convert import convert_permissions_lists, convert_user_permissions
-from quasselflask.querying import *
-from quasselflask import forms
+from quasselflask import userman, db, forms
+from quasselflask.models.query import *
+from quasselflask.parsing.convert_json import convert_permissions_lists, convert_user_permissions
 from quasselflask.util import random_string, safe_redirect, get_next_url, repr_user_input
-
-import logging
 
 
 @app.before_first_request

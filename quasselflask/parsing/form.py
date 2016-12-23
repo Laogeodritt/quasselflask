@@ -154,7 +154,7 @@ def convert_glob_to_like(s: str) -> (str, bool):
 
 
 class PasswordValidator:
-    def __init__(self, min=-1, max=-1, required_regex=(r'[A-Z]', r'[a-z]', r'[0-9]'), message=None):
+    def __init__(self, len_min=-1, len_max=-1, required_regex=(r'[A-Z]', r'[a-z]', r'[0-9]'), message=None):
         """
         Initialise a password validator.
 
@@ -168,11 +168,11 @@ class PasswordValidator:
         :param message: User-friendly message to show in case of non-matching password.
         """
 
-        if min > max > -1:
+        if len_min > len_max > -1:
             raise ValueError('min > max is not valid')
 
-        self.min = min
-        self.max = max
+        self.min = len_min
+        self.max = len_max
         self.regexes = [re.compile(pattern) for pattern in required_regex]
         if not message:
             message_parts = []

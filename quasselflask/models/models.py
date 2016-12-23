@@ -5,13 +5,13 @@ in case of future quassel changes (especially schema changes that don't affect q
 Project: QuasselFlask
 """
 
-from enum import Enum
-
-from flask_user import UserMixin
 from flask_login import AnonymousUserMixin
+from flask_user import UserMixin
 from sqlalchemy.ext.automap import automap_base
+from sqlalchemy.orm import Query
 
 from quasselflask import db
+from quasselflask.models.types import PermissionAccess, PermissionType
 from quasselflask.parsing.irclog import BacklogType
 
 _db_tables = ['backlog', 'sender', 'buffer', 'network', 'quasseluser']
@@ -35,27 +35,6 @@ def __repr_backlog(self):
                                                           self.sender.sender, self.message)
 
 Backlog.__repr__ = __repr_backlog
-
-
-class PermissionAccess(Enum):
-    deny = 0
-    allow = 1
-
-    @classmethod
-    def from_name(cls, name: str):
-        """ Get the PermissionAccess object corresponding to the name. Raises KeyError on failure."""
-        return cls.__members__[name]
-
-
-class PermissionType(Enum):
-    user = 0
-    network = 1
-    buffer = 2
-
-    @classmethod
-    def from_name(cls, name: str):
-        """ Get the PermissionType object corresponding to the name. Raises KeyError on failure."""
-        return cls.__members__[name]
 
 
 class QfUser(db.Model, UserMixin):
@@ -209,6 +188,31 @@ class QfPermission(db.Model):
             return self.bufferid
         else:
             raise ValueError("Invalid `type`: " + repr(self.type))
+
+    def get_tuple(self) -> tuple:
+        """
+        Return a tuple containing (PermissionType, int id, PermissionAccess, QfPermission).
+        Last element is the current object as a back-reference.
+        :return:
+        """
+        return self.type, self.get_id(), self.access, self
+
+    def get_match_query(self) -> Query:
+        """
+        Return a query that matches this permission's target (user, network or buffer) by column in that object's table
+        (User, Network or Buffer classes). The query can be passed to a Query object's filter() method.
+
+        WARNING: IF THIS PERMISSION'S ACCESS IS 'DENY', THIS METHOD STILL RETURNS A QUERY THAT MATCHES THE
+        USER/NETWORK/BUFFER. IT DOES NOT EXCLUDE IT.
+
+        :return:
+        """
+        if self.type == PermissionType.user:
+            return QuasselUser.userid == self.userid
+        elif self.type == PermissionType.network:
+            return Network.networkid == self.networkid
+        elif self.type == PermissionType.buffer:
+            return Buffer.bufferid == self.bufferid
 
     def __repr__(self):
         if self.type == PermissionType.user:

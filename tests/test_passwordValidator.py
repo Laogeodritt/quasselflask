@@ -9,9 +9,9 @@ from quasselflask.parsing.form import PasswordValidator
 
 
 class TestPasswordValidator(TestCase):
-    def _validate(self, str):
+    def _validate(self, str_):
         class Dummy:
-            data = str
+            data = str_
             description = 'Test Field'
         self.validator(None, Dummy())
 

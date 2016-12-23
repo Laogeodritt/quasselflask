@@ -98,7 +98,7 @@ class TestDisplayBacklog(TestCase):
             (  # Invalid colour number w/o background
                 'Here is \x0378color text',
                 'Here is ' + FORMAT_TAG + '8color text</span>',
-                (('color07'),)
+                (('color07',),)
             ),
             (  # Invalid colour number in background
                 'Here is \x031,78color text',
@@ -108,7 +108,7 @@ class TestDisplayBacklog(TestCase):
             (  # Not a number in expected background position
                 'Here is \x031,color text',
                 'Here is ' + FORMAT_TAG + ',color text</span>',
-                (('color01'),)
+                (('color01',),)
             ),
             (  # Reset
                 '\x02Let us \x1d test out\x0f reset and also \x034,12color \x02bold\x0f now',

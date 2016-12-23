@@ -54,6 +54,7 @@ class DummyObject:
         self._is_init = True
 
 
+# noinspection PyUnresolvedReferences,PyUnresolvedReferences
 def init_app(instance_path=None):
     """
     Initializes Flask configurations, SQLAlchemy, Quasselflask-specific setup, Flask extension setup/glue.
@@ -74,7 +75,7 @@ def init_app(instance_path=None):
 
     # Flask
     app = quasselflask.app = Flask(__name__,
-                                   instance_path=os.environ.get('QF_CONFIG_PATH', None),
+                                   instance_path=os.environ.get('QF_CONFIG_PATH', instance_path),
                                    instance_relative_config=True)
     app.config.from_object(DefaultConfig)
     app.config.from_object(InternalConfig)
@@ -91,8 +92,8 @@ def init_app(instance_path=None):
 
     # Database
     db = quasselflask.db = SQLAlchemy(app)
-    import quasselflask.models
-    quasselflask.models.qf_create_all()
+    import quasselflask.models.models
+    quasselflask.models.models.qf_create_all()
 
     # Forms
     CsrfProtect(app)
@@ -101,9 +102,9 @@ def init_app(instance_path=None):
     mail = quasselflask.mail = Mail(app)  # Flask-Mail, for Flask-User
 
     # Flask-User
-    db_adapter = SQLAlchemyAdapter(db, quasselflask.models.QfUser)
+    db_adapter = SQLAlchemyAdapter(db, quasselflask.models.models.QfUser)
     loginman = LoginManager()
-    loginman.anonymous_user = quasselflask.models.QfAnonymousUserMixin
+    loginman.anonymous_user = quasselflask.models.models.QfAnonymousUserMixin
     userman = quasselflask.userman = UserManager(db_adapter, app,
                                                  password_validator=PasswordValidator(
                                                      min=app.config['QF_PASSWORD_MIN'],

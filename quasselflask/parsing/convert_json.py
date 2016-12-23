@@ -6,7 +6,8 @@ Project: QuasselFlask
 
 import sqlalchemy.orm
 
-from quasselflask.models import QfUser, QfPermission
+from quasselflask.models.models import QfUser, QfPermission
+
 
 def convert_permissions_lists(db_quasselusers: sqlalchemy.orm.query.Query,
                               db_networks: sqlalchemy.orm.query.Query,
@@ -16,6 +17,7 @@ def convert_permissions_lists(db_quasselusers: sqlalchemy.orm.query.Query,
         'networks': convert_networks(db_networks),
         'buffers': convert_buffers(db_buffers)
     }
+
 
 def convert_user_permissions(user: QfUser):
     return {

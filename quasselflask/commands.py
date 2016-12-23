@@ -27,7 +27,7 @@ def init_superuser(name, email, password=''):
     :param password: Plain-text password of the superuser account to create. It is recommended to log in and change this
         password via the web interface. If not specified, will prompt at the command line.
     """
-    from quasselflask.models import QfUser as User
+    from quasselflask.models.models import QfUser as User
     db_adapter = userman.db_adapter
     user_class_fields = User.__dict__
     user_fields = {}
@@ -123,7 +123,7 @@ def reset_db():
     Have backups!). The connected PostgreSQL user must be owner (or member to the owner group) of the table to drop it.
     :return:
     """
-    from quasselflask import models
+    from quasselflask.models import models
     if prompt_bool('Are you sure? This will delete all QuasselFlask users and permissions and CANNOT BE UNDONE. '
                    'Quassel database will not be deleted. You will need to run the "init_superuser" '
                    'command again to set up QuasselFlask tables and superuser. (y|n) Default: '):

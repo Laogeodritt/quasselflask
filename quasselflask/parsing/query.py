@@ -465,22 +465,28 @@ class BooleanQuery(object):
         be string tokens (as processed in this class), or the result object from a previous callback call, or any
         combination thereof.
 
-        :param and_func: Callback taking two arguments for the AND function.
-        :param or_func: Callback taking two operands for the OR function.
-        :param operand_wrapper: Callback that is called on all operands before AND and OR operations (including operands
-            that are evaluated from AND/OR). Useful if all operands need a conversion before being passed to AND/OR
-            (but make sure to guard against reconverting an already AND'd or OR'd result). Must return the value that is
-            to be passed to AND/OR functions or returned as the expression evaluation result.
+        :param and_func: Callback taking two operands and returning the result of an AND operation between them. If
+            ``operand_wrapper`` is given, then the operands are each passed to ``operand_wrapper`` and the return
+            values are passed to ``and_func``. If it is not given, the arguments may be raw operands (str), or the
+            result of a previous AND or OR operation (an ``and_func`` or ``or_Func`` return value).
+        :param or_func: Callback taking two operands and returning the result of an OR operation between them.
+            Arguments are the same as the `and_func`.
+        :param operand_wrapper: Callback that is called on all operands. Operands may be raw tokens (str type), or
+            the result of a previous AND or OR operation (an ``and_func`` or ``or_func`` return value). This is useful
+            to pre-process or pre-convert the operand values before they are passed to ``and_func`` or ``or_func``.
+
+            This function takes one argument (an operand), and must return a value that can be passed to ``and_func``
+            or ``or_func``.
         :return: The final result of evaluation
         :raise ValueError: unexpected tokens or insufficient operands. In the case of an error being raised, it is the
-                caller's responsibility to clean up the expression execution that was occurring via the callbacks.
+                caller's responsibility to clean up any side effects caused by the callback functions.
         """
         arg_queue = []
         token = None
         if not self.postfix:
             return None
         if operand_wrapper is None:
-            def noop(s): pass
+            def noop(_): pass
             operand_wrapper = noop
         try:
             for token in self.postfix:

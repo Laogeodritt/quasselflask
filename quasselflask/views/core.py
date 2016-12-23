@@ -13,9 +13,9 @@ from flask_user import login_required
 
 import quasselflask
 from quasselflask import db
+from quasselflask.models.query import *
 from quasselflask.parsing.form import process_search_params
 from quasselflask.parsing.irclog import DisplayBacklog
-from quasselflask.querying import *
 from quasselflask.util import safe_redirect
 
 
@@ -98,7 +98,7 @@ def search():
     render_args['search_order'] = sql_args.get('order')
 
     # build and execute the query
-    results = build_db_search_query(db.session, sql_args).all()
+    results = build_query_backlog(db.session, sql_args).all()
 
     if sql_args['order'] == 'newest':
         results = reversed(results)
