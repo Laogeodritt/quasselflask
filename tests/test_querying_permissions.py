@@ -7,7 +7,7 @@ from unittest import TestCase
 
 import random
 
-from quasselflask.permissions import compile_permissions
+from quasselflask.permissions import make_cascaded_permissions, compile_permissions
 from quasselflask.models.types import PermissionAccess as Access, PermissionType as Type
 
 
@@ -35,16 +35,21 @@ class MockPerm:
         else:
             raise ValueError("Invalid `type` passed: " + repr(type_))
 
-    def __repr__(self):
+    def get_target_str(self):
         if self.type == Type.user:
-            return 'u{}{}'.format(self.userid, '+' if self.access is Access.allow else '#')
+            return 'u{}'.format(self.userid)
         elif self.type == Type.network:
-            return 'u{}n{}{}'.format(self.network.userid, self.networkid, '+' if self.access is Access.allow else '#')
+            return 'u{}n{}'.format(self.network.userid, self.networkid)
         elif self.type == Type.buffer:
-            return 'u{}n{}b{}{}'.format(self.buffer.network.userid, self.buffer.networkid, self.bufferid,
-                                        '+' if self.access is Access.allow else '#')
+            return 'u{}n{}b{}'.format(self.buffer.network.userid, self.buffer.networkid, self.bufferid)
         else:
             raise ValueError
+
+    def __str__(self):
+        return '{}{}'.format(self.get_target_str(), '+' if self.access is Access.allow else '#')
+
+    def __repr__(self):
+        return str(self)
 
     def get_id(self):
         if self.type == Type.user:
@@ -55,6 +60,9 @@ class MockPerm:
             return self.bufferid
         else:
             raise ValueError
+
+    def get_match_query(self):
+        return self.get_target_str()
 
     def copy(self):
         if self.type == Type.user:
@@ -73,6 +81,42 @@ class MockPerm:
             raise ValueError
         return MockPerm(self.access, self.type, id_, parent_userid, parent_networkid)
 
+    def __eq__(self, other):
+        return isinstance(other, MockPerm) and self.type == other.type and self.userid == other.userid and \
+               self.networkid == other.networkid and self.bufferid == other.bufferid and self.access == other.access
+
+    def __lt__(self, other):
+        if not isinstance(other, MockPerm):
+            raise TypeError("unorderable types: {} < {}".format(type(self), type(other)))
+        if self.type != other.type:
+            return self.type.value < other.type.value
+        else:
+            return self.get_id() < other.get_id()
+
+    def __le__(self, other):
+        if not isinstance(other, MockPerm):
+            raise TypeError("unorderable types: {} <= {}".format(type(self), type(other)))
+        if self.type != other.type:
+            return self.type.value < other.type.value
+        else:
+            return self.get_id() <= other.get_id()
+
+    def __gt__(self, other):
+        if not isinstance(other, MockPerm):
+            raise TypeError("unorderable types: {} > {}".format(type(self), type(other)))
+        if self.type != other.type:
+            return self.type.value > other.type.value
+        else:
+            return self.get_id() > other.get_id()
+
+    def __ge__(self, other):
+        if not isinstance(other, MockPerm):
+            raise TypeError("unorderable types: {} >= {}".format(type(self), type(other)))
+        if self.type != other.type:
+            return self.type.value > other.type.value
+        else:
+            return self.get_id() >= other.get_id()
+
 
 class MockQfUser:
     _autoinc = 0
@@ -90,13 +134,39 @@ class MockObject(object):
         self.__dict__.update(kwargs)
 
 
-class TestQueryingPermissions(TestCase):
-    def setUp(self):
-        # superuser
-        self.super_perms = []
-        self.super_perms.append(MockPerm(Access.allow, Type.user, 101))
-        self.super_user = MockQfUser(True, Access.deny, self.super_perms)
+def and_(a, b):
+    return "{} {} *".format(a, b)
 
+
+def or_(a, b):
+    return "{} {} +".format(a, b)
+
+
+def not_(a):
+    return "{} ¬".format(a)
+
+
+class TestQueryingPermissions(TestCase):
+    # FIXME: this test is unfortunately implementation-dependent:
+    # - Boolean expressions aren't evaluated
+    # - TRUE/FALSE aren't short-circuited
+    # - AND and OR are commutative and De Morgan's theorem means there isn't a unique representation (canonical sum-of-
+    #   products boolean expression could solve this)
+    #
+    # That seems too complex for a test. I feel like this entire solution, and its test, are too complex. =P
+    #
+
+    @staticmethod
+    def make_permissions_filter_string(user):
+        """ Returns reverse polish notation. """
+        cascaded = make_cascaded_permissions(user)
+
+        # Sort to ensure result order is consistent for a given permission set
+        for level in (1, 2, 3):
+            cascaded[level].sort()
+        return compile_permissions(cascaded, and_, or_, not_, 'TRUE', 'FALSE')
+
+    def setUp(self):
         # allow-all user
         self.allow_user = MockQfUser(False, Access.allow, [])
 
@@ -157,20 +227,44 @@ class TestQueryingPermissions(TestCase):
                              {'u1n1b1#', 'u1n1b2#', 'u2n3b3#', 'u2n3b4#', 'u2n4b5#', 'u2n4b6#'}
                              )
 
-    def test_compile_permissions_white(self):
-        compiled = compile_permissions(self.white_user)
+    def test_sorted_permissions_white(self):
+        cascaded = make_cascaded_permissions(self.white_user)
         expected = self.white_expect
-        self.assertIs(compiled[0], expected[0], 'level 0 access mismatch')
+        self.assertIs(cascaded[0], expected[0], 'level 0 access mismatch')
         for level in range(1, 3+1):
-            compiled_set = set(repr(perm) for perm in compiled[level])
+            compiled_set = set(repr(perm) for perm in cascaded[level])
             expected_set = expected[level]
-            self.assertEqual(compiled_set, expected_set, 'level {} mismatch'.format(level))
+            self.assertEqual(expected_set, compiled_set, 'level {} mismatch'.format(level))
 
-    def test_compile_permissions_black(self):
-        compiled = compile_permissions(self.black_user)
+    def test_sorted_permissions_black(self):
+        cascaded = make_cascaded_permissions(self.black_user)
         expected = self.black_expect
-        self.assertIs(compiled[0], expected[0], 'level 0 access mismatch')
+        self.assertIs(cascaded[0], expected[0], 'level 0 access mismatch')
         for level in range(1, 3+1):
-            compiled_set = set(repr(perm) for perm in compiled[level])
+            compiled_set = set(repr(perm) for perm in cascaded[level])
             expected_set = expected[level]
-            self.assertEqual(compiled_set, expected_set, 'level {} mismatch'.format(level))
+            self.assertEqual(expected_set, compiled_set, 'level {} mismatch'.format(level))
+
+    def test_filter_allow_all(self):
+        expected = 'TRUE'
+        result = self.make_permissions_filter_string(self.allow_user)
+        self.assertEqual(expected, result, 'mismatch boolean strings')
+
+    def test_filter_deny_all(self):
+        expected = 'FALSE'
+        result = self.make_permissions_filter_string(self.deny_user)
+        self.assertEqual(expected, result, 'mismatch boolean strings')
+
+    def test_filter_white_user(self):
+        expected = 'FALSE u1 u2 + u3n2 + u4n5b9 + + u1n1 u2n3 + u2n4 + u3n2b7 + u3n2b8 + ¬ * ' \
+                   'u1n1b1 u1n1b2 + u2n3b3 + u2n3b4 + u2n4b5 + u2n4b6 + +'
+        result = self.make_permissions_filter_string(self.white_user)
+        print(result)
+        self.assertEqual(expected, result, 'mismatch boolean strings')
+
+    def test_filter_black_user(self):
+        expected = 'TRUE u1 u2 + u3n2 + u4n5b9 + ¬ * u1n1 u2n3 + u2n4 + u3n2b7 + u3n2b8 + + ' \
+                   'u1n1b1 u1n1b2 + u2n3b3 + u2n3b4 + u2n4b5 + u2n4b6 + ¬ *'
+        result = self.make_permissions_filter_string(self.black_user)
+        print(result)
+        self.assertEqual(expected, result, 'mismatch boolean strings')

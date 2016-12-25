@@ -107,8 +107,8 @@ def init_app(instance_path=None):
     loginman.anonymous_user = quasselflask.models.models.QfAnonymousUserMixin
     userman = quasselflask.userman = UserManager(db_adapter, app,
                                                  password_validator=PasswordValidator(
-                                                     min=app.config['QF_PASSWORD_MIN'],
-                                                     max=app.config['QF_PASSWORD_MAX'],
+                                                     len_min=app.config['QF_PASSWORD_MIN'],
+                                                     len_max=app.config['QF_PASSWORD_MAX'],
                                                      required_regex=app.config['QF_PASSWORD_REGEX'],
                                                      message=app.config['QF_PASSWORD_MSG']),
                                                  login_manager=loginman

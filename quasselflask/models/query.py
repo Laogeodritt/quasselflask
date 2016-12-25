@@ -8,15 +8,12 @@ Project: QuasselFlask
 """
 
 import sqlalchemy.orm
-from sqlalchemy import desc, asc, and_, or_, not_
-from sqlalchemy import sql
+from sqlalchemy import desc, asc, and_, or_
 
 from quasselflask.models.models import QuasselUser, Network, Backlog, Buffer, Sender, QfUser
-from quasselflask.models.types import PermissionAccess
 from quasselflask.parsing.form import convert_glob_to_like, escape_like
 from quasselflask.parsing.irclog import BufferType
 from quasselflask.parsing.query import BooleanQuery
-from quasselflask.permissions import compile_permissions
 
 
 def build_query_backlog(session, args) -> sqlalchemy.orm.query.Query:
@@ -164,43 +161,3 @@ def query_qfuser(qfuserid) -> QfUser:
         return db.session.query(QfUser).filter(QfUser.qfuserid == qfuserid).one()
     except sqlalchemy.orm.exc.NoResultFound as e:
         raise NotFound("No such user.") from e
-
-
-def build_filter_permissions(user: QfUser) -> sqlalchemy.orm.Query:
-    """
-    Build an SQL query (WHERE clause) that filters according to a given user's permissions. This is intended to be used
-    as a filter for a backlog search query or other queries.
-
-    :param user: User whose permissions will be read. Usually the current_user. If superuser,
-    :return: A query object (WHERE clause) that can be passed to ``sqlalchemy.orm.Query.filter()`` of another query;
-        in the case that there are no permissions restrictions, ``sqlalchemy.sql.true()`` is returned. If the user is
-        permitted no access, ``sqlalchemy.sql.false()`` is returned.
-    """
-    if user.is_superuser():
-        return sql.true()
-
-    perm_struct = compile_permissions(user)
-    perm_access = (user.access, ~user.access, user.access, ~user.access)
-
-    # Build the SQL query to filter by permission
-    query = sql.true() if user.access == PermissionAccess.allow else sql.false()
-
-    # constants for readability
-    level3 = 3
-    level2 = 2
-    level1 = 1
-
-    for level in (1, 2, 3):
-        level_query = sql.false()
-        for perm in perm_struct[level]:
-            level_query = or_(level_query, perm.get_match_query())
-
-        if perm_access[level] is PermissionAccess.deny:
-            query = and_(query, not_(level_query))
-        elif perm_access[level] is PermissionAccess.allow:
-            query = or_(query, level_query)
-        else:
-            raise RuntimeError('internal error: invalid perm_access level')
-
-    return query
-    # TODO: Permission check interface

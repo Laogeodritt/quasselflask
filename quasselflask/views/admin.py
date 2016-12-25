@@ -14,8 +14,9 @@ from flask.ext.user import roles_required
 from itsdangerous import BadSignature
 from werkzeug.exceptions import BadRequest
 
-from quasselflask import userman, db, forms
+from quasselflask import app, userman, db, forms
 from quasselflask.models.query import *
+from quasselflask.models.types import *
 from quasselflask.parsing.convert_json import convert_permissions_lists, convert_user_permissions
 from quasselflask.util import random_string, safe_redirect, get_next_url, repr_user_input
 
@@ -223,7 +224,7 @@ def admin_manage_user(userid):
     logger.info(_log_access())
 
     # get current user to manage
-    user = query_qfuser(userid)
+    user = query_qfuser(db.session, userid)
 
     # get all possible permissions - for setting permissions
     db_quasselusers = query_quasselusers(db.session)
@@ -285,7 +286,7 @@ def admin_update_user(userid):
         return safe_redirect(get_next_url('POST'))
 
     # Valid - let's process it
-    user = query_qfuser(userid)
+    user = query_qfuser(db.session, userid)
 
     if 'status' in request.form:
         return admin_update_user_status(user)
@@ -407,7 +408,7 @@ def admin_permissions(userid):
     """
 
     logger.info(_log_access())
-    user = query_qfuser(userid)
+    user = query_qfuser(db.session, userid)
     try:
         perm_data = json.loads(request.form.get('permissions'))
     except json.JSONDecodeError:
@@ -451,6 +452,23 @@ def admin_permissions(userid):
     return safe_redirect(get_next_url('POST'))
 
 
+@app.route('/admin/users/<userid>/check_permissions', methods=['GET'])
+@roles_required('superuser')
+def admin_check_permissions(userid):
+    """
+    Shows a list of permitted buffers.
+    :param userid: User ID to check.
+    :return:
+    """
+    user = query_qfuser(db.session, userid)
+    permitted_buffers = query_permitted_buffers(db.session, user)
+
+    # TODO: template
+    # TODO: a version of this in /user/check_permissions
+    # TODO: links to this tool
+    return render_template("check_permissions.html", user=user, buffers=permitted_buffers)
+
+
 @app.route('/admin/users/<userid>/delete', methods=['POST'])
 @roles_required('superuser')
 def admin_delete_user(userid):
@@ -482,7 +500,7 @@ def admin_delete_user(userid):
         return safe_redirect(get_next_url('POST'))
 
     # Valid - let's process it
-    user = query_qfuser(userid)
+    user = query_qfuser(db.session, userid)
 
     # check if confirmed
     is_confirmed = False

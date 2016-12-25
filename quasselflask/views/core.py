@@ -12,7 +12,7 @@ from flask_sqlalchemy import get_debug_queries
 from flask_user import login_required
 
 import quasselflask
-from quasselflask import db
+from quasselflask import app, db
 from quasselflask.models.query import *
 from quasselflask.parsing.form import process_search_params
 from quasselflask.parsing.irclog import DisplayBacklog
