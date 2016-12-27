@@ -462,10 +462,6 @@ def admin_check_permissions(userid):
     """
     user = query_qfuser(db.session, userid)
     permitted_buffers = query_permitted_buffers(db.session, user)
-
-    # TODO: template
-    # TODO: a version of this in /user/check_permissions
-    # TODO: links to this tool
     return render_template("check_permissions.html", user=user, buffers=permitted_buffers)
 
 

@@ -78,10 +78,10 @@ html table.userlist tr, .light table.userlist tr {
     @include rebase_bgcolor($red, $rebase03);
   }*/
 }
-html #user-permission-display, .light #user-permission-display {
+html #user-permission-display, html .buffer-list, .light #user-permission-display, .light .buffer-list {
   border: 1px solid #657b83;
 }
-html #user-permission-display .label-extra, .light #user-permission-display .label-extra {
+html #user-permission-display .label-extra, html .buffer-list .label-extra, .light #user-permission-display .label-extra, .light .buffer-list .label-extra {
   color: #eee8d5;
 }
 html .label-extra, .light .label-extra {
@@ -148,10 +148,10 @@ html .label-extra, .light .label-extra {
     @include rebase_bgcolor($red, $rebase03);
   }*/
 }
-.dark #user-permission-display {
+.dark #user-permission-display, .dark .buffer-list {
   border: 1px solid #839496;
 }
-.dark #user-permission-display .label-extra {
+.dark #user-permission-display .label-extra, .dark .buffer-list .label-extra {
   color: #002b36;
 }
 .dark .label-extra {
@@ -290,7 +290,7 @@ form #search-maxlines {
   max-width: 4em;
 }
 
-input, button, .dijitTextBox {
+input, button, .buffer-list .buffer-allow, .buffer-list .buffer-deny, .dijitTextBox {
   border: 1px solid;
   border-radius: 10px;
   margin: 0 0.4em 0.6em;
@@ -316,32 +316,32 @@ input[type="text"], input[type="number"] {
   background-color: #f2b3b2;
 }
 
-button, input[type="submit"] {
+button, .buffer-list .buffer-allow, .buffer-list .buffer-deny, input[type="submit"] {
   background-color: #268bd2;
   border: solid #268bd2 1px;
   color: #fdf6e3;
   transition: color 0.3s, background-color 0.3s, border-color 0.3s;
   vertical-align: middle;
 }
-button:hover, button:active, button.state-flashing-on, input[type="submit"]:hover, input[type="submit"]:active, input[type="submit"].state-flashing-on {
+button:hover, .buffer-list .buffer-allow:hover, .buffer-list .buffer-deny:hover, button:active, .buffer-list .buffer-allow:active, .buffer-list .buffer-deny:active, button.state-flashing-on, .buffer-list .state-flashing-on.buffer-allow, .buffer-list .state-flashing-on.buffer-deny, input[type="submit"]:hover, input[type="submit"]:active, input[type="submit"].state-flashing-on {
   background-color: #4ca2df;
 }
-button[disabled], button[disabled]:hover, button[disabled]:active, input[type="submit"][disabled], input[type="submit"][disabled]:hover, input[type="submit"][disabled]:active {
+button[disabled], .buffer-list [disabled].buffer-allow, .buffer-list [disabled].buffer-deny, button[disabled]:hover, .buffer-list [disabled].buffer-allow:hover, .buffer-list [disabled].buffer-deny:hover, button[disabled]:active, .buffer-list [disabled].buffer-allow:active, .buffer-list [disabled].buffer-deny:active, input[type="submit"][disabled], input[type="submit"][disabled]:hover, input[type="submit"][disabled]:active {
   opacity: 0.5;
   background-color: #268bd2;
 }
 
-button[type="reset"], input[type="reset"] {
+button[type="reset"], .buffer-list [type="reset"].buffer-allow, .buffer-list [type="reset"].buffer-deny, input[type="reset"] {
   background-color: #6c71c4;
   border: solid #6c71c4 1px;
   color: #fdf6e3;
   transition: color 0.3s, background-color 0.3s, border-color 0.3s;
   vertical-align: middle;
 }
-button[type="reset"]:hover, button[type="reset"]:active, button[type="reset"].state-flashing-on, input[type="reset"]:hover, input[type="reset"]:active, input[type="reset"].state-flashing-on {
+button[type="reset"]:hover, .buffer-list [type="reset"].buffer-allow:hover, .buffer-list [type="reset"].buffer-deny:hover, button[type="reset"]:active, .buffer-list [type="reset"].buffer-allow:active, .buffer-list [type="reset"].buffer-deny:active, button[type="reset"].state-flashing-on, .buffer-list [type="reset"].state-flashing-on.buffer-allow, .buffer-list [type="reset"].state-flashing-on.buffer-deny, input[type="reset"]:hover, input[type="reset"]:active, input[type="reset"].state-flashing-on {
   background-color: #9094d3;
 }
-button[type="reset"][disabled], button[type="reset"][disabled]:hover, button[type="reset"][disabled]:active, input[type="reset"][disabled], input[type="reset"][disabled]:hover, input[type="reset"][disabled]:active {
+button[type="reset"][disabled], .buffer-list [type="reset"][disabled].buffer-allow, .buffer-list [type="reset"][disabled].buffer-deny, button[type="reset"][disabled]:hover, .buffer-list [type="reset"][disabled].buffer-allow:hover, .buffer-list [type="reset"][disabled].buffer-deny:hover, button[type="reset"][disabled]:active, .buffer-list [type="reset"][disabled].buffer-allow:active, .buffer-list [type="reset"][disabled].buffer-deny:active, input[type="reset"][disabled], input[type="reset"][disabled]:hover, input[type="reset"][disabled]:active {
   opacity: 0.5;
   background-color: #6c71c4;
 }
@@ -757,9 +757,6 @@ table.userlist .actions .action-edit[disabled], table.userlist .actions .action-
 .user-manage-row form input[type='email'] {
   width: 20em;
 }
-.user-manage-row label {
-  font-size: 120%;
-}
 
 .user-manage-delete {
   float: right;
@@ -772,13 +769,7 @@ table.userlist .actions .action-edit[disabled], table.userlist .actions .action-
   margin-bottom: 0.6em;
 }
 
-#user-permission-display {
-  border-radius: 10px;
-  margin: 0;
-  padding: 0.8em 1em;
-}
-
-#btn-permission-allow, #user-permission-display .permission-access-allow {
+#btn-permission-allow, #user-permission-display .permission-access-allow, .buffer-list .permission-access-allow, .buffer-list .buffer-allow {
   background-color: #2aa198;
   border: solid #2aa198 1px;
   color: #fdf6e3;
@@ -786,19 +777,19 @@ table.userlist .actions .action-edit[disabled], table.userlist .actions .action-
   vertical-align: middle;
   transition: color 0.3s, background-color 0.3s, border-color 0.3s;
 }
-#btn-permission-allow:hover, #btn-permission-allow:active, #btn-permission-allow.state-flashing-on, #user-permission-display .permission-access-allow:hover, #user-permission-display .permission-access-allow:active, #user-permission-display .permission-access-allow.state-flashing-on {
+#btn-permission-allow:hover, #user-permission-display .permission-access-allow:hover, .buffer-list .permission-access-allow:hover, .buffer-list .buffer-allow:hover, #btn-permission-allow:active, #user-permission-display .permission-access-allow:active, .buffer-list .permission-access-allow:active, .buffer-list .buffer-allow:active, #btn-permission-allow.state-flashing-on, #user-permission-display .state-flashing-on.permission-access-allow, .buffer-list .state-flashing-on.permission-access-allow, .buffer-list .state-flashing-on.buffer-allow {
   background-color: #35c9be;
 }
-#btn-permission-allow[disabled], #btn-permission-allow[disabled]:hover, #btn-permission-allow[disabled]:active, #user-permission-display .permission-access-allow[disabled], #user-permission-display .permission-access-allow[disabled]:hover, #user-permission-display .permission-access-allow[disabled]:active {
+#btn-permission-allow[disabled], #user-permission-display [disabled].permission-access-allow, .buffer-list [disabled].permission-access-allow, .buffer-list [disabled].buffer-allow, #btn-permission-allow[disabled]:hover, #user-permission-display [disabled].permission-access-allow:hover, .buffer-list [disabled].permission-access-allow:hover, .buffer-list [disabled].buffer-allow:hover, #btn-permission-allow[disabled]:active, #user-permission-display [disabled].permission-access-allow:active, .buffer-list [disabled].permission-access-allow:active, .buffer-list [disabled].buffer-allow:active {
   opacity: 0.5;
   background-color: #2aa198;
 }
-#btn-permission-allow:before, #user-permission-display .permission-access-allow:before {
+#btn-permission-allow:before, #user-permission-display .permission-access-allow:before, .buffer-list .permission-access-allow:before, .buffer-list .buffer-allow:before {
   content: "✓";
   margin-right: 0.4em;
 }
 
-#btn-permission-deny, #user-permission-display .permission-access-deny {
+#btn-permission-deny, #user-permission-display .permission-access-deny, .buffer-list .permission-access-deny, .buffer-list .buffer-deny {
   background-color: #cb4b16;
   border: solid #cb4b16 1px;
   color: #fdf6e3;
@@ -806,16 +797,45 @@ table.userlist .actions .action-edit[disabled], table.userlist .actions .action-
   vertical-align: middle;
   transition: color 0.3s, background-color 0.3s, border-color 0.3s;
 }
-#btn-permission-deny:hover, #btn-permission-deny:active, #btn-permission-deny.state-flashing-on, #user-permission-display .permission-access-deny:hover, #user-permission-display .permission-access-deny:active, #user-permission-display .permission-access-deny.state-flashing-on {
+#btn-permission-deny:hover, #user-permission-display .permission-access-deny:hover, .buffer-list .permission-access-deny:hover, .buffer-list .buffer-deny:hover, #btn-permission-deny:active, #user-permission-display .permission-access-deny:active, .buffer-list .permission-access-deny:active, .buffer-list .buffer-deny:active, #btn-permission-deny.state-flashing-on, #user-permission-display .state-flashing-on.permission-access-deny, .buffer-list .state-flashing-on.permission-access-deny, .buffer-list .state-flashing-on.buffer-deny {
   background-color: #e8632c;
 }
-#btn-permission-deny[disabled], #btn-permission-deny[disabled]:hover, #btn-permission-deny[disabled]:active, #user-permission-display .permission-access-deny[disabled], #user-permission-display .permission-access-deny[disabled]:hover, #user-permission-display .permission-access-deny[disabled]:active {
+#btn-permission-deny[disabled], #user-permission-display [disabled].permission-access-deny, .buffer-list [disabled].permission-access-deny, .buffer-list [disabled].buffer-deny, #btn-permission-deny[disabled]:hover, #user-permission-display [disabled].permission-access-deny:hover, .buffer-list [disabled].permission-access-deny:hover, .buffer-list [disabled].buffer-deny:hover, #btn-permission-deny[disabled]:active, #user-permission-display [disabled].permission-access-deny:active, .buffer-list [disabled].permission-access-deny:active, .buffer-list [disabled].buffer-deny:active {
   opacity: 0.5;
   background-color: #cb4b16;
 }
-#btn-permission-deny:before, #user-permission-display .permission-access-deny:before {
+#btn-permission-deny:before, #user-permission-display .permission-access-deny:before, .buffer-list .permission-access-deny:before, .buffer-list .buffer-deny:before {
   content: "✗";
   margin-right: 0.4em;
+}
+
+#user-permission-display, .buffer-list {
+  border-radius: 10px;
+  margin: 0;
+  padding: 0.8em 1em;
+}
+
+.buffer-list {
+  display: flex;
+  flex-flow: row wrap;
+  justify-content: flex-start;
+  align-items: stretch;
+  vertical-align: middle;
+}
+.buffer-list li {
+  list-style: none;
+}
+.buffer-list .buffer-allow {
+  /* non-interactive */
+}
+.buffer-list .buffer-allow:hover {
+  cursor: inherit;
+}
+.buffer-list .buffer-deny {
+  /* non-interactive */
+}
+.buffer-list .buffer-deny:hover {
+  cursor: inherit;
 }
 
 /* Dojo/Dijit stuff (also mixed into some blocks above) */

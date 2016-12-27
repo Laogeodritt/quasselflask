@@ -37,7 +37,9 @@
         <li id="nav-user">
             {% if call_or_get(current_user.is_authenticated) %}
                 <a href="{{ url_for('user.profile') }}">{{ current_user.username }}</a>
-                &nbsp; | &nbsp;
+                &nbsp;|&nbsp;
+                <a href="{{ url_for('check_permissions') }}">Permissions</a>
+                &nbsp;|&nbsp;
                 <a href="{{ url_for('user.logout') }}">Sign out</a>
             {% else %}
                 <a href="{{ url_for('user.login') }}">Sign in</a>
@@ -46,7 +48,7 @@
         {% if not call_or_get(current_user.is_anonymous) and call_or_get(current_user.is_superuser) %}
         <li id="nav-admin">
             <a href="{{ url_for('admin_create_user') }}">Create user</a>
-            |
+            &nbsp;|&nbsp;
             <a href="{{ url_for('admin_users') }}">Manage users</a>
         </li>
         {% endif %}

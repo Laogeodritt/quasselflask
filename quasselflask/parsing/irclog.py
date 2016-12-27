@@ -38,7 +38,7 @@ class BacklogType(Enum):
     invite = 0x20000
 
 
-class BufferType:
+class BufferType(Enum):
     """
     https://github.com/quassel/quassel/blob/master/src/common/bufferinfo.h
     That is all.

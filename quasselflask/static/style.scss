@@ -611,10 +611,6 @@ table.userlist {
 
     &[type='email'] { width: 20em; }
   }
-
-  label {
-    font-size: $large-font-size;
-  }
 }
 
 .user-manage-delete {
@@ -629,22 +625,47 @@ table.userlist {
   }
 }
 
-#user-permission-display {
-  border-radius: $content-border-radius;
-  margin: 0;
-  padding: 0.8em 1em;
-}
-
-#btn-permission-allow, #user-permission-display .permission-access-allow {
+#btn-permission-allow {
   @include button_color($enable-color);
   transition: $color-transition;
   &:before { content: "✓"; margin-right: 0.4em; }
 }
 
-#btn-permission-deny, #user-permission-display .permission-access-deny {
+#btn-permission-deny {
   @include button_color($disable-color);
   transition: $color-transition;
   &:before { content: "✗"; margin-right: 0.4em; }
+}
+
+#user-permission-display {
+  border-radius: $content-border-radius;
+  margin: 0;
+  padding: 0.8em 1em;
+
+  .permission-access-allow { @extend #btn-permission-allow; }
+  .permission-access-deny { @extend #btn-permission-deny; }
+}
+
+.buffer-list {
+  @extend #user-permission-display;
+  display: flex;
+  flex-flow: row wrap;
+  justify-content: flex-start;
+  align-items: stretch;
+  vertical-align: middle;
+
+  li { list-style: none; }
+
+  .buffer-allow {
+    @extend button;
+    @extend #btn-permission-allow;
+    &:hover { cursor: inherit; } /* non-interactive */
+  }
+  .buffer-deny {
+    @extend button;
+    @extend #btn-permission-deny;
+    &:hover { cursor: inherit; } /* non-interactive */
+  }
 }
 
 /* Dojo/Dijit stuff (also mixed into some blocks above) */

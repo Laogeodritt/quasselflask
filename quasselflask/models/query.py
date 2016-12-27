@@ -10,7 +10,9 @@ Project: QuasselFlask
 import sqlalchemy.orm
 from sqlalchemy import desc, asc, and_, or_
 
+from quasselflask.models.models import QfPermission
 from quasselflask.models.models import QuasselUser, Network, Backlog, Buffer, Sender, QfUser
+from quasselflask.models.types import PermissionAccess as Access, PermissionType as Type
 from quasselflask.parsing.form import convert_glob_to_like, escape_like
 from quasselflask.parsing.irclog import BufferType
 from quasselflask.parsing.query import BooleanQuery
@@ -46,6 +48,8 @@ def build_query_backlog(session, args) -> sqlalchemy.orm.query.Query:
     query_message_filter = build_filter_backlog_fulltext(args.get('query'), args.get('query_wildcard', None))
     if query_message_filter is not None:
         query = query.filter(query_message_filter)
+
+    query = query.filter(Buffer.bufferid.in_(pbuf.bufferid for pbuf in args['permissions']))
 
     if args.get('order') == 'newest':
         query = query.order_by(desc(Backlog.time))
@@ -136,22 +140,24 @@ def query_buffers(session, buffertypes=None) -> sqlalchemy.orm.query.Query:
     """
     Query the database for all Quassel buffers of the specified type.
     :param session: Database session (SQLAlchemy)
-    :param buffertypes: Buffer type or list of buffer types to retrieve (if None, query everything)
+    :param buffertypes: BufferType (enum value) or list/tuple of BufferType to retrieve (if None, query everything).
     :return:
     """
     query = session.query(Buffer)  # type: sqlalchemy.orm.query.Query
-    if isinstance(buffertypes, BufferType):
-        query = query.filter(Buffer.bufferType == buffertypes)
-    elif buffertypes:
-        query = query.filter(Buffer.buffertype.in_(buffertypes))
+    try:
+        query = query.filter(Buffer.buffertype.in_(bt.value for bt in buffertypes))
+    except TypeError:
+        # maybe it's a single value
+        query = query.filter(Buffer.buffertype == buffertypes.value)
     query = query.order_by(asc(Buffer.buffertype), asc(Buffer.buffername))
     return query
 
 
-def query_qfuser(qfuserid) -> QfUser:
+def query_qfuser(session: sqlalchemy.orm.Session, qfuserid: int) -> QfUser:
     """
     Find a user.
-    :param qfuserid:
+    :param session: SQLAlchemy session to use
+    :param qfuserid: ID to query
     :return: QfUser
     :raise NotFound: User not found.
     """
@@ -161,3 +167,57 @@ def query_qfuser(qfuserid) -> QfUser:
         return db.session.query(QfUser).filter(QfUser.qfuserid == qfuserid).one()
     except sqlalchemy.orm.exc.NoResultFound as e:
         raise NotFound("No such user.") from e
+
+
+def query_permitted_buffers(session: sqlalchemy.orm.Session, user: QfUser) -> [int]:
+    """
+    Return a list of buffers that the user is permitted to access.
+
+    :param session: Database session to use
+    :param user: User whose permissions to search
+    :return: List of Buffer objects
+    """
+    permissions = {
+        'users': tuple(perm for perm in user.permissions if perm.type == Type.user),
+        'networks': tuple(perm for perm in user.permissions if perm.type == Type.network),
+        'buffers': tuple(perm for perm in user.permissions if perm.type == Type.buffer),
+    }
+    permitted_buffers = []
+
+    for buffer in query_buffers(session, BufferType.channel_buffer):  # type: Buffer
+        # Priority 1: buffer match
+        try:
+            buffer_perm = next(perm for perm in permissions['buffers'] if perm.bufferid == buffer.bufferid)  \
+                # type: QfPermission
+            # If allow, add it to the list; if deny, short-circuit current buffer. Then continue to next buffer.
+            if buffer_perm.access is Access.allow:
+                permitted_buffers.append(buffer)
+            continue
+        except StopIteration:  # if next() doesn't find a match
+            pass
+
+        # Priority 2: network match
+        try:
+            network_perm = next(perm for perm in permissions['networks'] if perm.networkid == buffer.networkid) \
+                # type: QfPermission
+            if network_perm.access is Access.allow:
+                permitted_buffers.append(buffer)
+            continue
+        except StopIteration:  # if next() doesn't find a match
+            pass
+
+        try:
+            user_perm = next(perm for perm in permissions['users'] if perm.userid == buffer.network.userid) \
+                # type: QfPermission
+            if user_perm.access is Access.allow:
+                permitted_buffers.append(buffer)
+            continue
+        except StopIteration:  # if next() doesn't find a match
+            pass
+
+        # default access value
+        if user.access is Access.allow or user.is_superuser:
+            permitted_buffers.append(buffer)
+        continue
+
+    return permitted_buffers

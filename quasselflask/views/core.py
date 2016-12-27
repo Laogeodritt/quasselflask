@@ -9,7 +9,7 @@ import time
 
 from flask import request, g, render_template, url_for, redirect
 from flask_sqlalchemy import get_debug_queries
-from flask_user import login_required
+from flask_user import login_required, current_user
 
 import quasselflask
 from quasselflask import app, db
@@ -51,8 +51,6 @@ def home():
 @app.route('/search')
 @login_required
 def search():
-    # TODO: permissions
-
     # some helpful constants for the request argument processing
     # type of extraction/processing - this is more documentation as it's not used to process at the moment
     unique_args = {'start', 'end', 'limit', 'query_wildcard'}
@@ -82,6 +80,7 @@ def search():
     # Process and parse the args
     try:
         sql_args = process_search_params(form_args)
+        sql_args['permissions'] = query_permitted_buffers(db.session, current_user)
     except ValueError as e:
         errtext = e.args[0]
         return render_template('search_form.html', error=errtext, **render_args)
@@ -112,7 +111,17 @@ def search():
 
 # TODO: look at flask_users/core.py login() endpoint - security issue with 'next' GET parameter?
 # TODO: remember me token - don't use user id
-# TODO: send email to admin on registration
+
+
+@app.route('/user/permissions', methods=['GET'])
+@login_required
+def check_permissions():
+    """
+    Shows a list of permitted buffers.
+    :return:
+    """
+    permitted_buffers = query_permitted_buffers(db.session, current_user)
+    return render_template("check_permissions.html", user=current_user, buffers=permitted_buffers)
 
 
 @app.route('/context/<int:post_id>/<int:num_context>')

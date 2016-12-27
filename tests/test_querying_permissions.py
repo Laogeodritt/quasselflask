@@ -32,6 +32,7 @@ class MockPerm:
             self.buffer = MockObject(bufferid=id_, networkid=parent_networkid)
             self.buffer.network = MockObject(networkid=parent_networkid, userid=parent_userid)
             self.buffer.network.user = MockObject(userid=parent_userid)
+            self.buffer.user = self.buffer.network.user
         else:
             raise ValueError("Invalid `type` passed: " + repr(type_))
 
