@@ -9,8 +9,8 @@ import logging
 from datetime import datetime
 
 from flask import request, url_for, flash, redirect, render_template
-from flask.ext.login import current_user
-from flask.ext.user import roles_required
+from flask_login import current_user
+from flask_user import roles_required
 from itsdangerous import BadSignature
 from werkzeug.exceptions import BadRequest
 

@@ -110,7 +110,6 @@ def search():
     return render_template('results.html', records=[DisplayBacklog(result) for result in results], **render_args)
 
 # TODO: look at flask_users/core.py login() endpoint - security issue with 'next' GET parameter?
-# TODO: remember me token - don't use user id
 
 
 @app.route('/user/permissions', methods=['GET'])
