@@ -2,6 +2,8 @@
 
 **Quasselflask** is a web application intended to facilitate searching and exporting IRC logs stored by the [quassel IRC client](http://quassel-irc.org/) written in Python and making use of Flask, SQLAlchemy and JQuery.
 
+Quasselflask runs wherever Python + Flask run (Linux, Mac OSX, Windows users, y'all good). Note, however, that documentation is primarily written for Linux and assumes you have some basic Linux/Python knowledge. I know that this is sub-optimal, but writing good documentation takes a lot of time (and I don't have access to Mac OSX). I'd be very appreciative of documentation additions and improvements.
+
 The features supported:
 
 (**WARNING**: This software is in early development, so only some of these features are functional. It's not ready for general use. Curious where things are? See the Features Wishlist section below, or feel free to contact me.)
@@ -28,11 +30,13 @@ Many channels do not allow public logging. Even if it is not expressly disallowe
 
 # Configuration
 
-To configure Quasselflask, you should make a directory (preferably outside the quasselflask directory) and create a new file called `quasselflask.cfg`.
+You need to create a configuration file called `quasselflask.cfg` in the Flask instance path directory.
 
-When you run Quasselflask (see *Installation and running*, below), make sure that the environment variable `QF_CONFIG_PATH` is set set to the directory where you created the `quasselflask.cfg` file. This goes for running it using the test server as much as deploying it via WSGI in Apache, etc. (described below).
+The default location is in `$PREFIX/var/quasselflask-instance` (where `$PREFIX` is the location of your virtualenv if you're using that, or probably `/usr` if you installed it system-wide - see *Installation and running*, below).
 
-Here is a basic example configuration file that is enough to get you up and running:
+If you want to change the location: when you run Quasselflask, you can set the `QF_CONFIG_PATH` environment variable to the directory containing your `quasselflask.cfg` file. This goes for command-line maintenance commands and running it using the test server as much as deploying it via WSGI in Apache, etc. See *Installation and running*, below.
+
+Here is a basic example configuration file that is enough to get you up and running (**TODO: update this**):
 
     SQLALCHEMY_DATABASE_URI = 'postgresql://sqluser:password@hostname-or-IP-address/databasename'
     SITE_NAME = "John's IRC Logs"
@@ -58,7 +62,7 @@ This software is still under development and the configuration is changing as I 
 
 **TODO:** Document individual variables.
 
-[1] SQLite support is not possible because it does not allow concurrency (multiple applications to open the database at once). However, it might be possible if you were to make a copy of the SQLite database for Quasselflask to use. You can try getting this to work at your own risk.
+[1] SQLite support is not possible because it does not allow concurrency (multiple applications to open the database at once). Some features used in searching and quasselflask user management may be unavailable in SQLite (haven't scrutinised features thoroughly since I wrote it against postgresql specifically).
 
 # Requirements
 
@@ -76,7 +80,7 @@ If you're curious about dependencies, check out the [setup.py](setup.py) file, s
 
 In order to use Quasselflask, you need to prepare the database and database server. This should not affect Quassel's operation at all nor change your data. However, **you should always keep backups in case something happens**. Things can go wrong.
 
-We need to do two things: create a postgresql user with appropriate permissions permissions; and
+We need to do three things: create a postgresql user with appropriate permissions; set up Quasselflask tables and initial user; and create indexes in the database that allow our searches to be faster (quassel itself doesn't search like this so it doesn't make these indices).
  
  The instructions below assume you are root on a Linux system with postgresql; **or** that you have shell access to the Linux system running postgresql, and you can use the `psql` utility with sufficient permissions to manage users and your Quassel database.
 
@@ -84,7 +88,28 @@ If you have a control panel or something else to manage your postgresql database
 
 ## Creating the database user
 
-**TODO:** this section
+First, in a terminal, run the `psql` utility as the PostgreSQL superuser and connect to your Quassel database(`postgres` is the default PostgreSQL superuser on Debian, Ubuntu and other Debian-based distros; other distros may vary; `quasseldb` is the name of *your* Quassel database which you should change accordingly):
+
+    sudo -u postgres psql quasseldb
+
+Then type in this command to create a user specifically for Quasselflask (replace `username` and `yourpassword`):
+
+    CREATE USER username WITH NOSUPERUSER NOCREATEDB NOCREATEROLE NOCREATEUSER NOINHERIT LOGIN NOREPLICATION ENCRYPTED PASSWORD 'yourpasswordhere';
+
+Set up the user's permissions:
+
+    REVOKE ALL ON DATABASE quasseldb FROM quasselflask;
+    REVOKE ALL ON ALL TABLES IN SCHEMA public FROM quasselflask;
+    REVOKE ALL ON SCHEMA public FROM quasselflask;
+    GRANT CONNECT, CREATE ON DATABASE quasseldb TO quasselflask;
+    GRANT ALL ON SCHEMA public TO quasselflask;
+    GRANT SELECT, REFERENCES ON ALL TABLES IN SCHEMA public TO quasselflask;
+
+The last line is for security: this prevents Quasselflask from editing Quassel's tables (e.g. in case of a compromise of Quasselflask or of the SQL user it's using). This does add a few more steps to setup; if the security concern isn't an issue, you could also use `GRANT ALL ...` for the last line.
+
+To exit:
+
+    \quit
 
 ## Creating indexes to speed up searching
 
@@ -92,7 +117,7 @@ If you have a control panel or something else to manage your postgresql database
 
 This is an important step, because Quassel doesn't use the database to do deep searching, and there doesn't set up the database to be able to do this quickly. The following steps will create indices on a few columns to speed up searches&mdash;this will not change anything for Quassel's operation, but it will make your database take up a little bit more disk space.
 
-As a point of comparison: without doing this, searches took 15-20 seconds (ridiculous!). After doing this, the same test searches took around 0.2-0.6 seconds, with some of them taking up to 4s (didn't quite understand why so long!).
+As a point of comparison: without doing this, searches took 15-20 seconds (ridiculous!). After doing this, the same test searches took around 0.2-0.6 seconds, with some of them taking up to 4s (didn't quite understand why so long yet---to be fixed).
 
 # Installation and running
 
@@ -100,16 +125,54 @@ We recommend using a virtualenv to set up Quasselflask. This is a standard Pytho
 
 You do not need to install dependencies manually. Quasselflask comes ready as a package, so you can simply run the `setup.py` file. Assuming you created your virtualenv in the directory `./venv` and you downloaded Quasselflask to `./quasselflask`, you need to do the following in a terminal window:
 
-1. Activate the virtualenv:
+The following instructions assume you have the following directory structure: your current directory contains directory `venv` containing your virtualenv, and `quasselflask` containing a copy of Quasselflask (cloned from github or untarred).
+
+1. Activate the virtualenv in a terminal window. For the rest of these instructions, you will run all commands in the same window that you activated the virtualenv in.
 
        ./venv/bin/activate
 
-2. Run the setup.py file.
+2. Run the setup.py file to install Quasselflask into your virtualenv:
 
-The application is a fairly simple Flask application. As such, you can run it in the normal ways that you would run a Flask application:
+        python quasselflask/setup.py
 
-* For testing it out or using it locally,
-* [Flask deployment options](http://flask.pocoo.org/docs/0.11/deploying/), for a publicly hosted website. (This doesn't mean the logs are public, since you still have to login with a username/password to search them.)
+3. Place your `quasselflask.cfg` config file into `lib/quasselflask-instance/` or a custom location (see *Configuration* above).
+
+4. Create an initial Quasselflask superuser (a.k.a. admin user). This will automatically make Quasselflask tables if needed.
+
+        python -m quasselflask.run init_superuser username user@domain.com
+    
+    This will prompt you for a password. Type it in and press Enter (nothing will show up in the window).
+    
+5. (Optional) Now that you've created the needed tables, you can prevent your database user from creating further tables (in case of compromise of that user or of Quasselflask). See *Creating the database user* section for a reminder of the variables you have to substitute in (we're using the same example names as in that section).
+
+    First, at a terminal, start the `psql` utility again:
+
+        sudo -u postgres psql quassseldb
+
+    Then revoke the CREATE permission on the database:
+    
+        REVOKE CREATE ON DATABASE quasseldb TO quasselflask;
+    
+    And exit:
+    
+        \quit
+
+6.  Run the web application&mdash;you have various options to choose from. The application is a fairly simple Flask application. As such, you can run it in the normal ways that you would run a Flask application:
+
+    * For testing it out or using it locally,
+    * [Flask deployment options](http://flask.pocoo.org/docs/0.11/deploying/), for a publicly hosted website. (This doesn't mean the logs are public, since you still have to login with a username/password to search them.)
+
+# Management commands
+
+Quasselflask has a number of management commands that must be called from the command line. Make sure to activate your virtualenv first. Also make sure the environment variables needed are set (e.g. QF_CONFIG_PATH described in *Configuration* above, FLASK_DEBUG, etc.).
+
+The general command format is:
+
+    python -m quasselflask.run commandname [argument1 [argument2 [...]]
+
+The available commands are `init_db`, `init_superuser`, `reset_db`. Details are available in the application; to see the help files, run:
+
+    python -m quasselflask.run -?
 
 # API
 
@@ -141,29 +204,7 @@ Query parameters (all optional):
 * `query`: Literal text query. Supports boolean searches (AND, OR, parentheses, quotation marks) and optionally wildcards.
 * `query_wildcard`: If value is `1`, enables wildcards on the `query` parameter. If not passed or value `0`, disables wildcards. Be careful about making complex searches with wildcards, as it can be resource-intensive on the database.
 
-
-# Features wishlist
-
-* user search endpoint (not a log search but unique users)
-* top/floating navigation bar - add expand/collapse all
-* User handling and user/network/channel limitations
-* quasseluser/network search criteria
-* Context up/down + amount of context to fetch
-* Search by type of message (message, join, part, mode changes, etc.)
-* Pagination
-* Text export (option to email?)
-* Server configuration
-* PM search - better search of query buffers resilient despite query buffer renames during nick changes
-* Store access logs by qfuser - IP, hostname (flat files not db - cf RotatingFileHandler)
-
 # Things to document
 * QF_ALLOW_TEST_PAGES
-* User:
-
-      \connect quasseldb
-      CREATE USER quasselflask WITH NOSUPERUSER NOCREATEDB NOCREATEROLE NOCREATEUSER NOINHERIT LOGIN NOREPLICATION ENCRYPTED PASSWORD 'yourpasswordhere';
-      REVOKE ALL ON DATABASE quasseldb FROM quasselflask;
-      REVOKE ALL ON ALL TABLES IN SCHEMA public FROM quasselflask;
-      GRANT CONNECT ON DATABASE quasseldb TO quasselflask;
-      GRANT SELECT ON ALL TABLES IN SCHEMA public TO quasselflask;
-      # TODO: add stuff for the user tables
+* Development standard - things imported in init_app should not `from quasselflask import [...]`
+* All the endpoints?

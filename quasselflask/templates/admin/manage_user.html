@@ -1,0 +1,91 @@
+{% extends 'skel_main.html' %}
+{% block head %}{{ super() }}
+    <script src="//ajax.googleapis.com/ajax/libs/dojo/1.11.2/dojo/dojo.js" data-dojo-config="async: true"></script>
+    <script src="{{ url_for('static', filename='qf_manage_user.js') }}"></script>
+    <script>
+        PERMISSION_DATA = {{ permission_data|tojson }};
+        USER_PERMISSIONS = {{ user_permissions|tojson }};
+    </script>
+{% endblock %}
+
+{% block title %}Manage User - {{ user.username }}{% endblock %}
+
+{% block content %}
+    <main data-page="manage-user" data-user-id="{{ user.get_id() }}">
+        {% from "admin/_qf_macros.html" import user_disable_link, user_action_link %}
+        <h2>Manage User - {{ user.username }}</h2>
+        {% set is_current_user = user is sameas current_user %}
+
+        <div class="user-manage-row user-manage-delete">
+            <form method="post" class="linkform" action="{{ url_for('admin_delete_user', userid=user.get_id()) }}">
+                <input type="hidden" name="csrf_token" value="{{ csrf_token() }}">
+                <input type="hidden" name="next" value="{{ request.url }}">
+                <input type="submit" value="# Delete"{% if is_current_user %} disabled{% endif %} class="delete">
+            </form>
+        </div>
+
+        <div class="user-manage-row user-manage-status"><label>Status</label>
+            {%- if call_or_get(user.is_active) -%}
+                {{ user_action_link(user, '✓ Enabled', postname='status', postvalue='0', class='user-enabled', disabled=is_current_user, next_url=request.url) }}
+            {%- else -%}
+                {{ user_action_link(user, '✗ Disabled', postname='status', postvalue='1', class='user-disabled', disabled=is_current_user, next_url=request.url) }}
+            {%- endif -%}
+
+            {%- if call_or_get(user.is_superuser) -%}
+                {{ user_action_link(user, '@ Superuser', postname='superuser', postvalue='0', class='user-superuser', disabled=is_current_user, next_url=request.url) }}
+            {%- else -%}
+                {{ user_action_link(user, '∗ User', postname='superuser', postvalue='1', class='user-normaluser', disabled=is_current_user, next_url=request.url) }}
+            {%- endif -%}
+        </div>
+
+        <div class="user-manage-row user-manage-email">
+            <label>Email</label>
+            <form class="linkform" method="post" action="{{ url_for('admin_update_user', userid=user.get_id()) }}">
+                <input type="hidden" name="csrf_token" value="{{ csrf_token() }}">
+                <input type="hidden" name="next" value="{{ request.url }}">
+                <input type="hidden" name="confirm_email" value="{{ '0' if user is not sameas current_user else '1' }}">
+                <input type="email" name="email" value="{{ user.email }}" data-animate-event="input" data-animate-once data-animate-target="email-submit">
+                <input type="submit" value="Save" class="animate-slide animate-start-hidden" data-animate-id="email-submit" data-animate-type="width" data-animate-highlight-class="state-flashing-on">
+            </form>
+
+            {%- if user.confirmed_at -%}
+                {{ user_action_link(user, '✓ Confirmed', postname='confirm_email', postvalue='0', class='confirmed', disabled=is_current_user, next_url=request.url) }}
+            {%- else -%}
+                {{ user_action_link(user, '✗ Unconfirmed', postname='confirm_email', postvalue='1', class='unconfirmed', disabled=is_current_user, next_url=request.url) }}
+            {%- endif -%}
+        </div>
+
+        <h3>Permissions</h3>
+    {% if not call_or_get(user.is_superuser) %}
+        <form id="user-permission-entry-form">
+            <div class="form-row-end">
+                <button type="button" id="btn-permission-allow">Allow</button>
+                <button type="button" id="btn-permission-deny">Deny</button>
+                <button type="reset" id="btn-permission-reset">Clear</button>
+            </div>
+            <div>
+                <input type="text" name="quasseluser" value="" placeholder="quasseluser" id="combobox-quasseluser">
+                <input type="text" name="network" value="" placeholder="network" id="combobox-network">
+                <input type="text" name="buffer" value="" placeholder="channel" id="combobox-buffer">
+            </div>
+        </form>
+
+        <form id="user-permissions-form" method="post" action="{{  url_for('admin_permissions', userid=user.get_id()) }}">
+            <input type="hidden" name="csrf_token" value="{{ csrf_token() }}">
+            <input type="hidden" name="permissions" id="user-permissions-json">
+            <input type="hidden" name="next" value="{{ request.url }}">
+            <div class="form-row-end">
+                <button type="submit" id="user-permissions-submit">Save All</button>
+                <button type="button" id="user-permissions-view" onclick="window.open('{{ url_for('admin_check_permissions', userid=user.get_id()) }}', '_blank');">View</button>
+            </div>
+        </form>
+        <div id="user-permission-display"><p>Loading...</p></div>
+    {% else %}
+        <script>
+            QF_MANAGE_USER_PERMISSION_DISABLED = true;
+        </script>
+        <p>Superuser permissions cannot be set.</p>
+        <div id="user-permission-display" class="disabled"><button class="btn-perm permission-access-allow permission-type-default" type="button" disabled>(Default)</button></div>
+    {% endif %}
+    </main>
+{% endblock %}

@@ -38,6 +38,18 @@ class BacklogType(Enum):
     invite = 0x20000
 
 
+class BufferType(Enum):
+    """
+    https://github.com/quassel/quassel/blob/master/src/common/bufferinfo.h
+    That is all.
+    """
+    invalid_buffer = 0x00
+    status_buffer = 0x01
+    channel_buffer = 0x02
+    query_buffer = 0x04
+    group_buffer = 0x08
+
+
 class Color(Enum):
     """
     Colours used in the nickname colour field. Names may be used directly in CSS and should coordinate with CSS classes,

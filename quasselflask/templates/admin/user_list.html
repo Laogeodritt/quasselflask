@@ -1,0 +1,40 @@
+{% extends 'skel_main.html' %}
+{% block title %}Manage Users{% endblock %}
+{% block content %}
+    <main>
+        {% from "admin/_qf_macros.html" import user_disable_link, user_action_link %}
+        <h2>{%trans%}Manage Users{%endtrans%}</h2>
+
+        <div class="userlist-container">
+            {% if users %}
+                <div class="links-bar"><a href="{{ url_for('admin_create_user') }}">create user</a></div>
+                <table class="userlist">
+                    <tr>
+                        <th>ID</th>
+                        <th>Username</th>
+                        <th>Email</th>
+                        <th><!-- Actions --></th>
+                    </tr>
+                    {% for user in users %}
+                        {% set is_current_user = user is sameas current_user %}
+                    <tr class="user{% if call_or_get(user.is_superuser) %} superuser{% endif %}" data-user-id="{{ user.userid }}">
+                        <td class="uid">{{ user.get_id() }}</td>
+                        <td class="username"{% if call_or_get(user.is_superuser) %} title="Superuser"{% endif %}>{{ user.username }}</td>
+                        <td class="email">{{ user.email }} {% if user.confirmed_at -%}
+                            {{ user_action_link(user, '✓', postname='confirm_email', postvalue='0', class='confirmed', title="Confirmed (click to unconfirm)", next_url=request.url) }}
+                        {%- else -%}
+                            {{ user_action_link(user, '✗', postname='confirm_email', postvalue='1', class='unconfirmed', title="Unconfirmed (click to confirm)", next_url=request.url) }}
+                        {% endif %}</td>
+                        <td class="actions">
+                            {{ user_disable_link(user, is_current_user, next_url=request.url) }}
+                            <a href="{{ url_for('admin_manage_user', userid=user.get_id()) }}" class="action-edit">edit</a>
+                        </td>
+                    </tr>
+                    {% endfor %}
+                </table>
+            {% else %}
+                <p>No users. How'd you even get here?! (More seriously: Probably a bug, contact your friendly neighbourhood Quasselflask developer to report it.)</p>
+            {% endif %}
+        </div>
+    </main>
+{% endblock %}

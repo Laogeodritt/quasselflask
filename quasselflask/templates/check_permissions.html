@@ -1,0 +1,21 @@
+{#
+ # Show permitted buffers (channels) for a user.
+ #
+ # Arguments:
+ # user: QfUser object for the user whose permissions are being displayed
+ # buffers: list of buffers that the user is allowed to search. Must correspond to the ``user`` argument.
+ #
+ #}{% extends "skel_main.html" %}
+{% block head %}{{ super() }}
+{% endblock %}
+{% block title %}Permissions for {{ user.username }} ({{ user.qfuserid }}){% endblock %}
+{% block content %}<section>
+    <h2>Permissions for {{ user.username }} ({{ user.qfuserid }})</h2>
+    <ul class="buffer-list">
+        {% for buffer in buffers %}
+        <li class="buffer-allow">{{ buffer.buffername }} <span class="label-extra network">{{ buffer.network.networkname }}</span><span class="label-extra quasseluser">{{ buffer.quasseluser.username }}</span></li>
+        {% else %}
+        <li>No results.</li>
+        {% endfor %}
+    </ul>
+</section>{% endblock %}

@@ -1,19 +1,53 @@
 """
-Flask endpoints for this application.
+Main flask endpoints for this application.
 
 Project: QuasselFlask
 """
 
+import os
 import time
 
-from flask import request, g, render_template, redirect, url_for
+from flask import request, g, render_template, url_for, redirect
 from flask_sqlalchemy import get_debug_queries
+from flask_user import login_required, current_user
 
 import quasselflask
 from quasselflask import app, db
+from quasselflask.models.query import *
 from quasselflask.parsing.form import process_search_params
 from quasselflask.parsing.irclog import DisplayBacklog
-from quasselflask.querying import build_db_search_query
+from quasselflask.util import safe_redirect
+
+
+@app.before_first_request
+def flask_user_redirect_patch():
+    """
+    HACK: Replace werkzeug redirect() with a safe version globally at runtime
+
+    This is a workaround for Flask-User <0.6.8, which upon login, logout, etc. will redirect according to the 'next'
+    GET parameter without validating it and thus presents an open redirect security risk. As a solution, we will
+    globally replace the redirect() function in werkzeug with a safety-checked one.
+
+    The original method is available as werkzeug.util.unsafe_redirect.
+    """
+    import flask_user.views
+    flask_user.views.unsafe_redirect = flask_user.views.redirect
+    flask_user.views.redirect = flask_user.views.safe_redirect = safe_redirect
+
+
+@app.before_first_request
+def qf_setup_themes():
+    """ Reads the theme config (default and custom) and generates the structures used by the template. """
+    from quasselflask.views.themes import Theme
+
+    themes_dict = {}
+    for id_, name, file, cls in app.config.get('QF_DEFAULT_THEMES', []):
+        theme = Theme(id_, name, file=file, root_class=cls)
+        themes_dict[theme.id] = theme
+    for id_, name, file, cls in app.config.get('QF_CUSTOM_THEMES', []):
+        theme = Theme(id_, name, file=file, root_class=cls, custom=True)
+        themes_dict[theme.id] = theme
+    app.config['QF_THEMES'] = themes_dict
 
 
 @app.before_request
@@ -24,11 +58,13 @@ def globals_init():
 
 
 @app.route('/')
+@login_required
 def home():
     return render_template('search_form.html')
 
 
 @app.route('/search')
+@login_required
 def search():
     # some helpful constants for the request argument processing
     # type of extraction/processing - this is more documentation as it's not used to process at the moment
@@ -60,6 +96,7 @@ def search():
     # Process and parse the args
     try:
         sql_args = process_search_params(form_args)
+        sql_args['permissions'] = query_permitted_buffers(db.session, current_user)
     except ValueError as e:
         errtext = e.args[0]
         return render_template('search_form.html', error=errtext, **render_args)
@@ -76,7 +113,7 @@ def search():
     render_args['search_order'] = sql_args.get('order')
 
     # build and execute the query
-    results_cursor = build_db_search_query(db.session, sql_args).all()
+    results_cursor = build_query_backlog(db.session, sql_args).all()
 
     if sql_args['order'] == 'newest':
         results_cursor = reversed(results_cursor)
@@ -105,6 +142,19 @@ def search():
     render_args['expand_line_details'] = not has_single_channel or is_user_search or is_keyword_search
 
     return render_template('results.html', records=results_display, **render_args)
+
+# TODO: look at flask_users/core.py login() endpoint - security issue with 'next' GET parameter?
+
+
+@app.route('/user/permissions', methods=['GET'])
+@login_required
+def check_permissions():
+    """
+    Shows a list of permitted buffers.
+    :return:
+    """
+    permitted_buffers = query_permitted_buffers(db.session, current_user)
+    return render_template("check_permissions.html", user=current_user, buffers=permitted_buffers)
 
 
 @app.route('/context/<int:post_id>/<int:num_context>')

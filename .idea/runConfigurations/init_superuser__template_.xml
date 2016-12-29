@@ -1,0 +1,22 @@
+<component name="ProjectRunConfigurationManager">
+  <configuration default="false" name="init_superuser (template)" type="PythonConfigurationType" factoryName="Python">
+    <option name="INTERPRETER_OPTIONS" value="" />
+    <option name="PARENT_ENVS" value="true" />
+    <envs>
+      <env name="PYTHONUNBUFFERED" value="1" />
+      <env name="FLASK_DEBUG" value="1" />
+      <env name="QF_CONFIG_PATH" value="/home/marcalexc/data/sw/quasselflask/env/instance" />
+    </envs>
+    <option name="SDK_HOME" value="$PROJECT_DIR$/../env/bin/python" />
+    <option name="WORKING_DIRECTORY" value="$PROJECT_DIR$" />
+    <option name="IS_MODULE_SDK" value="false" />
+    <option name="ADD_CONTENT_ROOTS" value="true" />
+    <option name="ADD_SOURCE_ROOTS" value="true" />
+    <module name="quasselflask" />
+    <EXTENSION ID="PythonCoverageRunConfigurationExtension" enabled="false" sample_coverage="true" runner="coverage.py" />
+    <option name="SCRIPT_NAME" value="quasselflask/run.py" />
+    <option name="PARAMETERS" value="init_superuser &lt;username&gt; &lt;email&gt;" />
+    <option name="SHOW_COMMAND_LINE" value="false" />
+    <method />
+  </configuration>
+</component>

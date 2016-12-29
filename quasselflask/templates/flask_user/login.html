@@ -1,0 +1,36 @@
+{% extends 'skel_main.html' %}
+{% block title %}Login{% endblock %}
+{% block content %}
+<main>
+    {% from "flask_user/_macros.html" import render_checkbox_field, render_submit_field %}
+    {% from "flask_user/_qf_macros.html" import render_field %}
+    <h2>{%trans%}Login{%endtrans%}</h2>
+
+    <form action="" method="POST" id="form-login" role="form" class="narrow">
+        {{ form.hidden_tag() }}
+        {% if user_manager.enable_username %}
+            {{ render_field(form.username, label="Username", tabindex=110) }}
+        {% else %}
+            {{ render_field(form.email, label="Email address", tabindex=110) }}
+        {% endif %}
+
+        {{ render_field(form.password, label="Password", tabindex=120) }}
+
+        <div>
+            {# Remember me #}
+            {% if user_manager.enable_remember_me %}
+                {{ render_checkbox_field(login_form.remember_me, tabindex=130) }}
+            {% endif %}
+            {% if user_manager.enable_forgot_password %}
+                <div class="forgot-password">
+                    <a href="{{ url_for('user.forgot_password') }}" tabindex="195">
+                        {%trans%}Forgot your Password?{%endtrans%}</a>
+                </div>
+            {% endif %}
+        </div>
+
+        {# Submit button #}
+        {{ render_submit_field(form.submit, tabindex=180) }}
+    </form>
+</main>
+{% endblock %}

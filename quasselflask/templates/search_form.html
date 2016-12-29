@@ -19,7 +19,7 @@
 {% block title %}Search{% endblock %}
 {% block content %}<section>
     <h2>Search</h2>
-    <form action="/search" method="get">
+    <form action="/search" method="get" id="form-search">
         <div class="search-query-container">
             <input type="text" name="query" id="search-query" title="Search Query" placeholder="Search Query" {% if search_query is defined %}value="{{ search_query|e }}"{% endif %}>
             <input type="checkbox" name="query_wildcard" id="search-query-wildcard" value="1" {% if search_query_wildcard is defined and search_query_wildcard %}checked="checked"{% endif %}>

@@ -4,9 +4,15 @@ Starts the WSGI web application. If run directly from the command line, starts a
 Project: QuasselFlask
 """
 
+import sys
+from flask_script.commands import InvalidCommand
 import quasselflask
 
 quasselflask.init_app()
 
 if __name__ == "__main__":
-    quasselflask.app.run()
+    try:
+        quasselflask.cmdman.run()
+    except InvalidCommand as e:
+        print(e, file=sys.stderr)
+        sys.exit(1)
