@@ -430,7 +430,10 @@ html, .light, .dark {
       tr.irc-backlog-details {
         font-size: 80%;
         td:first-child { text-align: end; }
-        td { text-align: start; }
+        td {
+          text-align: start;
+          padding-bottom: 0.6em;
+        }
       }
       tr.irc-backlog-details.collapsed { display: none; }
 

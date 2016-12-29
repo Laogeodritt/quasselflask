@@ -453,6 +453,7 @@ html .result table.irc-log tr.irc-backlog-details td:first-child, .light .result
 }
 html .result table.irc-log tr.irc-backlog-details td, .light .result table.irc-log tr.irc-backlog-details td, .dark .result table.irc-log tr.irc-backlog-details td {
   text-align: start;
+  padding-bottom: 0.6em;
 }
 html .result table.irc-log tr.irc-backlog-details.collapsed, .light .result table.irc-log tr.irc-backlog-details.collapsed, .dark .result table.irc-log tr.irc-backlog-details.collapsed {
   display: none;

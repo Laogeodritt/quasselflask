@@ -13,7 +13,7 @@
 {% block content_after_form %}
 <main class="result">
     <h2>Results</h2>
-    <nav id="nav-irc-log"><a href="#" onclick="expandAllIrcLineDetails(); return false;">Expand all</a> <a href="#" onclick="collapseAllIrcLineDetails(); return false;">Collapse all</a></nav>
+    <nav id="nav-irc-log" class="links-bar"><a href="#" onclick="expandAllIrcLineDetails(); return false;">Expand all</a> <a href="#" onclick="collapseAllIrcLineDetails(); return false;">Collapse all</a></nav>
     <table class="irc-log">
         {% for record in records %}
             <tr class="irc-line {{ record.type.name|safe }}">
