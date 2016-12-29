@@ -204,7 +204,7 @@ body {
   font-family: 'PT Sans', sans-serif;
 }
 
-.light, .dark {
+html, .light, .dark {
 
   .dijitReset {
     padding: 0;
@@ -256,7 +256,7 @@ body {
     margin-top: 0.5em;
     font-weight: bold;
     color: $blue;
-  
+  }
 
   dd {
     margin-top: 0.3em;
@@ -413,16 +413,16 @@ body {
   }
 
   /** Results styling **/
-  html .result {
-  display: flex;
-  flex-direction: column;
-  align-items: stretch;
+  .result {
+    display: flex;
+    flex-direction: column;
+    align-items: stretch;
 
-  #nav-irc-log {
-    text-align: right;
-    margin: 0 0.3em 0.5em;
-    a { font-size: 80%; }
-  }
+    #nav-irc-log {
+      text-align: right;
+      margin: 0 0.3em 0.5em;
+      a { font-size: 80%; }
+    }
 
     table.irc-log {
       margin: 0.3em 0 1em;
@@ -763,5 +763,4 @@ body {
     padding: 0 0.5em;
     & + .label-extra:before { content: "|"; position: relative; left: -0.5em; }
   }
-
 }

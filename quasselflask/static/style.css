@@ -12,12 +12,13 @@
 html, .light {
   background-color: #eee8d5;
   color: #657b83;
+  /* a, a:active, a:visited { color: $rebase1; } */
 }
-html main, html section, html .light footer, .light html footer, html .dark footer, .dark html footer, html .light aside, .light html aside, html .light article, .light html article, html .dark aside, .dark html aside, html .dark article, .dark html article, html article, html footer, html aside, .light main, .light section, .light footer, .light aside, .light article, .light article, .light footer, .light aside {
+html main, html section, html footer, html .light footer, .light html footer, html .dark footer, .dark html footer, html aside, html article, html .light aside, .light html aside, html .light article, .light html article, html .dark aside, .dark html aside, html .dark article, .dark html article, html article, html footer, html aside, .light main, .light section, .light footer, .light aside, .light article, .light article, .light footer, .light aside {
   background-color: #fdf6e3;
   border-color: #657b83;
 }
-html .dijitComboBoxMenuPopup, html .dijitTooltip, html .light .dijitComboBoxMenuPopup, .light html .dijitComboBoxMenuPopup, html .dark .dijitComboBoxMenuPopup, .dark html .dijitComboBoxMenuPopup, .light .dijitComboBoxMenuPopup, .light .dijitTooltip, .light .dijitComboBoxMenuPopup {
+html .dijitComboBoxMenuPopup, html .dijitTooltip, html .dijitComboBoxMenuPopup, html .light .dijitComboBoxMenuPopup, .light html .dijitComboBoxMenuPopup, html .dark .dijitComboBoxMenuPopup, .dark html .dijitComboBoxMenuPopup, .light .dijitComboBoxMenuPopup, .light .dijitTooltip, .light .dijitComboBoxMenuPopup {
   background-color: #fdf6e3;
   border-color: #657b83 !important;
 }
@@ -27,10 +28,7 @@ html input, .light input {
 html header h1, html h1, html h2, html h3, html h4, html h5, html h6, .light header h1, .light h1, .light h2, .light h3, .light h4, .light h5, .light h6 {
   border-color: #657b83;
 }
-html a, html a:active, html a:visited, .light a, .light a:active, .light a:visited {
-  color: #586e75;
-}
-html section#error, html .light footer#error, .light html footer#error, html .dark footer#error, .dark html footer#error, html .light aside#error, .light html aside#error, html .light article#error, .light html article#error, html .dark aside#error, .dark html aside#error, html .dark article#error, .dark html article#error, html section#warning, html .light footer#warning, .light html footer#warning, html .dark footer#warning, .dark html footer#warning, html .light aside#warning, .light html aside#warning, html .light article#warning, .light html article#warning, html .dark aside#warning, .dark html aside#warning, html .dark article#warning, .dark html article#warning, html section#notice, html .light footer#notice, .light html footer#notice, html .dark footer#notice, .dark html footer#notice, html .light aside#notice, .light html aside#notice, html .light article#notice, .light html article#notice, html .dark aside#notice, .dark html aside#notice, html .dark article#notice, .dark html article#notice, .light section#error, .light footer#error, .light aside#error, .light article#error, .light section#warning, .light footer#warning, .light aside#warning, .light article#warning, .light section#notice, .light footer#notice, .light aside#notice, .light article#notice {
+html section#error, html footer#error, html aside#error, html article#error, html section#warning, html footer#warning, html aside#warning, html article#warning, html section#notice, html footer#notice, html aside#notice, html article#notice, .light section#error, .light footer#error, .light aside#error, .light article#error, .light section#warning, .light footer#warning, .light aside#warning, .light article#warning, .light section#notice, .light footer#notice, .light aside#notice, .light article#notice {
   color: #586e75;
 }
 html form input, .light form input {
@@ -57,6 +55,9 @@ html footer, .light footer {
 html .result table.irc-log .timestamp, .light .result table.irc-log .timestamp {
   color: #93a1a1 !important;
 }
+html .result table.irc-log tr.irc-backlog-details, .light .result table.irc-log tr.irc-backlog-details {
+  color: #93a1a1;
+}
 html .result table.irc-log .mode td, html .result table.irc-log .join td, html .result table.irc-log .part td, html .result table.irc-log .quit td, html .result table.irc-log .kick td, html .result table.irc-log .kill td,
 html .result table.irc-log .info td, html .result table.irc-log .daychange td, html .result table.irc-log .topic td, html .result table.irc-log .invite
 .netsplit_join td, html .result table.irc-log .netsplit_quit td,
@@ -72,10 +73,10 @@ html table.userlist tr, .light table.userlist tr {
     @include rebase_bgcolor($red, $rebase03);
   }*/
 }
-html #user-permission-display, html .light .buffer-list, .light html .buffer-list, html .dark .buffer-list, .dark html .buffer-list, .light #user-permission-display, .light .buffer-list, .light .dark .buffer-list, .dark .light .buffer-list {
+html #user-permission-display, html .buffer-list, html .light .buffer-list, .light html .buffer-list, html .dark .buffer-list, .dark html .buffer-list, .light #user-permission-display, .light html .buffer-list, html .light .buffer-list, .light .buffer-list, .light .dark .buffer-list, .dark .light .buffer-list {
   border: 1px solid #657b83;
 }
-html #user-permission-display .label-extra, html .light .buffer-list .label-extra, .light html .buffer-list .label-extra, html .dark .buffer-list .label-extra, .dark html .buffer-list .label-extra, .light #user-permission-display .label-extra, .light .buffer-list .label-extra, .light .dark .buffer-list .label-extra, .dark .light .buffer-list .label-extra {
+html #user-permission-display .label-extra, html .buffer-list .label-extra, html .light .buffer-list .label-extra, .light html .buffer-list .label-extra, html .dark .buffer-list .label-extra, .dark html .buffer-list .label-extra, .light #user-permission-display .label-extra, .light html .buffer-list .label-extra, html .light .buffer-list .label-extra, .light .buffer-list .label-extra, .light .dark .buffer-list .label-extra, .dark .light .buffer-list .label-extra {
   color: #eee8d5;
 }
 html .label-extra, .light .label-extra {
@@ -85,6 +86,7 @@ html .label-extra, .light .label-extra {
 .dark {
   background-color: #002b36;
   color: #839496;
+  /* a, a:active, a:visited { color: $rebase1; } */
 }
 .dark main, .dark section, .dark footer, .dark aside, .dark article, .dark article, .dark footer, .dark aside {
   background-color: #073642;
@@ -99,9 +101,6 @@ html .label-extra, .light .label-extra {
 }
 .dark header h1, .dark h1, .dark h2, .dark h3, .dark h4, .dark h5, .dark h6 {
   border-color: #839496;
-}
-.dark a, .dark a:active, .dark a:visited {
-  color: #93a1a1;
 }
 .dark section#error, .dark footer#error, .dark aside#error, .dark article#error, .dark section#warning, .dark footer#warning, .dark aside#warning, .dark article#warning, .dark section#notice, .dark footer#notice, .dark aside#notice, .dark article#notice {
   color: #93a1a1;
@@ -130,6 +129,9 @@ html .label-extra, .light .label-extra {
 .dark .result table.irc-log .timestamp {
   color: #586e75 !important;
 }
+.dark .result table.irc-log tr.irc-backlog-details {
+  color: #586e75;
+}
 .dark .result table.irc-log .mode td, .dark .result table.irc-log .join td, .dark .result table.irc-log .part td, .dark .result table.irc-log .quit td, .dark .result table.irc-log .kick td, .dark .result table.irc-log .kill td,
 .dark .result table.irc-log .info td, .dark .result table.irc-log .daychange td, .dark .result table.irc-log .topic td, .dark .result table.irc-log .invite
 .netsplit_join td, .dark .result table.irc-log .netsplit_quit td,
@@ -142,10 +144,10 @@ html .label-extra, .light .label-extra {
     @include rebase_bgcolor($red, $rebase03);
   }*/
 }
-.dark #user-permission-display, .dark .light .buffer-list, .light .dark .buffer-list, .dark .buffer-list {
+.dark #user-permission-display, .dark html .buffer-list, html .dark .buffer-list, .dark .light .buffer-list, .light .dark .buffer-list, .dark .buffer-list {
   border: 1px solid #839496;
 }
-.dark #user-permission-display .label-extra, .dark .light .buffer-list .label-extra, .light .dark .buffer-list .label-extra, .dark .buffer-list .label-extra {
+.dark #user-permission-display .label-extra, .dark html .buffer-list .label-extra, html .dark .buffer-list .label-extra, .dark .light .buffer-list .label-extra, .light .dark .buffer-list .label-extra, .dark .buffer-list .label-extra {
   color: #002b36;
 }
 .dark .label-extra {
@@ -160,7 +162,7 @@ body {
   font-family: 'PT Sans', sans-serif;
 }
 
-.light, .dark {
+html, .light, .dark {
   /** General elements **/
   /** Form styling **/
   /* forms for single-button POST request or single-button for Javascript-based forms */
@@ -168,12 +170,12 @@ body {
   /* Userlist styling */
   /* Dojo/Dijit stuff (also mixed into some blocks above) */
 }
-.light .dijitReset, .dark .dijitReset {
+html .dijitReset, .light .dijitReset, .dark .dijitReset {
   padding: 0;
   margin: 0;
   border: 0;
 }
-.light header h1, .light h1, .light h2, .light h3, .light h4, .light h5, .light h6, .dark header h1, .dark h1, .dark h2, .dark h3, .dark h4, .dark h5, .dark h6 {
+html header h1, html h1, html h2, html h3, html h4, html h5, html h6, .light header h1, .light h1, .light h2, .light h3, .light h4, .light h5, .light h6, .dark header h1, .dark h1, .dark h2, .dark h3, .dark h4, .dark h5, .dark h6 {
   color: #268bd2;
   font-family: 'PT Serif', serif;
   font-weight: normal;
@@ -182,33 +184,47 @@ body {
   margin-bottom: 0.8em;
   padding: 0 0.5em;
 }
-.light main, .light section, .light footer, .light aside, .light article, .dark main, .dark section, .dark footer, .dark aside, .dark article {
+html main, html section, html footer, html .light footer, .light html footer, html .dark footer, .dark html footer, html aside, html article, html .light aside, .light html aside, html .light article, .light html article, html .dark aside, .dark html aside, html .dark article, .dark html article, .light main, .light section, .light footer, .light aside, .light article, .dark main, .dark section, .dark footer, .dark aside, .dark article {
   border: 1px solid;
   border-radius: 10px;
   margin-top: 0.8em;
   margin-bottom: 1.5em;
   padding: 1.0em 1.5em 1.5em 1.5em;
 }
-.light section#error, .light footer#error, .light aside#error, .light article#error, .light .dijitComboBoxError, .light .dijitComboBoxError div, .light .dijitComboBoxError input, .dark section#error, .dark footer#error, .dark aside#error, .dark article#error, .dark .dijitComboBoxError, .dark .dijitComboBoxError div, .dark .dijitComboBoxError input {
+html section#error, html footer#error, html aside#error, html article#error, html .dijitComboBoxError, html .dijitComboBoxError div, html .dijitComboBoxError input, .light section#error, .light footer#error, .light aside#error, .light article#error, .light .dijitComboBoxError, .light .dijitComboBoxError div, .light .dijitComboBoxError input, .dark section#error, .dark footer#error, .dark aside#error, .dark article#error, .dark .dijitComboBoxError, .dark .dijitComboBoxError div, .dark .dijitComboBoxError input {
   background-color: #ee9e9c;
 }
-.light section#warning, .light footer#warning, .light aside#warning, .light article#warning, .dark section#warning, .dark footer#warning, .dark aside#warning, .dark article#warning {
+html section#warning, html footer#warning, html aside#warning, html article#warning, .light section#warning, .light footer#warning, .light aside#warning, .light article#warning, .dark section#warning, .dark footer#warning, .dark aside#warning, .dark article#warning {
   background-color: #ffce36;
 }
-.light section#notice, .light footer#notice, .light aside#notice, .light article#notice, .dark section#notice, .dark footer#notice, .dark aside#notice, .dark article#notice {
+html section#notice, html footer#notice, html aside#notice, html article#notice, .light section#notice, .light footer#notice, .light aside#notice, .light article#notice, .dark section#notice, .dark footer#notice, .dark aside#notice, .dark article#notice {
   background-color: #71dad2;
 }
-.light footer, .dark footer {
+html footer, .light footer, .dark footer {
   font-size: 80%;
   font-style: italic;
   text-align: center;
 }
-.light .links-bar, .dark .links-bar {
+html dt, .light dt, .dark dt {
+  margin-top: 0.5em;
+  font-weight: bold;
+  color: #268bd2;
+}
+html dd, .light dd, .dark dd {
+  margin-top: 0.3em;
+}
+html a, html a:visited, .light a, .light a:visited, .dark a, .dark a:visited {
+  color: #268bd2;
+}
+html a:hover, html a:active, .light a:hover, .light a:active, .dark a:hover, .dark a:active {
+  color: #2aa198;
+}
+html .links-bar, .light .links-bar, .dark .links-bar {
   float: right;
   padding: 0;
   margin: 0.5em 0 1em 0;
 }
-.light .links-bar a, .dark .links-bar a {
+html .links-bar a, .light .links-bar a, .dark .links-bar a {
   display: inline-block;
   margin: 0 0.3em;
   padding: 0.3em 0.6em;
@@ -220,485 +236,509 @@ body {
   color: #fdf6e3;
   text-decoration: none;
 }
-.light .links-bar a:visited, .light .links-bar a:hover, .light .links-bar a:active, .dark .links-bar a:visited, .dark .links-bar a:hover, .dark .links-bar a:active {
+html .links-bar a:visited, html .links-bar a:hover, html .links-bar a:active, .light .links-bar a:visited, .light .links-bar a:hover, .light .links-bar a:active, .dark .links-bar a:visited, .dark .links-bar a:hover, .dark .links-bar a:active {
   color: #fdf6e3;
   text-decoration: none;
 }
-.light .links-bar a:hover, .light .links-bar a:active, .light .links-bar a.state-flashing-on, .dark .links-bar a:hover, .dark .links-bar a:active, .dark .links-bar a.state-flashing-on {
+html .links-bar a:hover, html .links-bar a:active, html .links-bar a.state-flashing-on, .light .links-bar a:hover, .light .links-bar a:active, .light .links-bar a.state-flashing-on, .dark .links-bar a:hover, .dark .links-bar a:active, .dark .links-bar a.state-flashing-on {
   background-color: #4ca2df;
 }
-.light .links-bar a[disabled], .light .links-bar a[disabled]:hover, .light .links-bar a[disabled]:active, .dark .links-bar a[disabled], .dark .links-bar a[disabled]:hover, .dark .links-bar a[disabled]:active {
+html .links-bar a[disabled], html .links-bar a[disabled]:hover, html .links-bar a[disabled]:active, .light .links-bar a[disabled], .light .links-bar a[disabled]:hover, .light .links-bar a[disabled]:active, .dark .links-bar a[disabled], .dark .links-bar a[disabled]:hover, .dark .links-bar a[disabled]:active {
   opacity: 0.5;
   background-color: #268bd2;
 }
-.light .links-bar a, .light .links-bar a:visited, .light .links-bar a:hover, .light .links-bar a:active, .dark .links-bar a, .dark .links-bar a:visited, .dark .links-bar a:hover, .dark .links-bar a:active {
+html .links-bar a, html .links-bar a:visited, html .links-bar a:hover, html .links-bar a:active, .light .links-bar a, .light .links-bar a:visited, .light .links-bar a:hover, .light .links-bar a:active, .dark .links-bar a, .dark .links-bar a:visited, .dark .links-bar a:hover, .dark .links-bar a:active {
   color: #fdf6e3;
   text-decoration: none;
 }
-.light .links-bar a:hover, .light .links-bar a:active, .dark .links-bar a:hover, .dark .links-bar a:active {
+html .links-bar a:hover, html .links-bar a:active, .light .links-bar a:hover, .light .links-bar a:active, .dark .links-bar a:hover, .dark .links-bar a:active {
   background-color: #4ca2df;
 }
-.light .animate-start-hidden, .dark .animate-start-hidden {
+html .animate-start-hidden, .light .animate-start-hidden, .dark .animate-start-hidden {
   visibility: hidden;
   display: inline-block;
 }
-.light form, .dark form {
+html form, .light form, .dark form {
   display: flex;
   flex-direction: column;
   align-items: flex-end;
   vertical-align: middle;
 }
-.light form#form-login .forgot-password, .dark form#form-login .forgot-password {
+html form#form-login .forgot-password, .light form#form-login .forgot-password, .dark form#form-login .forgot-password {
   font-size: 80%;
 }
-.light form.narrow, .dark form.narrow {
+html form.narrow, .light form.narrow, .dark form.narrow {
   width: 33%;
   margin-left: auto;
   margin-right: auto;
 }
-.light form.narrow > div, .dark form.narrow > div {
+html form.narrow > div, .light form.narrow > div, .dark form.narrow > div {
   justify-content: space-between;
 }
-.light form > div, .dark form > div {
+html form > div, .light form > div, .dark form > div {
   width: 100%;
   display: flex;
   flex-direction: row;
   justify-content: center;
   align-items: baseline;
 }
-.light form > div.form-row-end, .dark form > div.form-row-end {
+html form > div.form-row-end, .light form > div.form-row-end, .dark form > div.form-row-end {
   justify-content: flex-end;
 }
-.light form input[type="text"], .light form input[type="password"], .light form input[type="number"], .light form input[type="textarea"], .light form .dijitTextBox, .dark form input[type="text"], .dark form input[type="password"], .dark form input[type="number"], .dark form input[type="textarea"], .dark form .dijitTextBox {
+html form input[type="text"], html form input[type="password"], html form input[type="number"], html form input[type="textarea"], html form .dijitTextBox, .light form input[type="text"], .light form input[type="password"], .light form input[type="number"], .light form input[type="textarea"], .light form .dijitTextBox, .dark form input[type="text"], .dark form input[type="password"], .dark form input[type="number"], .dark form input[type="textarea"], .dark form .dijitTextBox {
   flex-grow: 1;
 }
-.light form .help-block, .dark form .help-block {
+html form .help-block, .light form .help-block, .dark form .help-block {
   margin: 0 0.4em 0.2em;
   color: #dc322f;
   font-size: 80%;
 }
-.light form #search-query, .dark form #search-query {
+html form #search-query, .light form #search-query, .dark form #search-query {
   text-align: left;
 }
-.light form #search-maxlines, .dark form #search-maxlines {
+html form #search-maxlines, .light form #search-maxlines, .dark form #search-maxlines {
   max-width: 4em;
 }
-.light input, .light button, .light .buffer-list .buffer-allow, .dark .buffer-list .light .buffer-allow, .light .buffer-list .buffer-deny, .dark .buffer-list .light .buffer-deny, .light .dijitTextBox, .dark input, .dark button, .light .buffer-list .dark .buffer-allow, .dark .buffer-list .buffer-allow, .light .buffer-list .dark .buffer-deny, .dark .buffer-list .buffer-deny, .dark .dijitTextBox {
+html input, html button, html .buffer-list .buffer-allow, html .light .buffer-list .buffer-allow, .light .buffer-list html .buffer-allow, html .dark .buffer-list .buffer-allow, .dark .buffer-list html .buffer-allow, html .buffer-list .buffer-deny, html .light .buffer-list .buffer-deny, .light .buffer-list html .buffer-deny, html .dark .buffer-list .buffer-deny, .dark .buffer-list html .buffer-deny, html .dijitTextBox, .light input, .light button, html .buffer-list .light .buffer-allow, .light .buffer-list .buffer-allow, .dark .buffer-list .light .buffer-allow, html .buffer-list .light .buffer-deny, .light .buffer-list .buffer-deny, .dark .buffer-list .light .buffer-deny, .light .dijitTextBox, .dark input, .dark button, html .buffer-list .dark .buffer-allow, .light .buffer-list .dark .buffer-allow, .dark .buffer-list .buffer-allow, html .buffer-list .dark .buffer-deny, .light .buffer-list .dark .buffer-deny, .dark .buffer-list .buffer-deny, .dark .dijitTextBox {
   border: 1px solid;
   border-radius: 10px;
   margin: 0 0.4em 0.6em;
   padding: 0.3em 0.6em;
   vertical-align: middle;
 }
-.light label, .light input[type="checkbox"], .light input[type="radio"], .dark label, .dark input[type="checkbox"], .dark input[type="radio"] {
+html label, html input[type="checkbox"], html input[type="radio"], .light label, .light input[type="checkbox"], .light input[type="radio"], .dark label, .dark input[type="checkbox"], .dark input[type="radio"] {
   margin: 0 0.2em 0.6em;
   padding: 0;
 }
-.light input[type="text"], .light input[type="password"], .light input[type="number"], .light input[type="textarea"], .light .dijitTextBox, .dark input[type="text"], .dark input[type="password"], .dark input[type="number"], .dark input[type="textarea"], .dark .dijitTextBox {
+html input[type="text"], html input[type="password"], html input[type="number"], html input[type="textarea"], html .dijitTextBox, .light input[type="text"], .light input[type="password"], .light input[type="number"], .light input[type="textarea"], .light .dijitTextBox, .dark input[type="text"], .dark input[type="password"], .dark input[type="number"], .dark input[type="textarea"], .dark .dijitTextBox {
   text-align: center;
 }
-.light input[type="text"], .light input[type="number"], .dark input[type="text"], .dark input[type="number"] {
+html input[type="text"], html input[type="number"], .light input[type="text"], .light input[type="number"], .dark input[type="text"], .dark input[type="number"] {
   text-align: center;
 }
-.light > div.has-error input, .dark > div.has-error input {
+html > div.has-error input, .light > div.has-error input, .dark > div.has-error input {
   border-color: #dc322f;
   background-color: #f2b3b2;
 }
-.light button, .light .buffer-list .buffer-allow, .dark .buffer-list .light .buffer-allow, .light .buffer-list .buffer-deny, .dark .buffer-list .light .buffer-deny, .light input[type="submit"], .dark button, .light .buffer-list .dark .buffer-allow, .dark .buffer-list .buffer-allow, .light .buffer-list .dark .buffer-deny, .dark .buffer-list .buffer-deny, .dark input[type="submit"] {
+html button, html .buffer-list .buffer-allow, html .light .buffer-list .buffer-allow, .light .buffer-list html .buffer-allow, html .dark .buffer-list .buffer-allow, .dark .buffer-list html .buffer-allow, html .buffer-list .buffer-deny, html .light .buffer-list .buffer-deny, .light .buffer-list html .buffer-deny, html .dark .buffer-list .buffer-deny, .dark .buffer-list html .buffer-deny, html input[type="submit"], .light button, html .buffer-list .light .buffer-allow, .light .buffer-list .buffer-allow, .dark .buffer-list .light .buffer-allow, html .buffer-list .light .buffer-deny, .light .buffer-list .buffer-deny, .dark .buffer-list .light .buffer-deny, .light input[type="submit"], .dark button, html .buffer-list .dark .buffer-allow, .light .buffer-list .dark .buffer-allow, .dark .buffer-list .buffer-allow, html .buffer-list .dark .buffer-deny, .light .buffer-list .dark .buffer-deny, .dark .buffer-list .buffer-deny, .dark input[type="submit"] {
   background-color: #268bd2;
   border: solid #268bd2 1px;
   color: #fdf6e3;
   transition: color 0.3s, background-color 0.3s, border-color 0.3s;
   vertical-align: middle;
 }
-.light button:hover, .light .buffer-list .buffer-allow:hover, .dark .buffer-list .light .buffer-allow:hover, .light .buffer-list .buffer-deny:hover, .dark .buffer-list .light .buffer-deny:hover, .light button:active, .light .buffer-list .buffer-allow:active, .dark .buffer-list .light .buffer-allow:active, .light .buffer-list .buffer-deny:active, .dark .buffer-list .light .buffer-deny:active, .light button.state-flashing-on, .light .buffer-list .state-flashing-on.buffer-allow, .dark .buffer-list .light .state-flashing-on.buffer-allow, .light .buffer-list .state-flashing-on.buffer-deny, .dark .buffer-list .light .state-flashing-on.buffer-deny, .light input[type="submit"]:hover, .light input[type="submit"]:active, .light input[type="submit"].state-flashing-on, .dark button:hover, .light .buffer-list .dark .buffer-allow:hover, .dark .buffer-list .buffer-allow:hover, .light .buffer-list .dark .buffer-deny:hover, .dark .buffer-list .buffer-deny:hover, .dark button:active, .light .buffer-list .dark .buffer-allow:active, .dark .buffer-list .buffer-allow:active, .light .buffer-list .dark .buffer-deny:active, .dark .buffer-list .buffer-deny:active, .dark button.state-flashing-on, .light .buffer-list .dark .state-flashing-on.buffer-allow, .dark .buffer-list .state-flashing-on.buffer-allow, .light .buffer-list .dark .state-flashing-on.buffer-deny, .dark .buffer-list .state-flashing-on.buffer-deny, .dark input[type="submit"]:hover, .dark input[type="submit"]:active, .dark input[type="submit"].state-flashing-on {
+html button:hover, html .buffer-list .buffer-allow:hover, .light .buffer-list html .buffer-allow:hover, .dark .buffer-list html .buffer-allow:hover, html .buffer-list .buffer-deny:hover, .light .buffer-list html .buffer-deny:hover, .dark .buffer-list html .buffer-deny:hover, html button:active, html .buffer-list .buffer-allow:active, .light .buffer-list html .buffer-allow:active, .dark .buffer-list html .buffer-allow:active, html .buffer-list .buffer-deny:active, .light .buffer-list html .buffer-deny:active, .dark .buffer-list html .buffer-deny:active, html button.state-flashing-on, html .buffer-list .state-flashing-on.buffer-allow, .light .buffer-list html .state-flashing-on.buffer-allow, .dark .buffer-list html .state-flashing-on.buffer-allow, html .buffer-list .state-flashing-on.buffer-deny, .light .buffer-list html .state-flashing-on.buffer-deny, .dark .buffer-list html .state-flashing-on.buffer-deny, html input[type="submit"]:hover, html input[type="submit"]:active, html input[type="submit"].state-flashing-on, .light button:hover, html .buffer-list .light .buffer-allow:hover, .light .buffer-list .buffer-allow:hover, .dark .buffer-list .light .buffer-allow:hover, html .buffer-list .light .buffer-deny:hover, .light .buffer-list .buffer-deny:hover, .dark .buffer-list .light .buffer-deny:hover, .light button:active, html .buffer-list .light .buffer-allow:active, .light .buffer-list .buffer-allow:active, .dark .buffer-list .light .buffer-allow:active, html .buffer-list .light .buffer-deny:active, .light .buffer-list .buffer-deny:active, .dark .buffer-list .light .buffer-deny:active, .light button.state-flashing-on, html .buffer-list .light .state-flashing-on.buffer-allow, .light .buffer-list .state-flashing-on.buffer-allow, .dark .buffer-list .light .state-flashing-on.buffer-allow, html .buffer-list .light .state-flashing-on.buffer-deny, .light .buffer-list .state-flashing-on.buffer-deny, .dark .buffer-list .light .state-flashing-on.buffer-deny, .light input[type="submit"]:hover, .light input[type="submit"]:active, .light input[type="submit"].state-flashing-on, .dark button:hover, html .buffer-list .dark .buffer-allow:hover, .light .buffer-list .dark .buffer-allow:hover, .dark .buffer-list .buffer-allow:hover, html .buffer-list .dark .buffer-deny:hover, .light .buffer-list .dark .buffer-deny:hover, .dark .buffer-list .buffer-deny:hover, .dark button:active, html .buffer-list .dark .buffer-allow:active, .light .buffer-list .dark .buffer-allow:active, .dark .buffer-list .buffer-allow:active, html .buffer-list .dark .buffer-deny:active, .light .buffer-list .dark .buffer-deny:active, .dark .buffer-list .buffer-deny:active, .dark button.state-flashing-on, html .buffer-list .dark .state-flashing-on.buffer-allow, .light .buffer-list .dark .state-flashing-on.buffer-allow, .dark .buffer-list .state-flashing-on.buffer-allow, html .buffer-list .dark .state-flashing-on.buffer-deny, .light .buffer-list .dark .state-flashing-on.buffer-deny, .dark .buffer-list .state-flashing-on.buffer-deny, .dark input[type="submit"]:hover, .dark input[type="submit"]:active, .dark input[type="submit"].state-flashing-on {
   background-color: #4ca2df;
 }
-.light button[disabled], .light .buffer-list [disabled].buffer-allow, .dark .buffer-list .light [disabled].buffer-allow, .light .buffer-list [disabled].buffer-deny, .dark .buffer-list .light [disabled].buffer-deny, .light button[disabled]:hover, .light .buffer-list [disabled].buffer-allow:hover, .dark .buffer-list .light [disabled].buffer-allow:hover, .light .buffer-list [disabled].buffer-deny:hover, .dark .buffer-list .light [disabled].buffer-deny:hover, .light button[disabled]:active, .light .buffer-list [disabled].buffer-allow:active, .dark .buffer-list .light [disabled].buffer-allow:active, .light .buffer-list [disabled].buffer-deny:active, .dark .buffer-list .light [disabled].buffer-deny:active, .light input[type="submit"][disabled], .light input[type="submit"][disabled]:hover, .light input[type="submit"][disabled]:active, .dark button[disabled], .light .buffer-list .dark [disabled].buffer-allow, .dark .buffer-list [disabled].buffer-allow, .light .buffer-list .dark [disabled].buffer-deny, .dark .buffer-list [disabled].buffer-deny, .dark button[disabled]:hover, .light .buffer-list .dark [disabled].buffer-allow:hover, .dark .buffer-list [disabled].buffer-allow:hover, .light .buffer-list .dark [disabled].buffer-deny:hover, .dark .buffer-list [disabled].buffer-deny:hover, .dark button[disabled]:active, .light .buffer-list .dark [disabled].buffer-allow:active, .dark .buffer-list [disabled].buffer-allow:active, .light .buffer-list .dark [disabled].buffer-deny:active, .dark .buffer-list [disabled].buffer-deny:active, .dark input[type="submit"][disabled], .dark input[type="submit"][disabled]:hover, .dark input[type="submit"][disabled]:active {
+html button[disabled], html .buffer-list [disabled].buffer-allow, .light .buffer-list html [disabled].buffer-allow, .dark .buffer-list html [disabled].buffer-allow, html .buffer-list [disabled].buffer-deny, .light .buffer-list html [disabled].buffer-deny, .dark .buffer-list html [disabled].buffer-deny, html button[disabled]:hover, html .buffer-list [disabled].buffer-allow:hover, .light .buffer-list html [disabled].buffer-allow:hover, .dark .buffer-list html [disabled].buffer-allow:hover, html .buffer-list [disabled].buffer-deny:hover, .light .buffer-list html [disabled].buffer-deny:hover, .dark .buffer-list html [disabled].buffer-deny:hover, html button[disabled]:active, html .buffer-list [disabled].buffer-allow:active, .light .buffer-list html [disabled].buffer-allow:active, .dark .buffer-list html [disabled].buffer-allow:active, html .buffer-list [disabled].buffer-deny:active, .light .buffer-list html [disabled].buffer-deny:active, .dark .buffer-list html [disabled].buffer-deny:active, html input[type="submit"][disabled], html input[type="submit"][disabled]:hover, html input[type="submit"][disabled]:active, .light button[disabled], html .buffer-list .light [disabled].buffer-allow, .light .buffer-list [disabled].buffer-allow, .dark .buffer-list .light [disabled].buffer-allow, html .buffer-list .light [disabled].buffer-deny, .light .buffer-list [disabled].buffer-deny, .dark .buffer-list .light [disabled].buffer-deny, .light button[disabled]:hover, html .buffer-list .light [disabled].buffer-allow:hover, .light .buffer-list [disabled].buffer-allow:hover, .dark .buffer-list .light [disabled].buffer-allow:hover, html .buffer-list .light [disabled].buffer-deny:hover, .light .buffer-list [disabled].buffer-deny:hover, .dark .buffer-list .light [disabled].buffer-deny:hover, .light button[disabled]:active, html .buffer-list .light [disabled].buffer-allow:active, .light .buffer-list [disabled].buffer-allow:active, .dark .buffer-list .light [disabled].buffer-allow:active, html .buffer-list .light [disabled].buffer-deny:active, .light .buffer-list [disabled].buffer-deny:active, .dark .buffer-list .light [disabled].buffer-deny:active, .light input[type="submit"][disabled], .light input[type="submit"][disabled]:hover, .light input[type="submit"][disabled]:active, .dark button[disabled], html .buffer-list .dark [disabled].buffer-allow, .light .buffer-list .dark [disabled].buffer-allow, .dark .buffer-list [disabled].buffer-allow, html .buffer-list .dark [disabled].buffer-deny, .light .buffer-list .dark [disabled].buffer-deny, .dark .buffer-list [disabled].buffer-deny, .dark button[disabled]:hover, html .buffer-list .dark [disabled].buffer-allow:hover, .light .buffer-list .dark [disabled].buffer-allow:hover, .dark .buffer-list [disabled].buffer-allow:hover, html .buffer-list .dark [disabled].buffer-deny:hover, .light .buffer-list .dark [disabled].buffer-deny:hover, .dark .buffer-list [disabled].buffer-deny:hover, .dark button[disabled]:active, html .buffer-list .dark [disabled].buffer-allow:active, .light .buffer-list .dark [disabled].buffer-allow:active, .dark .buffer-list [disabled].buffer-allow:active, html .buffer-list .dark [disabled].buffer-deny:active, .light .buffer-list .dark [disabled].buffer-deny:active, .dark .buffer-list [disabled].buffer-deny:active, .dark input[type="submit"][disabled], .dark input[type="submit"][disabled]:hover, .dark input[type="submit"][disabled]:active {
   opacity: 0.5;
   background-color: #268bd2;
 }
-.light button[type="reset"], .light .buffer-list [type="reset"].buffer-allow, .dark .buffer-list .light [type="reset"].buffer-allow, .light .buffer-list [type="reset"].buffer-deny, .dark .buffer-list .light [type="reset"].buffer-deny, .light input[type="reset"], .dark button[type="reset"], .light .buffer-list .dark [type="reset"].buffer-allow, .dark .buffer-list [type="reset"].buffer-allow, .light .buffer-list .dark [type="reset"].buffer-deny, .dark .buffer-list [type="reset"].buffer-deny, .dark input[type="reset"] {
+html button[type="reset"], html .buffer-list [type="reset"].buffer-allow, .light .buffer-list html [type="reset"].buffer-allow, .dark .buffer-list html [type="reset"].buffer-allow, html .buffer-list [type="reset"].buffer-deny, .light .buffer-list html [type="reset"].buffer-deny, .dark .buffer-list html [type="reset"].buffer-deny, html input[type="reset"], .light button[type="reset"], html .buffer-list .light [type="reset"].buffer-allow, .light .buffer-list [type="reset"].buffer-allow, .dark .buffer-list .light [type="reset"].buffer-allow, html .buffer-list .light [type="reset"].buffer-deny, .light .buffer-list [type="reset"].buffer-deny, .dark .buffer-list .light [type="reset"].buffer-deny, .light input[type="reset"], .dark button[type="reset"], html .buffer-list .dark [type="reset"].buffer-allow, .light .buffer-list .dark [type="reset"].buffer-allow, .dark .buffer-list [type="reset"].buffer-allow, html .buffer-list .dark [type="reset"].buffer-deny, .light .buffer-list .dark [type="reset"].buffer-deny, .dark .buffer-list [type="reset"].buffer-deny, .dark input[type="reset"] {
   background-color: #6c71c4;
   border: solid #6c71c4 1px;
   color: #fdf6e3;
   transition: color 0.3s, background-color 0.3s, border-color 0.3s;
   vertical-align: middle;
 }
-.light button[type="reset"]:hover, .light .buffer-list [type="reset"].buffer-allow:hover, .dark .buffer-list .light [type="reset"].buffer-allow:hover, .light .buffer-list [type="reset"].buffer-deny:hover, .dark .buffer-list .light [type="reset"].buffer-deny:hover, .light button[type="reset"]:active, .light .buffer-list [type="reset"].buffer-allow:active, .dark .buffer-list .light [type="reset"].buffer-allow:active, .light .buffer-list [type="reset"].buffer-deny:active, .dark .buffer-list .light [type="reset"].buffer-deny:active, .light button[type="reset"].state-flashing-on, .light .buffer-list [type="reset"].state-flashing-on.buffer-allow, .dark .buffer-list .light [type="reset"].state-flashing-on.buffer-allow, .light .buffer-list [type="reset"].state-flashing-on.buffer-deny, .dark .buffer-list .light [type="reset"].state-flashing-on.buffer-deny, .light input[type="reset"]:hover, .light input[type="reset"]:active, .light input[type="reset"].state-flashing-on, .dark button[type="reset"]:hover, .light .buffer-list .dark [type="reset"].buffer-allow:hover, .dark .buffer-list [type="reset"].buffer-allow:hover, .light .buffer-list .dark [type="reset"].buffer-deny:hover, .dark .buffer-list [type="reset"].buffer-deny:hover, .dark button[type="reset"]:active, .light .buffer-list .dark [type="reset"].buffer-allow:active, .dark .buffer-list [type="reset"].buffer-allow:active, .light .buffer-list .dark [type="reset"].buffer-deny:active, .dark .buffer-list [type="reset"].buffer-deny:active, .dark button[type="reset"].state-flashing-on, .light .buffer-list .dark [type="reset"].state-flashing-on.buffer-allow, .dark .buffer-list [type="reset"].state-flashing-on.buffer-allow, .light .buffer-list .dark [type="reset"].state-flashing-on.buffer-deny, .dark .buffer-list [type="reset"].state-flashing-on.buffer-deny, .dark input[type="reset"]:hover, .dark input[type="reset"]:active, .dark input[type="reset"].state-flashing-on {
+html button[type="reset"]:hover, html .buffer-list [type="reset"].buffer-allow:hover, .light .buffer-list html [type="reset"].buffer-allow:hover, .dark .buffer-list html [type="reset"].buffer-allow:hover, html .buffer-list [type="reset"].buffer-deny:hover, .light .buffer-list html [type="reset"].buffer-deny:hover, .dark .buffer-list html [type="reset"].buffer-deny:hover, html button[type="reset"]:active, html .buffer-list [type="reset"].buffer-allow:active, .light .buffer-list html [type="reset"].buffer-allow:active, .dark .buffer-list html [type="reset"].buffer-allow:active, html .buffer-list [type="reset"].buffer-deny:active, .light .buffer-list html [type="reset"].buffer-deny:active, .dark .buffer-list html [type="reset"].buffer-deny:active, html button[type="reset"].state-flashing-on, html .buffer-list [type="reset"].state-flashing-on.buffer-allow, .light .buffer-list html [type="reset"].state-flashing-on.buffer-allow, .dark .buffer-list html [type="reset"].state-flashing-on.buffer-allow, html .buffer-list [type="reset"].state-flashing-on.buffer-deny, .light .buffer-list html [type="reset"].state-flashing-on.buffer-deny, .dark .buffer-list html [type="reset"].state-flashing-on.buffer-deny, html input[type="reset"]:hover, html input[type="reset"]:active, html input[type="reset"].state-flashing-on, .light button[type="reset"]:hover, html .buffer-list .light [type="reset"].buffer-allow:hover, .light .buffer-list [type="reset"].buffer-allow:hover, .dark .buffer-list .light [type="reset"].buffer-allow:hover, html .buffer-list .light [type="reset"].buffer-deny:hover, .light .buffer-list [type="reset"].buffer-deny:hover, .dark .buffer-list .light [type="reset"].buffer-deny:hover, .light button[type="reset"]:active, html .buffer-list .light [type="reset"].buffer-allow:active, .light .buffer-list [type="reset"].buffer-allow:active, .dark .buffer-list .light [type="reset"].buffer-allow:active, html .buffer-list .light [type="reset"].buffer-deny:active, .light .buffer-list [type="reset"].buffer-deny:active, .dark .buffer-list .light [type="reset"].buffer-deny:active, .light button[type="reset"].state-flashing-on, html .buffer-list .light [type="reset"].state-flashing-on.buffer-allow, .light .buffer-list [type="reset"].state-flashing-on.buffer-allow, .dark .buffer-list .light [type="reset"].state-flashing-on.buffer-allow, html .buffer-list .light [type="reset"].state-flashing-on.buffer-deny, .light .buffer-list [type="reset"].state-flashing-on.buffer-deny, .dark .buffer-list .light [type="reset"].state-flashing-on.buffer-deny, .light input[type="reset"]:hover, .light input[type="reset"]:active, .light input[type="reset"].state-flashing-on, .dark button[type="reset"]:hover, html .buffer-list .dark [type="reset"].buffer-allow:hover, .light .buffer-list .dark [type="reset"].buffer-allow:hover, .dark .buffer-list [type="reset"].buffer-allow:hover, html .buffer-list .dark [type="reset"].buffer-deny:hover, .light .buffer-list .dark [type="reset"].buffer-deny:hover, .dark .buffer-list [type="reset"].buffer-deny:hover, .dark button[type="reset"]:active, html .buffer-list .dark [type="reset"].buffer-allow:active, .light .buffer-list .dark [type="reset"].buffer-allow:active, .dark .buffer-list [type="reset"].buffer-allow:active, html .buffer-list .dark [type="reset"].buffer-deny:active, .light .buffer-list .dark [type="reset"].buffer-deny:active, .dark .buffer-list [type="reset"].buffer-deny:active, .dark button[type="reset"].state-flashing-on, html .buffer-list .dark [type="reset"].state-flashing-on.buffer-allow, .light .buffer-list .dark [type="reset"].state-flashing-on.buffer-allow, .dark .buffer-list [type="reset"].state-flashing-on.buffer-allow, html .buffer-list .dark [type="reset"].state-flashing-on.buffer-deny, .light .buffer-list .dark [type="reset"].state-flashing-on.buffer-deny, .dark .buffer-list [type="reset"].state-flashing-on.buffer-deny, .dark input[type="reset"]:hover, .dark input[type="reset"]:active, .dark input[type="reset"].state-flashing-on {
   background-color: #9094d3;
 }
-.light button[type="reset"][disabled], .light .buffer-list [type="reset"][disabled].buffer-allow, .dark .buffer-list .light [type="reset"][disabled].buffer-allow, .light .buffer-list [type="reset"][disabled].buffer-deny, .dark .buffer-list .light [type="reset"][disabled].buffer-deny, .light button[type="reset"][disabled]:hover, .light .buffer-list [type="reset"][disabled].buffer-allow:hover, .dark .buffer-list .light [type="reset"][disabled].buffer-allow:hover, .light .buffer-list [type="reset"][disabled].buffer-deny:hover, .dark .buffer-list .light [type="reset"][disabled].buffer-deny:hover, .light button[type="reset"][disabled]:active, .light .buffer-list [type="reset"][disabled].buffer-allow:active, .dark .buffer-list .light [type="reset"][disabled].buffer-allow:active, .light .buffer-list [type="reset"][disabled].buffer-deny:active, .dark .buffer-list .light [type="reset"][disabled].buffer-deny:active, .light input[type="reset"][disabled], .light input[type="reset"][disabled]:hover, .light input[type="reset"][disabled]:active, .dark button[type="reset"][disabled], .light .buffer-list .dark [type="reset"][disabled].buffer-allow, .dark .buffer-list [type="reset"][disabled].buffer-allow, .light .buffer-list .dark [type="reset"][disabled].buffer-deny, .dark .buffer-list [type="reset"][disabled].buffer-deny, .dark button[type="reset"][disabled]:hover, .light .buffer-list .dark [type="reset"][disabled].buffer-allow:hover, .dark .buffer-list [type="reset"][disabled].buffer-allow:hover, .light .buffer-list .dark [type="reset"][disabled].buffer-deny:hover, .dark .buffer-list [type="reset"][disabled].buffer-deny:hover, .dark button[type="reset"][disabled]:active, .light .buffer-list .dark [type="reset"][disabled].buffer-allow:active, .dark .buffer-list [type="reset"][disabled].buffer-allow:active, .light .buffer-list .dark [type="reset"][disabled].buffer-deny:active, .dark .buffer-list [type="reset"][disabled].buffer-deny:active, .dark input[type="reset"][disabled], .dark input[type="reset"][disabled]:hover, .dark input[type="reset"][disabled]:active {
+html button[type="reset"][disabled], html .buffer-list [type="reset"][disabled].buffer-allow, .light .buffer-list html [type="reset"][disabled].buffer-allow, .dark .buffer-list html [type="reset"][disabled].buffer-allow, html .buffer-list [type="reset"][disabled].buffer-deny, .light .buffer-list html [type="reset"][disabled].buffer-deny, .dark .buffer-list html [type="reset"][disabled].buffer-deny, html button[type="reset"][disabled]:hover, html .buffer-list [type="reset"][disabled].buffer-allow:hover, .light .buffer-list html [type="reset"][disabled].buffer-allow:hover, .dark .buffer-list html [type="reset"][disabled].buffer-allow:hover, html .buffer-list [type="reset"][disabled].buffer-deny:hover, .light .buffer-list html [type="reset"][disabled].buffer-deny:hover, .dark .buffer-list html [type="reset"][disabled].buffer-deny:hover, html button[type="reset"][disabled]:active, html .buffer-list [type="reset"][disabled].buffer-allow:active, .light .buffer-list html [type="reset"][disabled].buffer-allow:active, .dark .buffer-list html [type="reset"][disabled].buffer-allow:active, html .buffer-list [type="reset"][disabled].buffer-deny:active, .light .buffer-list html [type="reset"][disabled].buffer-deny:active, .dark .buffer-list html [type="reset"][disabled].buffer-deny:active, html input[type="reset"][disabled], html input[type="reset"][disabled]:hover, html input[type="reset"][disabled]:active, .light button[type="reset"][disabled], html .buffer-list .light [type="reset"][disabled].buffer-allow, .light .buffer-list [type="reset"][disabled].buffer-allow, .dark .buffer-list .light [type="reset"][disabled].buffer-allow, html .buffer-list .light [type="reset"][disabled].buffer-deny, .light .buffer-list [type="reset"][disabled].buffer-deny, .dark .buffer-list .light [type="reset"][disabled].buffer-deny, .light button[type="reset"][disabled]:hover, html .buffer-list .light [type="reset"][disabled].buffer-allow:hover, .light .buffer-list [type="reset"][disabled].buffer-allow:hover, .dark .buffer-list .light [type="reset"][disabled].buffer-allow:hover, html .buffer-list .light [type="reset"][disabled].buffer-deny:hover, .light .buffer-list [type="reset"][disabled].buffer-deny:hover, .dark .buffer-list .light [type="reset"][disabled].buffer-deny:hover, .light button[type="reset"][disabled]:active, html .buffer-list .light [type="reset"][disabled].buffer-allow:active, .light .buffer-list [type="reset"][disabled].buffer-allow:active, .dark .buffer-list .light [type="reset"][disabled].buffer-allow:active, html .buffer-list .light [type="reset"][disabled].buffer-deny:active, .light .buffer-list [type="reset"][disabled].buffer-deny:active, .dark .buffer-list .light [type="reset"][disabled].buffer-deny:active, .light input[type="reset"][disabled], .light input[type="reset"][disabled]:hover, .light input[type="reset"][disabled]:active, .dark button[type="reset"][disabled], html .buffer-list .dark [type="reset"][disabled].buffer-allow, .light .buffer-list .dark [type="reset"][disabled].buffer-allow, .dark .buffer-list [type="reset"][disabled].buffer-allow, html .buffer-list .dark [type="reset"][disabled].buffer-deny, .light .buffer-list .dark [type="reset"][disabled].buffer-deny, .dark .buffer-list [type="reset"][disabled].buffer-deny, .dark button[type="reset"][disabled]:hover, html .buffer-list .dark [type="reset"][disabled].buffer-allow:hover, .light .buffer-list .dark [type="reset"][disabled].buffer-allow:hover, .dark .buffer-list [type="reset"][disabled].buffer-allow:hover, html .buffer-list .dark [type="reset"][disabled].buffer-deny:hover, .light .buffer-list .dark [type="reset"][disabled].buffer-deny:hover, .dark .buffer-list [type="reset"][disabled].buffer-deny:hover, .dark button[type="reset"][disabled]:active, html .buffer-list .dark [type="reset"][disabled].buffer-allow:active, .light .buffer-list .dark [type="reset"][disabled].buffer-allow:active, .dark .buffer-list [type="reset"][disabled].buffer-allow:active, html .buffer-list .dark [type="reset"][disabled].buffer-deny:active, .light .buffer-list .dark [type="reset"][disabled].buffer-deny:active, .dark .buffer-list [type="reset"][disabled].buffer-deny:active, .dark input[type="reset"][disabled], .dark input[type="reset"][disabled]:hover, .dark input[type="reset"][disabled]:active {
   opacity: 0.5;
   background-color: #6c71c4;
 }
-.light form.linkform, .dark form.linkform {
+html form.linkform, .light form.linkform, .dark form.linkform {
   display: inline-block;
   vertical-align: middle;
   margin: 0;
   padding: 0;
 }
-.light form.linkform input[type='submit'], .dark form.linkform input[type='submit'] {
+html form.linkform input[type='submit'], .light form.linkform input[type='submit'], .dark form.linkform input[type='submit'] {
   display: inline-block;
   margin: 0 0.3em;
 }
-.light form.linkform input[type='submit'].user-enabled, .light form.linkform input[type='submit'].confirmed, .dark form.linkform input[type='submit'].user-enabled, .dark form.linkform input[type='submit'].confirmed {
+html form.linkform input[type='submit'].user-enabled, html form.linkform input[type='submit'].confirmed, .light form.linkform input[type='submit'].user-enabled, .light form.linkform input[type='submit'].confirmed, .dark form.linkform input[type='submit'].user-enabled, .dark form.linkform input[type='submit'].confirmed {
   background-color: #2aa198;
   border: solid #2aa198 1px;
   color: #fdf6e3;
   transition: color 0.3s, background-color 0.3s, border-color 0.3s;
   vertical-align: middle;
 }
-.light form.linkform input[type='submit'].user-enabled:hover, .light form.linkform input[type='submit'].user-enabled:active, .light form.linkform input[type='submit'].user-enabled.state-flashing-on, .light form.linkform input[type='submit'].confirmed:hover, .light form.linkform input[type='submit'].confirmed:active, .light form.linkform input[type='submit'].confirmed.state-flashing-on, .dark form.linkform input[type='submit'].user-enabled:hover, .dark form.linkform input[type='submit'].user-enabled:active, .dark form.linkform input[type='submit'].user-enabled.state-flashing-on, .dark form.linkform input[type='submit'].confirmed:hover, .dark form.linkform input[type='submit'].confirmed:active, .dark form.linkform input[type='submit'].confirmed.state-flashing-on {
+html form.linkform input[type='submit'].user-enabled:hover, html form.linkform input[type='submit'].user-enabled:active, html form.linkform input[type='submit'].user-enabled.state-flashing-on, html form.linkform input[type='submit'].confirmed:hover, html form.linkform input[type='submit'].confirmed:active, html form.linkform input[type='submit'].confirmed.state-flashing-on, .light form.linkform input[type='submit'].user-enabled:hover, .light form.linkform input[type='submit'].user-enabled:active, .light form.linkform input[type='submit'].user-enabled.state-flashing-on, .light form.linkform input[type='submit'].confirmed:hover, .light form.linkform input[type='submit'].confirmed:active, .light form.linkform input[type='submit'].confirmed.state-flashing-on, .dark form.linkform input[type='submit'].user-enabled:hover, .dark form.linkform input[type='submit'].user-enabled:active, .dark form.linkform input[type='submit'].user-enabled.state-flashing-on, .dark form.linkform input[type='submit'].confirmed:hover, .dark form.linkform input[type='submit'].confirmed:active, .dark form.linkform input[type='submit'].confirmed.state-flashing-on {
   background-color: #35c9be;
 }
-.light form.linkform input[type='submit'].user-enabled[disabled], .light form.linkform input[type='submit'].user-enabled[disabled]:hover, .light form.linkform input[type='submit'].user-enabled[disabled]:active, .light form.linkform input[type='submit'].confirmed[disabled], .light form.linkform input[type='submit'].confirmed[disabled]:hover, .light form.linkform input[type='submit'].confirmed[disabled]:active, .dark form.linkform input[type='submit'].user-enabled[disabled], .dark form.linkform input[type='submit'].user-enabled[disabled]:hover, .dark form.linkform input[type='submit'].user-enabled[disabled]:active, .dark form.linkform input[type='submit'].confirmed[disabled], .dark form.linkform input[type='submit'].confirmed[disabled]:hover, .dark form.linkform input[type='submit'].confirmed[disabled]:active {
+html form.linkform input[type='submit'].user-enabled[disabled], html form.linkform input[type='submit'].user-enabled[disabled]:hover, html form.linkform input[type='submit'].user-enabled[disabled]:active, html form.linkform input[type='submit'].confirmed[disabled], html form.linkform input[type='submit'].confirmed[disabled]:hover, html form.linkform input[type='submit'].confirmed[disabled]:active, .light form.linkform input[type='submit'].user-enabled[disabled], .light form.linkform input[type='submit'].user-enabled[disabled]:hover, .light form.linkform input[type='submit'].user-enabled[disabled]:active, .light form.linkform input[type='submit'].confirmed[disabled], .light form.linkform input[type='submit'].confirmed[disabled]:hover, .light form.linkform input[type='submit'].confirmed[disabled]:active, .dark form.linkform input[type='submit'].user-enabled[disabled], .dark form.linkform input[type='submit'].user-enabled[disabled]:hover, .dark form.linkform input[type='submit'].user-enabled[disabled]:active, .dark form.linkform input[type='submit'].confirmed[disabled], .dark form.linkform input[type='submit'].confirmed[disabled]:hover, .dark form.linkform input[type='submit'].confirmed[disabled]:active {
   opacity: 0.5;
   background-color: #2aa198;
 }
-.light form.linkform input[type='submit'].user-disabled, .light form.linkform input[type='submit'].unconfirmed, .dark form.linkform input[type='submit'].user-disabled, .dark form.linkform input[type='submit'].unconfirmed {
+html form.linkform input[type='submit'].user-disabled, html form.linkform input[type='submit'].unconfirmed, .light form.linkform input[type='submit'].user-disabled, .light form.linkform input[type='submit'].unconfirmed, .dark form.linkform input[type='submit'].user-disabled, .dark form.linkform input[type='submit'].unconfirmed {
   background-color: #cb4b16;
   border: solid #cb4b16 1px;
   color: #fdf6e3;
   transition: color 0.3s, background-color 0.3s, border-color 0.3s;
   vertical-align: middle;
 }
-.light form.linkform input[type='submit'].user-disabled:hover, .light form.linkform input[type='submit'].user-disabled:active, .light form.linkform input[type='submit'].user-disabled.state-flashing-on, .light form.linkform input[type='submit'].unconfirmed:hover, .light form.linkform input[type='submit'].unconfirmed:active, .light form.linkform input[type='submit'].unconfirmed.state-flashing-on, .dark form.linkform input[type='submit'].user-disabled:hover, .dark form.linkform input[type='submit'].user-disabled:active, .dark form.linkform input[type='submit'].user-disabled.state-flashing-on, .dark form.linkform input[type='submit'].unconfirmed:hover, .dark form.linkform input[type='submit'].unconfirmed:active, .dark form.linkform input[type='submit'].unconfirmed.state-flashing-on {
+html form.linkform input[type='submit'].user-disabled:hover, html form.linkform input[type='submit'].user-disabled:active, html form.linkform input[type='submit'].user-disabled.state-flashing-on, html form.linkform input[type='submit'].unconfirmed:hover, html form.linkform input[type='submit'].unconfirmed:active, html form.linkform input[type='submit'].unconfirmed.state-flashing-on, .light form.linkform input[type='submit'].user-disabled:hover, .light form.linkform input[type='submit'].user-disabled:active, .light form.linkform input[type='submit'].user-disabled.state-flashing-on, .light form.linkform input[type='submit'].unconfirmed:hover, .light form.linkform input[type='submit'].unconfirmed:active, .light form.linkform input[type='submit'].unconfirmed.state-flashing-on, .dark form.linkform input[type='submit'].user-disabled:hover, .dark form.linkform input[type='submit'].user-disabled:active, .dark form.linkform input[type='submit'].user-disabled.state-flashing-on, .dark form.linkform input[type='submit'].unconfirmed:hover, .dark form.linkform input[type='submit'].unconfirmed:active, .dark form.linkform input[type='submit'].unconfirmed.state-flashing-on {
   background-color: #e8632c;
 }
-.light form.linkform input[type='submit'].user-disabled[disabled], .light form.linkform input[type='submit'].user-disabled[disabled]:hover, .light form.linkform input[type='submit'].user-disabled[disabled]:active, .light form.linkform input[type='submit'].unconfirmed[disabled], .light form.linkform input[type='submit'].unconfirmed[disabled]:hover, .light form.linkform input[type='submit'].unconfirmed[disabled]:active, .dark form.linkform input[type='submit'].user-disabled[disabled], .dark form.linkform input[type='submit'].user-disabled[disabled]:hover, .dark form.linkform input[type='submit'].user-disabled[disabled]:active, .dark form.linkform input[type='submit'].unconfirmed[disabled], .dark form.linkform input[type='submit'].unconfirmed[disabled]:hover, .dark form.linkform input[type='submit'].unconfirmed[disabled]:active {
+html form.linkform input[type='submit'].user-disabled[disabled], html form.linkform input[type='submit'].user-disabled[disabled]:hover, html form.linkform input[type='submit'].user-disabled[disabled]:active, html form.linkform input[type='submit'].unconfirmed[disabled], html form.linkform input[type='submit'].unconfirmed[disabled]:hover, html form.linkform input[type='submit'].unconfirmed[disabled]:active, .light form.linkform input[type='submit'].user-disabled[disabled], .light form.linkform input[type='submit'].user-disabled[disabled]:hover, .light form.linkform input[type='submit'].user-disabled[disabled]:active, .light form.linkform input[type='submit'].unconfirmed[disabled], .light form.linkform input[type='submit'].unconfirmed[disabled]:hover, .light form.linkform input[type='submit'].unconfirmed[disabled]:active, .dark form.linkform input[type='submit'].user-disabled[disabled], .dark form.linkform input[type='submit'].user-disabled[disabled]:hover, .dark form.linkform input[type='submit'].user-disabled[disabled]:active, .dark form.linkform input[type='submit'].unconfirmed[disabled], .dark form.linkform input[type='submit'].unconfirmed[disabled]:hover, .dark form.linkform input[type='submit'].unconfirmed[disabled]:active {
   opacity: 0.5;
   background-color: #cb4b16;
 }
-.light form.linkform input[type='submit'].user-superuser, .dark form.linkform input[type='submit'].user-superuser {
+html form.linkform input[type='submit'].user-superuser, .light form.linkform input[type='submit'].user-superuser, .dark form.linkform input[type='submit'].user-superuser {
   background-color: #cb4b16;
   border: solid #cb4b16 1px;
   color: #fdf6e3;
   transition: color 0.3s, background-color 0.3s, border-color 0.3s;
   vertical-align: middle;
 }
-.light form.linkform input[type='submit'].user-superuser:hover, .light form.linkform input[type='submit'].user-superuser:active, .light form.linkform input[type='submit'].user-superuser.state-flashing-on, .dark form.linkform input[type='submit'].user-superuser:hover, .dark form.linkform input[type='submit'].user-superuser:active, .dark form.linkform input[type='submit'].user-superuser.state-flashing-on {
+html form.linkform input[type='submit'].user-superuser:hover, html form.linkform input[type='submit'].user-superuser:active, html form.linkform input[type='submit'].user-superuser.state-flashing-on, .light form.linkform input[type='submit'].user-superuser:hover, .light form.linkform input[type='submit'].user-superuser:active, .light form.linkform input[type='submit'].user-superuser.state-flashing-on, .dark form.linkform input[type='submit'].user-superuser:hover, .dark form.linkform input[type='submit'].user-superuser:active, .dark form.linkform input[type='submit'].user-superuser.state-flashing-on {
   background-color: #e8632c;
 }
-.light form.linkform input[type='submit'].user-superuser[disabled], .light form.linkform input[type='submit'].user-superuser[disabled]:hover, .light form.linkform input[type='submit'].user-superuser[disabled]:active, .dark form.linkform input[type='submit'].user-superuser[disabled], .dark form.linkform input[type='submit'].user-superuser[disabled]:hover, .dark form.linkform input[type='submit'].user-superuser[disabled]:active {
+html form.linkform input[type='submit'].user-superuser[disabled], html form.linkform input[type='submit'].user-superuser[disabled]:hover, html form.linkform input[type='submit'].user-superuser[disabled]:active, .light form.linkform input[type='submit'].user-superuser[disabled], .light form.linkform input[type='submit'].user-superuser[disabled]:hover, .light form.linkform input[type='submit'].user-superuser[disabled]:active, .dark form.linkform input[type='submit'].user-superuser[disabled], .dark form.linkform input[type='submit'].user-superuser[disabled]:hover, .dark form.linkform input[type='submit'].user-superuser[disabled]:active {
   opacity: 0.5;
   background-color: #cb4b16;
 }
-.light form.linkform input[type='submit'].user-normaluser, .dark form.linkform input[type='submit'].user-normaluser {
+html form.linkform input[type='submit'].user-normaluser, .light form.linkform input[type='submit'].user-normaluser, .dark form.linkform input[type='submit'].user-normaluser {
   background-color: #2aa198;
   border: solid #2aa198 1px;
   color: #fdf6e3;
   transition: color 0.3s, background-color 0.3s, border-color 0.3s;
   vertical-align: middle;
 }
-.light form.linkform input[type='submit'].user-normaluser:hover, .light form.linkform input[type='submit'].user-normaluser:active, .light form.linkform input[type='submit'].user-normaluser.state-flashing-on, .dark form.linkform input[type='submit'].user-normaluser:hover, .dark form.linkform input[type='submit'].user-normaluser:active, .dark form.linkform input[type='submit'].user-normaluser.state-flashing-on {
+html form.linkform input[type='submit'].user-normaluser:hover, html form.linkform input[type='submit'].user-normaluser:active, html form.linkform input[type='submit'].user-normaluser.state-flashing-on, .light form.linkform input[type='submit'].user-normaluser:hover, .light form.linkform input[type='submit'].user-normaluser:active, .light form.linkform input[type='submit'].user-normaluser.state-flashing-on, .dark form.linkform input[type='submit'].user-normaluser:hover, .dark form.linkform input[type='submit'].user-normaluser:active, .dark form.linkform input[type='submit'].user-normaluser.state-flashing-on {
   background-color: #35c9be;
 }
-.light form.linkform input[type='submit'].user-normaluser[disabled], .light form.linkform input[type='submit'].user-normaluser[disabled]:hover, .light form.linkform input[type='submit'].user-normaluser[disabled]:active, .dark form.linkform input[type='submit'].user-normaluser[disabled], .dark form.linkform input[type='submit'].user-normaluser[disabled]:hover, .dark form.linkform input[type='submit'].user-normaluser[disabled]:active {
+html form.linkform input[type='submit'].user-normaluser[disabled], html form.linkform input[type='submit'].user-normaluser[disabled]:hover, html form.linkform input[type='submit'].user-normaluser[disabled]:active, .light form.linkform input[type='submit'].user-normaluser[disabled], .light form.linkform input[type='submit'].user-normaluser[disabled]:hover, .light form.linkform input[type='submit'].user-normaluser[disabled]:active, .dark form.linkform input[type='submit'].user-normaluser[disabled], .dark form.linkform input[type='submit'].user-normaluser[disabled]:hover, .dark form.linkform input[type='submit'].user-normaluser[disabled]:active {
   opacity: 0.5;
   background-color: #2aa198;
 }
-.light form.linkform input[type='submit'].delete, .dark form.linkform input[type='submit'].delete {
+html form.linkform input[type='submit'].delete, .light form.linkform input[type='submit'].delete, .dark form.linkform input[type='submit'].delete {
   background-color: #dc322f;
   border: solid #dc322f 1px;
   color: #fdf6e3;
   transition: color 0.3s, background-color 0.3s, border-color 0.3s;
   vertical-align: middle;
 }
-.light form.linkform input[type='submit'].delete:hover, .light form.linkform input[type='submit'].delete:active, .light form.linkform input[type='submit'].delete.state-flashing-on, .dark form.linkform input[type='submit'].delete:hover, .dark form.linkform input[type='submit'].delete:active, .dark form.linkform input[type='submit'].delete.state-flashing-on {
+html form.linkform input[type='submit'].delete:hover, html form.linkform input[type='submit'].delete:active, html form.linkform input[type='submit'].delete.state-flashing-on, .light form.linkform input[type='submit'].delete:hover, .light form.linkform input[type='submit'].delete:active, .light form.linkform input[type='submit'].delete.state-flashing-on, .dark form.linkform input[type='submit'].delete:hover, .dark form.linkform input[type='submit'].delete:active, .dark form.linkform input[type='submit'].delete.state-flashing-on {
   background-color: #e35d5b;
 }
-.light form.linkform input[type='submit'].delete[disabled], .light form.linkform input[type='submit'].delete[disabled]:hover, .light form.linkform input[type='submit'].delete[disabled]:active, .dark form.linkform input[type='submit'].delete[disabled], .dark form.linkform input[type='submit'].delete[disabled]:hover, .dark form.linkform input[type='submit'].delete[disabled]:active {
+html form.linkform input[type='submit'].delete[disabled], html form.linkform input[type='submit'].delete[disabled]:hover, html form.linkform input[type='submit'].delete[disabled]:active, .light form.linkform input[type='submit'].delete[disabled], .light form.linkform input[type='submit'].delete[disabled]:hover, .light form.linkform input[type='submit'].delete[disabled]:active, .dark form.linkform input[type='submit'].delete[disabled], .dark form.linkform input[type='submit'].delete[disabled]:hover, .dark form.linkform input[type='submit'].delete[disabled]:active {
   opacity: 0.5;
   background-color: #dc322f;
 }
-.light html .result table.irc-log, .dark html .result table.irc-log {
+html .result, .light .result, .dark .result {
+  display: flex;
+  flex-direction: column;
+  align-items: stretch;
+}
+html .result #nav-irc-log, .light .result #nav-irc-log, .dark .result #nav-irc-log {
+  text-align: right;
+  margin: 0 0.3em 0.5em;
+}
+html .result #nav-irc-log a, .light .result #nav-irc-log a, .dark .result #nav-irc-log a {
+  font-size: 80%;
+}
+html .result table.irc-log, .light .result table.irc-log, .dark .result table.irc-log {
   margin: 0.3em 0 1em;
   /* different message classes */
   /* grey/deemph colour set by the light/dark rebase above */
 }
-.light html .result table.irc-log td, .dark html .result table.irc-log td {
+html .result table.irc-log tr.irc-backlog-details, .light .result table.irc-log tr.irc-backlog-details, .dark .result table.irc-log tr.irc-backlog-details {
+  font-size: 80%;
+}
+html .result table.irc-log tr.irc-backlog-details td:first-child, .light .result table.irc-log tr.irc-backlog-details td:first-child, .dark .result table.irc-log tr.irc-backlog-details td:first-child {
+  text-align: end;
+}
+html .result table.irc-log tr.irc-backlog-details td, .light .result table.irc-log tr.irc-backlog-details td, .dark .result table.irc-log tr.irc-backlog-details td {
+  text-align: start;
+}
+html .result table.irc-log tr.irc-backlog-details.collapsed, .light .result table.irc-log tr.irc-backlog-details.collapsed, .dark .result table.irc-log tr.irc-backlog-details.collapsed {
+  display: none;
+}
+html .result table.irc-log td, .light .result table.irc-log td, .dark .result table.irc-log td {
   vertical-align: baseline;
   padding: 0.11em 0.2em;
 }
-.light html .result table.irc-log .timestamp, .dark html .result table.irc-log .timestamp {
+html .result table.irc-log .timestamp, .light .result table.irc-log .timestamp, .dark .result table.irc-log .timestamp {
   text-align: left;
   white-space: nowrap;
   font-size: 80%;
   font-style: normal;
   font-weight: normal;
 }
-.light html .result table.irc-log .timestamp:before, .dark html .result table.irc-log .timestamp:before {
+html .result table.irc-log .timestamp:before, .light .result table.irc-log .timestamp:before, .dark .result table.irc-log .timestamp:before {
   content: '[';
 }
-.light html .result table.irc-log .timestamp:after, .dark html .result table.irc-log .timestamp:after {
+html .result table.irc-log .timestamp:after, .light .result table.irc-log .timestamp:after, .dark .result table.irc-log .timestamp:after {
   content: ']';
 }
-.light html .result table.irc-log .icon, .dark html .result table.irc-log .icon {
+html .result table.irc-log .icon, .light .result table.irc-log .icon, .dark .result table.irc-log .icon {
   text-align: center;
 }
-.light html .result table.irc-log .sender, .dark html .result table.irc-log .sender {
+html .result table.irc-log .sender, .light .result table.irc-log .sender, .dark .result table.irc-log .sender {
   text-align: right;
   white-space: nowrap;
 }
-.light html .result table.irc-log .sender.nick-yellow, .dark html .result table.irc-log .sender.nick-yellow {
+html .result table.irc-log .sender.nick-yellow, .light .result table.irc-log .sender.nick-yellow, .dark .result table.irc-log .sender.nick-yellow {
   color: #b58900;
 }
-.light html .result table.irc-log .sender.nick-orange, .dark html .result table.irc-log .sender.nick-orange {
+html .result table.irc-log .sender.nick-orange, .light .result table.irc-log .sender.nick-orange, .dark .result table.irc-log .sender.nick-orange {
   color: #cb4b16;
 }
-.light html .result table.irc-log .sender.nick-red, .dark html .result table.irc-log .sender.nick-red {
+html .result table.irc-log .sender.nick-red, .light .result table.irc-log .sender.nick-red, .dark .result table.irc-log .sender.nick-red {
   color: #dc322f;
 }
-.light html .result table.irc-log .sender.nick-magenta, .dark html .result table.irc-log .sender.nick-magenta {
+html .result table.irc-log .sender.nick-magenta, .light .result table.irc-log .sender.nick-magenta, .dark .result table.irc-log .sender.nick-magenta {
   color: #d33682;
 }
-.light html .result table.irc-log .sender.nick-violet, .dark html .result table.irc-log .sender.nick-violet {
+html .result table.irc-log .sender.nick-violet, .light .result table.irc-log .sender.nick-violet, .dark .result table.irc-log .sender.nick-violet {
   color: #6c71c4;
 }
-.light html .result table.irc-log .sender.nick-blue, .dark html .result table.irc-log .sender.nick-blue {
+html .result table.irc-log .sender.nick-blue, .light .result table.irc-log .sender.nick-blue, .dark .result table.irc-log .sender.nick-blue {
   color: #268bd2;
 }
-.light html .result table.irc-log .sender.nick-cyan, .dark html .result table.irc-log .sender.nick-cyan {
+html .result table.irc-log .sender.nick-cyan, .light .result table.irc-log .sender.nick-cyan, .dark .result table.irc-log .sender.nick-cyan {
   color: #2aa198;
 }
-.light html .result table.irc-log .sender.nick-green, .dark html .result table.irc-log .sender.nick-green {
+html .result table.irc-log .sender.nick-green, .light .result table.irc-log .sender.nick-green, .dark .result table.irc-log .sender.nick-green {
   color: #859900;
 }
-.light html .result table.irc-log .message, .dark html .result table.irc-log .message {
+html .result table.irc-log .message, .light .result table.irc-log .message, .dark .result table.irc-log .message {
   text-align: left;
   white-space: normal;
 }
-.light html .result table.irc-log .message .irc-bold, .dark html .result table.irc-log .message .irc-bold {
+html .result table.irc-log .message .irc-bold, .light .result table.irc-log .message .irc-bold, .dark .result table.irc-log .message .irc-bold {
   font-weight: bold;
 }
-.light html .result table.irc-log .message .irc-italic, .dark html .result table.irc-log .message .irc-italic {
+html .result table.irc-log .message .irc-italic, .light .result table.irc-log .message .irc-italic, .dark .result table.irc-log .message .irc-italic {
   font-style: italic;
 }
-.light html .result table.irc-log .message .irc-underline, .dark html .result table.irc-log .message .irc-underline {
+html .result table.irc-log .message .irc-underline, .light .result table.irc-log .message .irc-underline, .dark .result table.irc-log .message .irc-underline {
   text-decoration: underline;
 }
-.light html .result table.irc-log .message .irc-color00, .dark html .result table.irc-log .message .irc-color00 {
+html .result table.irc-log .message .irc-color00, .light .result table.irc-log .message .irc-color00, .dark .result table.irc-log .message .irc-color00 {
   color: #fdf6e3;
 }
-.light html .result table.irc-log .message .irc-color01, .dark html .result table.irc-log .message .irc-color01 {
+html .result table.irc-log .message .irc-color01, .light .result table.irc-log .message .irc-color01, .dark .result table.irc-log .message .irc-color01 {
   color: #002b36;
 }
-.light html .result table.irc-log .message .irc-color02, .dark html .result table.irc-log .message .irc-color02 {
+html .result table.irc-log .message .irc-color02, .light .result table.irc-log .message .irc-color02, .dark .result table.irc-log .message .irc-color02 {
   color: #073642;
 }
-.light html .result table.irc-log .message .irc-color03, .dark html .result table.irc-log .message .irc-color03 {
+html .result table.irc-log .message .irc-color03, .light .result table.irc-log .message .irc-color03, .dark .result table.irc-log .message .irc-color03 {
   color: #859900;
 }
-.light html .result table.irc-log .message .irc-color04, .dark html .result table.irc-log .message .irc-color04 {
+html .result table.irc-log .message .irc-color04, .light .result table.irc-log .message .irc-color04, .dark .result table.irc-log .message .irc-color04 {
   color: #dc322f;
 }
-.light html .result table.irc-log .message .irc-color05, .dark html .result table.irc-log .message .irc-color05 {
+html .result table.irc-log .message .irc-color05, .light .result table.irc-log .message .irc-color05, .dark .result table.irc-log .message .irc-color05 {
   color: #586e75;
 }
-.light html .result table.irc-log .message .irc-color06, .dark html .result table.irc-log .message .irc-color06 {
+html .result table.irc-log .message .irc-color06, .light .result table.irc-log .message .irc-color06, .dark .result table.irc-log .message .irc-color06 {
   color: #6c71c4;
 }
-.light html .result table.irc-log .message .irc-color07, .dark html .result table.irc-log .message .irc-color07 {
+html .result table.irc-log .message .irc-color07, .light .result table.irc-log .message .irc-color07, .dark .result table.irc-log .message .irc-color07 {
   color: #cb4b16;
 }
-.light html .result table.irc-log .message .irc-color08, .dark html .result table.irc-log .message .irc-color08 {
+html .result table.irc-log .message .irc-color08, .light .result table.irc-log .message .irc-color08, .dark .result table.irc-log .message .irc-color08 {
   color: #b58900;
 }
-.light html .result table.irc-log .message .irc-color09, .dark html .result table.irc-log .message .irc-color09 {
+html .result table.irc-log .message .irc-color09, .light .result table.irc-log .message .irc-color09, .dark .result table.irc-log .message .irc-color09 {
   color: #b1cc00;
 }
-.light html .result table.irc-log .message .irc-color10, .dark html .result table.irc-log .message .irc-color10 {
+html .result table.irc-log .message .irc-color10, .light .result table.irc-log .message .irc-color10, .dark .result table.irc-log .message .irc-color10 {
   color: #2aa198;
 }
-.light html .result table.irc-log .message .irc-color11, .dark html .result table.irc-log .message .irc-color11 {
+html .result table.irc-log .message .irc-color11, .light .result table.irc-log .message .irc-color11, .dark .result table.irc-log .message .irc-color11 {
   color: #35c9be;
 }
-.light html .result table.irc-log .message .irc-color12, .dark html .result table.irc-log .message .irc-color12 {
+html .result table.irc-log .message .irc-color12, .light .result table.irc-log .message .irc-color12, .dark .result table.irc-log .message .irc-color12 {
   color: #268bd2;
 }
-.light html .result table.irc-log .message .irc-color13, .dark html .result table.irc-log .message .irc-color13 {
+html .result table.irc-log .message .irc-color13, .light .result table.irc-log .message .irc-color13, .dark .result table.irc-log .message .irc-color13 {
   color: #d33682;
 }
-.light html .result table.irc-log .message .irc-color14, .dark html .result table.irc-log .message .irc-color14 {
+html .result table.irc-log .message .irc-color14, .light .result table.irc-log .message .irc-color14, .dark .result table.irc-log .message .irc-color14 {
   color: #657b83;
 }
-.light html .result table.irc-log .message .irc-color15, .dark html .result table.irc-log .message .irc-color15 {
+html .result table.irc-log .message .irc-color15, .light .result table.irc-log .message .irc-color15, .dark .result table.irc-log .message .irc-color15 {
   color: #93a1a1;
 }
-.light html .result table.irc-log .message .irc-bgcolor00, .dark html .result table.irc-log .message .irc-bgcolor00 {
+html .result table.irc-log .message .irc-bgcolor00, .light .result table.irc-log .message .irc-bgcolor00, .dark .result table.irc-log .message .irc-bgcolor00 {
   background-color: #fdf6e3;
 }
-.light html .result table.irc-log .message .irc-bgcolor01, .dark html .result table.irc-log .message .irc-bgcolor01 {
+html .result table.irc-log .message .irc-bgcolor01, .light .result table.irc-log .message .irc-bgcolor01, .dark .result table.irc-log .message .irc-bgcolor01 {
   background-color: #002b36;
 }
-.light html .result table.irc-log .message .irc-bgcolor02, .dark html .result table.irc-log .message .irc-bgcolor02 {
+html .result table.irc-log .message .irc-bgcolor02, .light .result table.irc-log .message .irc-bgcolor02, .dark .result table.irc-log .message .irc-bgcolor02 {
   background-color: #073642;
 }
-.light html .result table.irc-log .message .irc-bgcolor03, .dark html .result table.irc-log .message .irc-bgcolor03 {
+html .result table.irc-log .message .irc-bgcolor03, .light .result table.irc-log .message .irc-bgcolor03, .dark .result table.irc-log .message .irc-bgcolor03 {
   background-color: #859900;
 }
-.light html .result table.irc-log .message .irc-bgcolor04, .dark html .result table.irc-log .message .irc-bgcolor04 {
+html .result table.irc-log .message .irc-bgcolor04, .light .result table.irc-log .message .irc-bgcolor04, .dark .result table.irc-log .message .irc-bgcolor04 {
   background-color: #dc322f;
 }
-.light html .result table.irc-log .message .irc-bgcolor05, .dark html .result table.irc-log .message .irc-bgcolor05 {
+html .result table.irc-log .message .irc-bgcolor05, .light .result table.irc-log .message .irc-bgcolor05, .dark .result table.irc-log .message .irc-bgcolor05 {
   background-color: #586e75;
 }
-.light html .result table.irc-log .message .irc-bgcolor06, .dark html .result table.irc-log .message .irc-bgcolor06 {
+html .result table.irc-log .message .irc-bgcolor06, .light .result table.irc-log .message .irc-bgcolor06, .dark .result table.irc-log .message .irc-bgcolor06 {
   background-color: #6c71c4;
 }
-.light html .result table.irc-log .message .irc-bgcolor07, .dark html .result table.irc-log .message .irc-bgcolor07 {
+html .result table.irc-log .message .irc-bgcolor07, .light .result table.irc-log .message .irc-bgcolor07, .dark .result table.irc-log .message .irc-bgcolor07 {
   background-color: #cb4b16;
 }
-.light html .result table.irc-log .message .irc-bgcolor08, .dark html .result table.irc-log .message .irc-bgcolor08 {
+html .result table.irc-log .message .irc-bgcolor08, .light .result table.irc-log .message .irc-bgcolor08, .dark .result table.irc-log .message .irc-bgcolor08 {
   background-color: #b58900;
 }
-.light html .result table.irc-log .message .irc-bgcolor09, .dark html .result table.irc-log .message .irc-bgcolor09 {
+html .result table.irc-log .message .irc-bgcolor09, .light .result table.irc-log .message .irc-bgcolor09, .dark .result table.irc-log .message .irc-bgcolor09 {
   background-color: #b1cc00;
 }
-.light html .result table.irc-log .message .irc-bgcolor10, .dark html .result table.irc-log .message .irc-bgcolor10 {
+html .result table.irc-log .message .irc-bgcolor10, .light .result table.irc-log .message .irc-bgcolor10, .dark .result table.irc-log .message .irc-bgcolor10 {
   background-color: #2aa198;
 }
-.light html .result table.irc-log .message .irc-bgcolor11, .dark html .result table.irc-log .message .irc-bgcolor11 {
+html .result table.irc-log .message .irc-bgcolor11, .light .result table.irc-log .message .irc-bgcolor11, .dark .result table.irc-log .message .irc-bgcolor11 {
   background-color: #35c9be;
 }
-.light html .result table.irc-log .message .irc-bgcolor12, .dark html .result table.irc-log .message .irc-bgcolor12 {
+html .result table.irc-log .message .irc-bgcolor12, .light .result table.irc-log .message .irc-bgcolor12, .dark .result table.irc-log .message .irc-bgcolor12 {
   background-color: #268bd2;
 }
-.light html .result table.irc-log .message .irc-bgcolor13, .dark html .result table.irc-log .message .irc-bgcolor13 {
+html .result table.irc-log .message .irc-bgcolor13, .light .result table.irc-log .message .irc-bgcolor13, .dark .result table.irc-log .message .irc-bgcolor13 {
   background-color: #d33682;
 }
-.light html .result table.irc-log .message .irc-bgcolor14, .dark html .result table.irc-log .message .irc-bgcolor14 {
+html .result table.irc-log .message .irc-bgcolor14, .light .result table.irc-log .message .irc-bgcolor14, .dark .result table.irc-log .message .irc-bgcolor14 {
   background-color: #657b83;
 }
-.light html .result table.irc-log .message .irc-bgcolor15, .dark html .result table.irc-log .message .irc-bgcolor15 {
+html .result table.irc-log .message .irc-bgcolor15, .light .result table.irc-log .message .irc-bgcolor15, .dark .result table.irc-log .message .irc-bgcolor15 {
   background-color: #93a1a1;
 }
-.light html .result table.irc-log .privmsg .sender:before, .dark html .result table.irc-log .privmsg .sender:before {
+html .result table.irc-log .privmsg .sender:before, .light .result table.irc-log .privmsg .sender:before, .dark .result table.irc-log .privmsg .sender:before {
   content: '<';
 }
-.light html .result table.irc-log .privmsg .sender:after, .dark html .result table.irc-log .privmsg .sender:after {
+html .result table.irc-log .privmsg .sender:after, .light .result table.irc-log .privmsg .sender:after, .dark .result table.irc-log .privmsg .sender:after {
   content: '>';
 }
-.light html .result table.irc-log .notice td, .light html .result table.irc-log .server td, .dark html .result table.irc-log .notice td, .dark html .result table.irc-log .server td {
+html .result table.irc-log .notice td, html .result table.irc-log .server td, .light .result table.irc-log .notice td, .light .result table.irc-log .server td, .dark .result table.irc-log .notice td, .dark .result table.irc-log .server td {
   color: #b58900;
 }
-.light html .result table.irc-log .notice .sender:before, .light html .result table.irc-log .server .sender:before, .dark html .result table.irc-log .notice .sender:before, .dark html .result table.irc-log .server .sender:before {
+html .result table.irc-log .notice .sender:before, html .result table.irc-log .server .sender:before, .light .result table.irc-log .notice .sender:before, .light .result table.irc-log .server .sender:before, .dark .result table.irc-log .notice .sender:before, .dark .result table.irc-log .server .sender:before {
   content: '[';
   color: #b58900;
 }
-.light html .result table.irc-log .notice .sender:after, .light html .result table.irc-log .server .sender:after, .dark html .result table.irc-log .notice .sender:after, .dark html .result table.irc-log .server .sender:after {
+html .result table.irc-log .notice .sender:after, html .result table.irc-log .server .sender:after, .light .result table.irc-log .notice .sender:after, .light .result table.irc-log .server .sender:after, .dark .result table.irc-log .notice .sender:after, .dark .result table.irc-log .server .sender:after {
   content: ']';
   color: #b58900;
 }
-.light html .result table.irc-log .action, .dark html .result table.irc-log .action {
+html .result table.irc-log .action, .light .result table.irc-log .action, .dark .result table.irc-log .action {
   font-style: italic;
 }
-.light html .result table.irc-log .mode td, .dark html .result table.irc-log .mode td {
+html .result table.irc-log .mode td, .light .result table.irc-log .mode td, .dark .result table.irc-log .mode td {
   color: #268bd2;
 }
-.light html .result table.irc-log .mode .message:before, .dark html .result table.irc-log .mode .message:before {
+html .result table.irc-log .mode .message:before, .light .result table.irc-log .mode .message:before, .dark .result table.irc-log .mode .message:before {
   content: 'Mode ';
 }
-.light html .result table.irc-log .join .message:before, .dark html .result table.irc-log .join .message:before {
+html .result table.irc-log .join .message:before, .light .result table.irc-log .join .message:before, .dark .result table.irc-log .join .message:before {
   content: 'has joined channel ';
 }
-.light html .result table.irc-log .netsplit_join .message:before, .dark html .result table.irc-log .netsplit_join .message:before {
+html .result table.irc-log .netsplit_join .message:before, .light .result table.irc-log .netsplit_join .message:before, .dark .result table.irc-log .netsplit_join .message:before {
   content: 'has joined channel ';
 }
-.light html .result table.irc-log .netsplit_join .message:after, .dark html .result table.irc-log .netsplit_join .message:after {
+html .result table.irc-log .netsplit_join .message:after, .light .result table.irc-log .netsplit_join .message:after, .dark .result table.irc-log .netsplit_join .message:after {
   content: ' (netsplit ended)';
 }
-.light html .result table.irc-log .part .message:before, .dark html .result table.irc-log .part .message:before {
+html .result table.irc-log .part .message:before, .light .result table.irc-log .part .message:before, .dark .result table.irc-log .part .message:before {
   content: ' has left (';
 }
-.light html .result table.irc-log .part .message:after, .dark html .result table.irc-log .part .message:after {
+html .result table.irc-log .part .message:after, .light .result table.irc-log .part .message:after, .dark .result table.irc-log .part .message:after {
   content: ')';
 }
-.light html .result table.irc-log .quit .message:before, .dark html .result table.irc-log .quit .message:before {
+html .result table.irc-log .quit .message:before, .light .result table.irc-log .quit .message:before, .dark .result table.irc-log .quit .message:before {
   content: 'has quit (';
 }
-.light html .result table.irc-log .quit .message:after, .dark html .result table.irc-log .quit .message:after {
+html .result table.irc-log .quit .message:after, .light .result table.irc-log .quit .message:after, .dark .result table.irc-log .quit .message:after {
   content: ')';
 }
-.light html .result table.irc-log .netsplit_quit .message:before, .dark html .result table.irc-log .netsplit_quit .message:before {
+html .result table.irc-log .netsplit_quit .message:before, .light .result table.irc-log .netsplit_quit .message:before, .dark .result table.irc-log .netsplit_quit .message:before {
   content: 'has quit (netsplit: ';
 }
-.light html .result table.irc-log .netsplit_quit .message:after, .dark html .result table.irc-log .netsplit_quit .message:after {
+html .result table.irc-log .netsplit_quit .message:after, .light .result table.irc-log .netsplit_quit .message:after, .dark .result table.irc-log .netsplit_quit .message:after {
   content: ')';
 }
-.light html .result table.irc-log .kick td, .dark html .result table.irc-log .kick td {
+html .result table.irc-log .kick td, .light .result table.irc-log .kick td, .dark .result table.irc-log .kick td {
   color: #6c71c4;
 }
-.light html .result table.irc-log .kick .message:before, .dark html .result table.irc-log .kick .message:before {
+html .result table.irc-log .kick .message:before, .light .result table.irc-log .kick .message:before, .dark .result table.irc-log .kick .message:before {
   content: 'has kicked ';
 }
-.light html .result table.irc-log .kill td, .dark html .result table.irc-log .kill td {
+html .result table.irc-log .kill td, .light .result table.irc-log .kill td, .dark .result table.irc-log .kill td {
   color: #6c71c4;
 }
-.light html .result table.irc-log .kill .message:before, .dark html .result table.irc-log .kill .message:before {
+html .result table.irc-log .kill .message:before, .light .result table.irc-log .kill .message:before, .dark .result table.irc-log .kill .message:before {
   content: 'has killed ';
 }
-.light html .result table.irc-log .invite .message:before, .dark html .result table.irc-log .invite .message:before {
+html .result table.irc-log .invite .message:before, .light .result table.irc-log .invite .message:before, .dark .result table.irc-log .invite .message:before {
   content: 'has invited ';
 }
-.light html .result table.irc-log .invite .message:after, .dark html .result table.irc-log .invite .message:after {
+html .result table.irc-log .invite .message:after, .light .result table.irc-log .invite .message:after, .dark .result table.irc-log .invite .message:after {
   content: ' to the channel';
 }
-.light html .result table.irc-log .info, .light html .result table.irc-log .daychange, .light html .result table.irc-log .topic, .dark html .result table.irc-log .info, .dark html .result table.irc-log .daychange, .dark html .result table.irc-log .topic {
+html .result table.irc-log .info, html .result table.irc-log .daychange, html .result table.irc-log .topic, .light .result table.irc-log .info, .light .result table.irc-log .daychange, .light .result table.irc-log .topic, .dark .result table.irc-log .info, .dark .result table.irc-log .daychange, .dark .result table.irc-log .topic {
   /* color set by the light/dark rebase above */
 }
-.light html .result table.irc-log .error td, .dark html .result table.irc-log .error td {
+html .result table.irc-log .error td, .light .result table.irc-log .error td, .dark .result table.irc-log .error td {
   color: #cb4b16;
 }
-.light html .result table.irc-log .nick, .dark html .result table.irc-log .nick {
+html .result table.irc-log .nick, .light .result table.irc-log .nick, .dark .result table.irc-log .nick {
   /* color set by the light/dark rebase above */
 }
-.light .userlist-container, .dark .userlist-container {
+html .userlist-container, .light .userlist-container, .dark .userlist-container {
   width: 60%;
   margin-left: auto;
   margin-right: auto;
   clear: both;
 }
-.light table.userlist, .dark table.userlist {
+html table.userlist, .light table.userlist, .dark table.userlist {
   width: 100%;
 }
-.light table.userlist th, .dark table.userlist th {
+html table.userlist th, .light table.userlist th, .dark table.userlist th {
   font-size: 120%;
   font-weight: bold;
   text-align: center;
 }
-.light table.userlist td, .dark table.userlist td {
+html table.userlist td, .light table.userlist td, .dark table.userlist td {
   padding: 0.8em 0.6em;
 }
-.light table.userlist tr.superuser .username, .dark table.userlist tr.superuser .username {
+html table.userlist tr.superuser .username, .light table.userlist tr.superuser .username, .dark table.userlist tr.superuser .username {
   color: #cb4b16;
 }
-.light table.userlist tr.superuser .username:after, .dark table.userlist tr.superuser .username:after {
+html table.userlist tr.superuser .username:after, .light table.userlist tr.superuser .username:after, .dark table.userlist tr.superuser .username:after {
   display: inline-block;
   margin-left: 0.6em;
   content: 'SU';
   font-size: 60%;
 }
-.light table.userlist .uid, .dark table.userlist .uid {
+html table.userlist .uid, .light table.userlist .uid, .dark table.userlist .uid {
   text-align: right;
 }
-.light table.userlist .email form.linkform, .light table.userlist .email input[type="submit"], .dark table.userlist .email form.linkform, .dark table.userlist .email input[type="submit"] {
+html table.userlist .email form.linkform, html table.userlist .email input[type="submit"], .light table.userlist .email form.linkform, .light table.userlist .email input[type="submit"], .dark table.userlist .email form.linkform, .dark table.userlist .email input[type="submit"] {
   padding: 0;
   margin: 0;
   background-color: transparent;
   border: none;
 }
-.light table.userlist .email form.linkform.confirmed, .light table.userlist .email input[type="submit"].confirmed, .dark table.userlist .email form.linkform.confirmed, .dark table.userlist .email input[type="submit"].confirmed {
+html table.userlist .email form.linkform.confirmed, html table.userlist .email input[type="submit"].confirmed, .light table.userlist .email form.linkform.confirmed, .light table.userlist .email input[type="submit"].confirmed, .dark table.userlist .email form.linkform.confirmed, .dark table.userlist .email input[type="submit"].confirmed {
   color: #2aa198;
 }
-.light table.userlist .email form.linkform.unconfirmed, .light table.userlist .email input[type="submit"].unconfirmed, .dark table.userlist .email form.linkform.unconfirmed, .dark table.userlist .email input[type="submit"].unconfirmed {
+html table.userlist .email form.linkform.unconfirmed, html table.userlist .email input[type="submit"].unconfirmed, .light table.userlist .email form.linkform.unconfirmed, .light table.userlist .email input[type="submit"].unconfirmed, .dark table.userlist .email form.linkform.unconfirmed, .dark table.userlist .email input[type="submit"].unconfirmed {
   color: #cb4b16;
 }
-.light table.userlist .actions, .dark table.userlist .actions {
+html table.userlist .actions, .light table.userlist .actions, .dark table.userlist .actions {
   text-align: center;
 }
-.light table.userlist .actions .action-edit, .dark table.userlist .actions .action-edit {
+html table.userlist .actions .action-edit, .light table.userlist .actions .action-edit, .dark table.userlist .actions .action-edit {
   display: inline-block;
   margin: 0 0.3em;
   padding: 0.3em 0.6em;
@@ -710,42 +750,42 @@ body {
   color: #fdf6e3;
   text-decoration: none;
 }
-.light table.userlist .actions .action-edit:visited, .light table.userlist .actions .action-edit:hover, .light table.userlist .actions .action-edit:active, .dark table.userlist .actions .action-edit:visited, .dark table.userlist .actions .action-edit:hover, .dark table.userlist .actions .action-edit:active {
+html table.userlist .actions .action-edit:visited, html table.userlist .actions .action-edit:hover, html table.userlist .actions .action-edit:active, .light table.userlist .actions .action-edit:visited, .light table.userlist .actions .action-edit:hover, .light table.userlist .actions .action-edit:active, .dark table.userlist .actions .action-edit:visited, .dark table.userlist .actions .action-edit:hover, .dark table.userlist .actions .action-edit:active {
   color: #fdf6e3;
   text-decoration: none;
 }
-.light table.userlist .actions .action-edit:hover, .light table.userlist .actions .action-edit:active, .light table.userlist .actions .action-edit.state-flashing-on, .dark table.userlist .actions .action-edit:hover, .dark table.userlist .actions .action-edit:active, .dark table.userlist .actions .action-edit.state-flashing-on {
+html table.userlist .actions .action-edit:hover, html table.userlist .actions .action-edit:active, html table.userlist .actions .action-edit.state-flashing-on, .light table.userlist .actions .action-edit:hover, .light table.userlist .actions .action-edit:active, .light table.userlist .actions .action-edit.state-flashing-on, .dark table.userlist .actions .action-edit:hover, .dark table.userlist .actions .action-edit:active, .dark table.userlist .actions .action-edit.state-flashing-on {
   background-color: #4ca2df;
 }
-.light table.userlist .actions .action-edit[disabled], .light table.userlist .actions .action-edit[disabled]:hover, .light table.userlist .actions .action-edit[disabled]:active, .dark table.userlist .actions .action-edit[disabled], .dark table.userlist .actions .action-edit[disabled]:hover, .dark table.userlist .actions .action-edit[disabled]:active {
+html table.userlist .actions .action-edit[disabled], html table.userlist .actions .action-edit[disabled]:hover, html table.userlist .actions .action-edit[disabled]:active, .light table.userlist .actions .action-edit[disabled], .light table.userlist .actions .action-edit[disabled]:hover, .light table.userlist .actions .action-edit[disabled]:active, .dark table.userlist .actions .action-edit[disabled], .dark table.userlist .actions .action-edit[disabled]:hover, .dark table.userlist .actions .action-edit[disabled]:active {
   opacity: 0.5;
   background-color: #268bd2;
 }
-.light .user-manage-row, .dark .user-manage-row {
+html .user-manage-row, .light .user-manage-row, .dark .user-manage-row {
   margin-top: 0;
   margin-bottom: 1em;
 }
-.light .user-manage-row *, .dark .user-manage-row * {
+html .user-manage-row *, .light .user-manage-row *, .dark .user-manage-row * {
   display: inline-block;
   vertical-align: middle;
 }
-.light .user-manage-row form input, .dark .user-manage-row form input {
+html .user-manage-row form input, .light .user-manage-row form input, .dark .user-manage-row form input {
   margin-top: 0;
   margin-bottom: 0;
 }
-.light .user-manage-row form input[type='email'], .dark .user-manage-row form input[type='email'] {
+html .user-manage-row form input[type='email'], .light .user-manage-row form input[type='email'], .dark .user-manage-row form input[type='email'] {
   width: 20em;
 }
-.light .user-manage-delete, .dark .user-manage-delete {
+html .user-manage-delete, .light .user-manage-delete, .dark .user-manage-delete {
   float: right;
 }
-.light #user-permission-entry-form, .dark #user-permission-entry-form {
+html #user-permission-entry-form, .light #user-permission-entry-form, .dark #user-permission-entry-form {
   margin-bottom: 1.5em;
 }
-.light #user-permission-entry-form > div, .dark #user-permission-entry-form > div {
+html #user-permission-entry-form > div, .light #user-permission-entry-form > div, .dark #user-permission-entry-form > div {
   margin-bottom: 0.6em;
 }
-.light #btn-permission-allow, .light #user-permission-display .permission-access-allow, .light .buffer-list .permission-access-allow, .light .dark .buffer-list .permission-access-allow, .dark .light .buffer-list .permission-access-allow, .dark #user-permission-display .light .permission-access-allow, .light .dark .buffer-list .permission-access-allow, .dark .buffer-list .light .permission-access-allow, .light .buffer-list .buffer-allow, .light .dark .buffer-list .buffer-allow, .dark .buffer-list .light .buffer-allow, .dark #btn-permission-allow, .light #user-permission-display .dark .permission-access-allow, .dark .light .buffer-list .permission-access-allow, .light .buffer-list .dark .permission-access-allow, .light .dark .buffer-list .permission-access-allow, .dark .light .buffer-list .permission-access-allow, .dark #user-permission-display .permission-access-allow, .dark .buffer-list .permission-access-allow, .dark .light .buffer-list .buffer-allow, .light .buffer-list .dark .buffer-allow, .dark .buffer-list .buffer-allow {
+html #btn-permission-allow, html #user-permission-display .permission-access-allow, html .buffer-list .permission-access-allow, html .light .buffer-list .permission-access-allow, .light html .buffer-list .permission-access-allow, html .dark .buffer-list .permission-access-allow, .dark html .buffer-list .permission-access-allow, html .light #user-permission-display .permission-access-allow, .light #user-permission-display html .permission-access-allow, html .light .buffer-list .permission-access-allow, .light .buffer-list html .permission-access-allow, html .light .dark .buffer-list .permission-access-allow, .light .dark .buffer-list html .permission-access-allow, html .dark .light .buffer-list .permission-access-allow, .dark .light .buffer-list html .permission-access-allow, html .dark #user-permission-display .permission-access-allow, .dark #user-permission-display html .permission-access-allow, html .dark .buffer-list .permission-access-allow, .dark .buffer-list html .permission-access-allow, html .buffer-list .buffer-allow, html .light .buffer-list .buffer-allow, .light .buffer-list html .buffer-allow, html .dark .buffer-list .buffer-allow, .dark .buffer-list html .buffer-allow, .light #btn-permission-allow, html #user-permission-display .light .permission-access-allow, .light html .buffer-list .permission-access-allow, html .buffer-list .light .permission-access-allow, html .light .buffer-list .permission-access-allow, .light html .buffer-list .permission-access-allow, .light html .dark .buffer-list .permission-access-allow, html .dark .buffer-list .light .permission-access-allow, .light .dark html .buffer-list .permission-access-allow, .dark html .buffer-list .light .permission-access-allow, .light #user-permission-display .permission-access-allow, .light .buffer-list .permission-access-allow, .light .dark .buffer-list .permission-access-allow, .dark .light .buffer-list .permission-access-allow, .dark #user-permission-display .light .permission-access-allow, .light .dark .buffer-list .permission-access-allow, .dark .buffer-list .light .permission-access-allow, .light html .buffer-list .buffer-allow, html .buffer-list .light .buffer-allow, .light .buffer-list .buffer-allow, .light .dark .buffer-list .buffer-allow, .dark .buffer-list .light .buffer-allow, .dark #btn-permission-allow, html #user-permission-display .dark .permission-access-allow, .dark html .buffer-list .permission-access-allow, html .buffer-list .dark .permission-access-allow, .dark html .light .buffer-list .permission-access-allow, html .light .buffer-list .dark .permission-access-allow, .dark .light html .buffer-list .permission-access-allow, .light html .buffer-list .dark .permission-access-allow, html .dark .buffer-list .permission-access-allow, .dark html .buffer-list .permission-access-allow, .light #user-permission-display .dark .permission-access-allow, .dark .light .buffer-list .permission-access-allow, .light .buffer-list .dark .permission-access-allow, .light .dark .buffer-list .permission-access-allow, .dark .light .buffer-list .permission-access-allow, .dark #user-permission-display .permission-access-allow, .dark .buffer-list .permission-access-allow, .dark html .buffer-list .buffer-allow, html .buffer-list .dark .buffer-allow, .dark .light .buffer-list .buffer-allow, .light .buffer-list .dark .buffer-allow, .dark .buffer-list .buffer-allow {
   background-color: #2aa198;
   border: solid #2aa198 1px;
   color: #fdf6e3;
@@ -753,18 +793,18 @@ body {
   vertical-align: middle;
   transition: color 0.3s, background-color 0.3s, border-color 0.3s;
 }
-.light #btn-permission-allow:hover, .light #user-permission-display .permission-access-allow:hover, .light .buffer-list .permission-access-allow:hover, .light .dark .buffer-list .permission-access-allow:hover, .dark .light .buffer-list .permission-access-allow:hover, .dark #user-permission-display .light .permission-access-allow:hover, .light .dark .buffer-list .permission-access-allow:hover, .dark .buffer-list .light .permission-access-allow:hover, .light .buffer-list .buffer-allow:hover, .light .dark .buffer-list .buffer-allow:hover, .dark .buffer-list .light .buffer-allow:hover, .light #btn-permission-allow:active, .light #user-permission-display .permission-access-allow:active, .light .buffer-list .permission-access-allow:active, .light .dark .buffer-list .permission-access-allow:active, .dark .light .buffer-list .permission-access-allow:active, .dark #user-permission-display .light .permission-access-allow:active, .light .dark .buffer-list .permission-access-allow:active, .dark .buffer-list .light .permission-access-allow:active, .light .buffer-list .buffer-allow:active, .light .dark .buffer-list .buffer-allow:active, .dark .buffer-list .light .buffer-allow:active, .light #btn-permission-allow.state-flashing-on, .light #user-permission-display .state-flashing-on.permission-access-allow, .light .buffer-list .state-flashing-on.permission-access-allow, .light .dark .buffer-list .state-flashing-on.permission-access-allow, .dark .light .buffer-list .state-flashing-on.permission-access-allow, .dark #user-permission-display .light .state-flashing-on.permission-access-allow, .light .dark .buffer-list .state-flashing-on.permission-access-allow, .dark .buffer-list .light .state-flashing-on.permission-access-allow, .light .buffer-list .state-flashing-on.buffer-allow, .light .dark .buffer-list .state-flashing-on.buffer-allow, .dark .buffer-list .light .state-flashing-on.buffer-allow, .dark #btn-permission-allow:hover, .light #user-permission-display .dark .permission-access-allow:hover, .dark .light .buffer-list .permission-access-allow:hover, .light .buffer-list .dark .permission-access-allow:hover, .light .dark .buffer-list .permission-access-allow:hover, .dark .light .buffer-list .permission-access-allow:hover, .dark #user-permission-display .permission-access-allow:hover, .dark .buffer-list .permission-access-allow:hover, .dark .light .buffer-list .buffer-allow:hover, .light .buffer-list .dark .buffer-allow:hover, .dark .buffer-list .buffer-allow:hover, .dark #btn-permission-allow:active, .light #user-permission-display .dark .permission-access-allow:active, .dark .light .buffer-list .permission-access-allow:active, .light .buffer-list .dark .permission-access-allow:active, .light .dark .buffer-list .permission-access-allow:active, .dark .light .buffer-list .permission-access-allow:active, .dark #user-permission-display .permission-access-allow:active, .dark .buffer-list .permission-access-allow:active, .dark .light .buffer-list .buffer-allow:active, .light .buffer-list .dark .buffer-allow:active, .dark .buffer-list .buffer-allow:active, .dark #btn-permission-allow.state-flashing-on, .light #user-permission-display .dark .state-flashing-on.permission-access-allow, .dark .light .buffer-list .state-flashing-on.permission-access-allow, .light .buffer-list .dark .state-flashing-on.permission-access-allow, .light .dark .buffer-list .state-flashing-on.permission-access-allow, .dark .light .buffer-list .state-flashing-on.permission-access-allow, .dark #user-permission-display .state-flashing-on.permission-access-allow, .dark .buffer-list .state-flashing-on.permission-access-allow, .dark .light .buffer-list .state-flashing-on.buffer-allow, .light .buffer-list .dark .state-flashing-on.buffer-allow, .dark .buffer-list .state-flashing-on.buffer-allow {
+html #btn-permission-allow:hover, html #user-permission-display .permission-access-allow:hover, html .buffer-list .permission-access-allow:hover, html .light .buffer-list .permission-access-allow:hover, .light html .buffer-list .permission-access-allow:hover, html .dark .buffer-list .permission-access-allow:hover, .dark html .buffer-list .permission-access-allow:hover, .light #user-permission-display html .permission-access-allow:hover, html .light .buffer-list .permission-access-allow:hover, .light .buffer-list html .permission-access-allow:hover, html .light .dark .buffer-list .permission-access-allow:hover, .light .dark .buffer-list html .permission-access-allow:hover, html .dark .light .buffer-list .permission-access-allow:hover, .dark .light .buffer-list html .permission-access-allow:hover, .dark #user-permission-display html .permission-access-allow:hover, html .dark .buffer-list .permission-access-allow:hover, .dark .buffer-list html .permission-access-allow:hover, html .buffer-list .buffer-allow:hover, html .light .buffer-list .buffer-allow:hover, .light .buffer-list html .buffer-allow:hover, html .dark .buffer-list .buffer-allow:hover, .dark .buffer-list html .buffer-allow:hover, html #btn-permission-allow:active, html #user-permission-display .permission-access-allow:active, html .buffer-list .permission-access-allow:active, html .light .buffer-list .permission-access-allow:active, .light html .buffer-list .permission-access-allow:active, html .dark .buffer-list .permission-access-allow:active, .dark html .buffer-list .permission-access-allow:active, .light #user-permission-display html .permission-access-allow:active, html .light .buffer-list .permission-access-allow:active, .light .buffer-list html .permission-access-allow:active, html .light .dark .buffer-list .permission-access-allow:active, .light .dark .buffer-list html .permission-access-allow:active, html .dark .light .buffer-list .permission-access-allow:active, .dark .light .buffer-list html .permission-access-allow:active, .dark #user-permission-display html .permission-access-allow:active, html .dark .buffer-list .permission-access-allow:active, .dark .buffer-list html .permission-access-allow:active, html .buffer-list .buffer-allow:active, html .light .buffer-list .buffer-allow:active, .light .buffer-list html .buffer-allow:active, html .dark .buffer-list .buffer-allow:active, .dark .buffer-list html .buffer-allow:active, html #btn-permission-allow.state-flashing-on, html #user-permission-display .state-flashing-on.permission-access-allow, html .buffer-list .state-flashing-on.permission-access-allow, html .light .buffer-list .state-flashing-on.permission-access-allow, .light html .buffer-list .state-flashing-on.permission-access-allow, html .dark .buffer-list .state-flashing-on.permission-access-allow, .dark html .buffer-list .state-flashing-on.permission-access-allow, .light #user-permission-display html .state-flashing-on.permission-access-allow, html .light .buffer-list .state-flashing-on.permission-access-allow, .light .buffer-list html .state-flashing-on.permission-access-allow, html .light .dark .buffer-list .state-flashing-on.permission-access-allow, .light .dark .buffer-list html .state-flashing-on.permission-access-allow, html .dark .light .buffer-list .state-flashing-on.permission-access-allow, .dark .light .buffer-list html .state-flashing-on.permission-access-allow, .dark #user-permission-display html .state-flashing-on.permission-access-allow, html .dark .buffer-list .state-flashing-on.permission-access-allow, .dark .buffer-list html .state-flashing-on.permission-access-allow, html .buffer-list .state-flashing-on.buffer-allow, html .light .buffer-list .state-flashing-on.buffer-allow, .light .buffer-list html .state-flashing-on.buffer-allow, html .dark .buffer-list .state-flashing-on.buffer-allow, .dark .buffer-list html .state-flashing-on.buffer-allow, .light #btn-permission-allow:hover, html #user-permission-display .light .permission-access-allow:hover, .light html .buffer-list .permission-access-allow:hover, html .buffer-list .light .permission-access-allow:hover, html .light .buffer-list .permission-access-allow:hover, .light html .buffer-list .permission-access-allow:hover, .light html .dark .buffer-list .permission-access-allow:hover, html .dark .buffer-list .light .permission-access-allow:hover, .light .dark html .buffer-list .permission-access-allow:hover, .dark html .buffer-list .light .permission-access-allow:hover, .light #user-permission-display .permission-access-allow:hover, .light .buffer-list .permission-access-allow:hover, .light .dark .buffer-list .permission-access-allow:hover, .dark .light .buffer-list .permission-access-allow:hover, .dark #user-permission-display .light .permission-access-allow:hover, .light .dark .buffer-list .permission-access-allow:hover, .dark .buffer-list .light .permission-access-allow:hover, .light html .buffer-list .buffer-allow:hover, html .buffer-list .light .buffer-allow:hover, .light .buffer-list .buffer-allow:hover, .light .dark .buffer-list .buffer-allow:hover, .dark .buffer-list .light .buffer-allow:hover, .light #btn-permission-allow:active, html #user-permission-display .light .permission-access-allow:active, .light html .buffer-list .permission-access-allow:active, html .buffer-list .light .permission-access-allow:active, html .light .buffer-list .permission-access-allow:active, .light html .buffer-list .permission-access-allow:active, .light html .dark .buffer-list .permission-access-allow:active, html .dark .buffer-list .light .permission-access-allow:active, .light .dark html .buffer-list .permission-access-allow:active, .dark html .buffer-list .light .permission-access-allow:active, .light #user-permission-display .permission-access-allow:active, .light .buffer-list .permission-access-allow:active, .light .dark .buffer-list .permission-access-allow:active, .dark .light .buffer-list .permission-access-allow:active, .dark #user-permission-display .light .permission-access-allow:active, .light .dark .buffer-list .permission-access-allow:active, .dark .buffer-list .light .permission-access-allow:active, .light html .buffer-list .buffer-allow:active, html .buffer-list .light .buffer-allow:active, .light .buffer-list .buffer-allow:active, .light .dark .buffer-list .buffer-allow:active, .dark .buffer-list .light .buffer-allow:active, .light #btn-permission-allow.state-flashing-on, html #user-permission-display .light .state-flashing-on.permission-access-allow, .light html .buffer-list .state-flashing-on.permission-access-allow, html .buffer-list .light .state-flashing-on.permission-access-allow, html .light .buffer-list .state-flashing-on.permission-access-allow, .light html .buffer-list .state-flashing-on.permission-access-allow, .light html .dark .buffer-list .state-flashing-on.permission-access-allow, html .dark .buffer-list .light .state-flashing-on.permission-access-allow, .light .dark html .buffer-list .state-flashing-on.permission-access-allow, .dark html .buffer-list .light .state-flashing-on.permission-access-allow, .light #user-permission-display .state-flashing-on.permission-access-allow, .light .buffer-list .state-flashing-on.permission-access-allow, .light .dark .buffer-list .state-flashing-on.permission-access-allow, .dark .light .buffer-list .state-flashing-on.permission-access-allow, .dark #user-permission-display .light .state-flashing-on.permission-access-allow, .light .dark .buffer-list .state-flashing-on.permission-access-allow, .dark .buffer-list .light .state-flashing-on.permission-access-allow, .light html .buffer-list .state-flashing-on.buffer-allow, html .buffer-list .light .state-flashing-on.buffer-allow, .light .buffer-list .state-flashing-on.buffer-allow, .light .dark .buffer-list .state-flashing-on.buffer-allow, .dark .buffer-list .light .state-flashing-on.buffer-allow, .dark #btn-permission-allow:hover, html #user-permission-display .dark .permission-access-allow:hover, .dark html .buffer-list .permission-access-allow:hover, html .buffer-list .dark .permission-access-allow:hover, .dark html .light .buffer-list .permission-access-allow:hover, html .light .buffer-list .dark .permission-access-allow:hover, .dark .light html .buffer-list .permission-access-allow:hover, .light html .buffer-list .dark .permission-access-allow:hover, html .dark .buffer-list .permission-access-allow:hover, .dark html .buffer-list .permission-access-allow:hover, .light #user-permission-display .dark .permission-access-allow:hover, .dark .light .buffer-list .permission-access-allow:hover, .light .buffer-list .dark .permission-access-allow:hover, .light .dark .buffer-list .permission-access-allow:hover, .dark .light .buffer-list .permission-access-allow:hover, .dark #user-permission-display .permission-access-allow:hover, .dark .buffer-list .permission-access-allow:hover, .dark html .buffer-list .buffer-allow:hover, html .buffer-list .dark .buffer-allow:hover, .dark .light .buffer-list .buffer-allow:hover, .light .buffer-list .dark .buffer-allow:hover, .dark .buffer-list .buffer-allow:hover, .dark #btn-permission-allow:active, html #user-permission-display .dark .permission-access-allow:active, .dark html .buffer-list .permission-access-allow:active, html .buffer-list .dark .permission-access-allow:active, .dark html .light .buffer-list .permission-access-allow:active, html .light .buffer-list .dark .permission-access-allow:active, .dark .light html .buffer-list .permission-access-allow:active, .light html .buffer-list .dark .permission-access-allow:active, html .dark .buffer-list .permission-access-allow:active, .dark html .buffer-list .permission-access-allow:active, .light #user-permission-display .dark .permission-access-allow:active, .dark .light .buffer-list .permission-access-allow:active, .light .buffer-list .dark .permission-access-allow:active, .light .dark .buffer-list .permission-access-allow:active, .dark .light .buffer-list .permission-access-allow:active, .dark #user-permission-display .permission-access-allow:active, .dark .buffer-list .permission-access-allow:active, .dark html .buffer-list .buffer-allow:active, html .buffer-list .dark .buffer-allow:active, .dark .light .buffer-list .buffer-allow:active, .light .buffer-list .dark .buffer-allow:active, .dark .buffer-list .buffer-allow:active, .dark #btn-permission-allow.state-flashing-on, html #user-permission-display .dark .state-flashing-on.permission-access-allow, .dark html .buffer-list .state-flashing-on.permission-access-allow, html .buffer-list .dark .state-flashing-on.permission-access-allow, .dark html .light .buffer-list .state-flashing-on.permission-access-allow, html .light .buffer-list .dark .state-flashing-on.permission-access-allow, .dark .light html .buffer-list .state-flashing-on.permission-access-allow, .light html .buffer-list .dark .state-flashing-on.permission-access-allow, html .dark .buffer-list .state-flashing-on.permission-access-allow, .dark html .buffer-list .state-flashing-on.permission-access-allow, .light #user-permission-display .dark .state-flashing-on.permission-access-allow, .dark .light .buffer-list .state-flashing-on.permission-access-allow, .light .buffer-list .dark .state-flashing-on.permission-access-allow, .light .dark .buffer-list .state-flashing-on.permission-access-allow, .dark .light .buffer-list .state-flashing-on.permission-access-allow, .dark #user-permission-display .state-flashing-on.permission-access-allow, .dark .buffer-list .state-flashing-on.permission-access-allow, .dark html .buffer-list .state-flashing-on.buffer-allow, html .buffer-list .dark .state-flashing-on.buffer-allow, .dark .light .buffer-list .state-flashing-on.buffer-allow, .light .buffer-list .dark .state-flashing-on.buffer-allow, .dark .buffer-list .state-flashing-on.buffer-allow {
   background-color: #35c9be;
 }
-.light #btn-permission-allow[disabled], .light #user-permission-display [disabled].permission-access-allow, .light .buffer-list [disabled].permission-access-allow, .light .dark .buffer-list [disabled].permission-access-allow, .dark .light .buffer-list [disabled].permission-access-allow, .dark #user-permission-display .light [disabled].permission-access-allow, .light .dark .buffer-list [disabled].permission-access-allow, .dark .buffer-list .light [disabled].permission-access-allow, .light .buffer-list [disabled].buffer-allow, .light .dark .buffer-list [disabled].buffer-allow, .dark .buffer-list .light [disabled].buffer-allow, .light #btn-permission-allow[disabled]:hover, .light #user-permission-display [disabled].permission-access-allow:hover, .light .buffer-list [disabled].permission-access-allow:hover, .light .dark .buffer-list [disabled].permission-access-allow:hover, .dark .light .buffer-list [disabled].permission-access-allow:hover, .dark #user-permission-display .light [disabled].permission-access-allow:hover, .light .dark .buffer-list [disabled].permission-access-allow:hover, .dark .buffer-list .light [disabled].permission-access-allow:hover, .light .buffer-list [disabled].buffer-allow:hover, .light .dark .buffer-list [disabled].buffer-allow:hover, .dark .buffer-list .light [disabled].buffer-allow:hover, .light #btn-permission-allow[disabled]:active, .light #user-permission-display [disabled].permission-access-allow:active, .light .buffer-list [disabled].permission-access-allow:active, .light .dark .buffer-list [disabled].permission-access-allow:active, .dark .light .buffer-list [disabled].permission-access-allow:active, .dark #user-permission-display .light [disabled].permission-access-allow:active, .light .dark .buffer-list [disabled].permission-access-allow:active, .dark .buffer-list .light [disabled].permission-access-allow:active, .light .buffer-list [disabled].buffer-allow:active, .light .dark .buffer-list [disabled].buffer-allow:active, .dark .buffer-list .light [disabled].buffer-allow:active, .dark #btn-permission-allow[disabled], .light #user-permission-display .dark [disabled].permission-access-allow, .dark .light .buffer-list [disabled].permission-access-allow, .light .buffer-list .dark [disabled].permission-access-allow, .light .dark .buffer-list [disabled].permission-access-allow, .dark .light .buffer-list [disabled].permission-access-allow, .dark #user-permission-display [disabled].permission-access-allow, .dark .buffer-list [disabled].permission-access-allow, .dark .light .buffer-list [disabled].buffer-allow, .light .buffer-list .dark [disabled].buffer-allow, .dark .buffer-list [disabled].buffer-allow, .dark #btn-permission-allow[disabled]:hover, .light #user-permission-display .dark [disabled].permission-access-allow:hover, .dark .light .buffer-list [disabled].permission-access-allow:hover, .light .buffer-list .dark [disabled].permission-access-allow:hover, .light .dark .buffer-list [disabled].permission-access-allow:hover, .dark .light .buffer-list [disabled].permission-access-allow:hover, .dark #user-permission-display [disabled].permission-access-allow:hover, .dark .buffer-list [disabled].permission-access-allow:hover, .dark .light .buffer-list [disabled].buffer-allow:hover, .light .buffer-list .dark [disabled].buffer-allow:hover, .dark .buffer-list [disabled].buffer-allow:hover, .dark #btn-permission-allow[disabled]:active, .light #user-permission-display .dark [disabled].permission-access-allow:active, .dark .light .buffer-list [disabled].permission-access-allow:active, .light .buffer-list .dark [disabled].permission-access-allow:active, .light .dark .buffer-list [disabled].permission-access-allow:active, .dark .light .buffer-list [disabled].permission-access-allow:active, .dark #user-permission-display [disabled].permission-access-allow:active, .dark .buffer-list [disabled].permission-access-allow:active, .dark .light .buffer-list [disabled].buffer-allow:active, .light .buffer-list .dark [disabled].buffer-allow:active, .dark .buffer-list [disabled].buffer-allow:active {
+html #btn-permission-allow[disabled], html #user-permission-display [disabled].permission-access-allow, html .buffer-list [disabled].permission-access-allow, html .light .buffer-list [disabled].permission-access-allow, .light html .buffer-list [disabled].permission-access-allow, html .dark .buffer-list [disabled].permission-access-allow, .dark html .buffer-list [disabled].permission-access-allow, .light #user-permission-display html [disabled].permission-access-allow, html .light .buffer-list [disabled].permission-access-allow, .light .buffer-list html [disabled].permission-access-allow, html .light .dark .buffer-list [disabled].permission-access-allow, .light .dark .buffer-list html [disabled].permission-access-allow, html .dark .light .buffer-list [disabled].permission-access-allow, .dark .light .buffer-list html [disabled].permission-access-allow, .dark #user-permission-display html [disabled].permission-access-allow, html .dark .buffer-list [disabled].permission-access-allow, .dark .buffer-list html [disabled].permission-access-allow, html .buffer-list [disabled].buffer-allow, html .light .buffer-list [disabled].buffer-allow, .light .buffer-list html [disabled].buffer-allow, html .dark .buffer-list [disabled].buffer-allow, .dark .buffer-list html [disabled].buffer-allow, html #btn-permission-allow[disabled]:hover, html #user-permission-display [disabled].permission-access-allow:hover, html .buffer-list [disabled].permission-access-allow:hover, html .light .buffer-list [disabled].permission-access-allow:hover, .light html .buffer-list [disabled].permission-access-allow:hover, html .dark .buffer-list [disabled].permission-access-allow:hover, .dark html .buffer-list [disabled].permission-access-allow:hover, .light #user-permission-display html [disabled].permission-access-allow:hover, html .light .buffer-list [disabled].permission-access-allow:hover, .light .buffer-list html [disabled].permission-access-allow:hover, html .light .dark .buffer-list [disabled].permission-access-allow:hover, .light .dark .buffer-list html [disabled].permission-access-allow:hover, html .dark .light .buffer-list [disabled].permission-access-allow:hover, .dark .light .buffer-list html [disabled].permission-access-allow:hover, .dark #user-permission-display html [disabled].permission-access-allow:hover, html .dark .buffer-list [disabled].permission-access-allow:hover, .dark .buffer-list html [disabled].permission-access-allow:hover, html .buffer-list [disabled].buffer-allow:hover, html .light .buffer-list [disabled].buffer-allow:hover, .light .buffer-list html [disabled].buffer-allow:hover, html .dark .buffer-list [disabled].buffer-allow:hover, .dark .buffer-list html [disabled].buffer-allow:hover, html #btn-permission-allow[disabled]:active, html #user-permission-display [disabled].permission-access-allow:active, html .buffer-list [disabled].permission-access-allow:active, html .light .buffer-list [disabled].permission-access-allow:active, .light html .buffer-list [disabled].permission-access-allow:active, html .dark .buffer-list [disabled].permission-access-allow:active, .dark html .buffer-list [disabled].permission-access-allow:active, .light #user-permission-display html [disabled].permission-access-allow:active, html .light .buffer-list [disabled].permission-access-allow:active, .light .buffer-list html [disabled].permission-access-allow:active, html .light .dark .buffer-list [disabled].permission-access-allow:active, .light .dark .buffer-list html [disabled].permission-access-allow:active, html .dark .light .buffer-list [disabled].permission-access-allow:active, .dark .light .buffer-list html [disabled].permission-access-allow:active, .dark #user-permission-display html [disabled].permission-access-allow:active, html .dark .buffer-list [disabled].permission-access-allow:active, .dark .buffer-list html [disabled].permission-access-allow:active, html .buffer-list [disabled].buffer-allow:active, html .light .buffer-list [disabled].buffer-allow:active, .light .buffer-list html [disabled].buffer-allow:active, html .dark .buffer-list [disabled].buffer-allow:active, .dark .buffer-list html [disabled].buffer-allow:active, .light #btn-permission-allow[disabled], html #user-permission-display .light [disabled].permission-access-allow, .light html .buffer-list [disabled].permission-access-allow, html .buffer-list .light [disabled].permission-access-allow, html .light .buffer-list [disabled].permission-access-allow, .light html .buffer-list [disabled].permission-access-allow, .light html .dark .buffer-list [disabled].permission-access-allow, html .dark .buffer-list .light [disabled].permission-access-allow, .light .dark html .buffer-list [disabled].permission-access-allow, .dark html .buffer-list .light [disabled].permission-access-allow, .light #user-permission-display [disabled].permission-access-allow, .light .buffer-list [disabled].permission-access-allow, .light .dark .buffer-list [disabled].permission-access-allow, .dark .light .buffer-list [disabled].permission-access-allow, .dark #user-permission-display .light [disabled].permission-access-allow, .light .dark .buffer-list [disabled].permission-access-allow, .dark .buffer-list .light [disabled].permission-access-allow, .light html .buffer-list [disabled].buffer-allow, html .buffer-list .light [disabled].buffer-allow, .light .buffer-list [disabled].buffer-allow, .light .dark .buffer-list [disabled].buffer-allow, .dark .buffer-list .light [disabled].buffer-allow, .light #btn-permission-allow[disabled]:hover, html #user-permission-display .light [disabled].permission-access-allow:hover, .light html .buffer-list [disabled].permission-access-allow:hover, html .buffer-list .light [disabled].permission-access-allow:hover, html .light .buffer-list [disabled].permission-access-allow:hover, .light html .buffer-list [disabled].permission-access-allow:hover, .light html .dark .buffer-list [disabled].permission-access-allow:hover, html .dark .buffer-list .light [disabled].permission-access-allow:hover, .light .dark html .buffer-list [disabled].permission-access-allow:hover, .dark html .buffer-list .light [disabled].permission-access-allow:hover, .light #user-permission-display [disabled].permission-access-allow:hover, .light .buffer-list [disabled].permission-access-allow:hover, .light .dark .buffer-list [disabled].permission-access-allow:hover, .dark .light .buffer-list [disabled].permission-access-allow:hover, .dark #user-permission-display .light [disabled].permission-access-allow:hover, .light .dark .buffer-list [disabled].permission-access-allow:hover, .dark .buffer-list .light [disabled].permission-access-allow:hover, .light html .buffer-list [disabled].buffer-allow:hover, html .buffer-list .light [disabled].buffer-allow:hover, .light .buffer-list [disabled].buffer-allow:hover, .light .dark .buffer-list [disabled].buffer-allow:hover, .dark .buffer-list .light [disabled].buffer-allow:hover, .light #btn-permission-allow[disabled]:active, html #user-permission-display .light [disabled].permission-access-allow:active, .light html .buffer-list [disabled].permission-access-allow:active, html .buffer-list .light [disabled].permission-access-allow:active, html .light .buffer-list [disabled].permission-access-allow:active, .light html .buffer-list [disabled].permission-access-allow:active, .light html .dark .buffer-list [disabled].permission-access-allow:active, html .dark .buffer-list .light [disabled].permission-access-allow:active, .light .dark html .buffer-list [disabled].permission-access-allow:active, .dark html .buffer-list .light [disabled].permission-access-allow:active, .light #user-permission-display [disabled].permission-access-allow:active, .light .buffer-list [disabled].permission-access-allow:active, .light .dark .buffer-list [disabled].permission-access-allow:active, .dark .light .buffer-list [disabled].permission-access-allow:active, .dark #user-permission-display .light [disabled].permission-access-allow:active, .light .dark .buffer-list [disabled].permission-access-allow:active, .dark .buffer-list .light [disabled].permission-access-allow:active, .light html .buffer-list [disabled].buffer-allow:active, html .buffer-list .light [disabled].buffer-allow:active, .light .buffer-list [disabled].buffer-allow:active, .light .dark .buffer-list [disabled].buffer-allow:active, .dark .buffer-list .light [disabled].buffer-allow:active, .dark #btn-permission-allow[disabled], html #user-permission-display .dark [disabled].permission-access-allow, .dark html .buffer-list [disabled].permission-access-allow, html .buffer-list .dark [disabled].permission-access-allow, .dark html .light .buffer-list [disabled].permission-access-allow, html .light .buffer-list .dark [disabled].permission-access-allow, .dark .light html .buffer-list [disabled].permission-access-allow, .light html .buffer-list .dark [disabled].permission-access-allow, html .dark .buffer-list [disabled].permission-access-allow, .dark html .buffer-list [disabled].permission-access-allow, .light #user-permission-display .dark [disabled].permission-access-allow, .dark .light .buffer-list [disabled].permission-access-allow, .light .buffer-list .dark [disabled].permission-access-allow, .light .dark .buffer-list [disabled].permission-access-allow, .dark .light .buffer-list [disabled].permission-access-allow, .dark #user-permission-display [disabled].permission-access-allow, .dark .buffer-list [disabled].permission-access-allow, .dark html .buffer-list [disabled].buffer-allow, html .buffer-list .dark [disabled].buffer-allow, .dark .light .buffer-list [disabled].buffer-allow, .light .buffer-list .dark [disabled].buffer-allow, .dark .buffer-list [disabled].buffer-allow, .dark #btn-permission-allow[disabled]:hover, html #user-permission-display .dark [disabled].permission-access-allow:hover, .dark html .buffer-list [disabled].permission-access-allow:hover, html .buffer-list .dark [disabled].permission-access-allow:hover, .dark html .light .buffer-list [disabled].permission-access-allow:hover, html .light .buffer-list .dark [disabled].permission-access-allow:hover, .dark .light html .buffer-list [disabled].permission-access-allow:hover, .light html .buffer-list .dark [disabled].permission-access-allow:hover, html .dark .buffer-list [disabled].permission-access-allow:hover, .dark html .buffer-list [disabled].permission-access-allow:hover, .light #user-permission-display .dark [disabled].permission-access-allow:hover, .dark .light .buffer-list [disabled].permission-access-allow:hover, .light .buffer-list .dark [disabled].permission-access-allow:hover, .light .dark .buffer-list [disabled].permission-access-allow:hover, .dark .light .buffer-list [disabled].permission-access-allow:hover, .dark #user-permission-display [disabled].permission-access-allow:hover, .dark .buffer-list [disabled].permission-access-allow:hover, .dark html .buffer-list [disabled].buffer-allow:hover, html .buffer-list .dark [disabled].buffer-allow:hover, .dark .light .buffer-list [disabled].buffer-allow:hover, .light .buffer-list .dark [disabled].buffer-allow:hover, .dark .buffer-list [disabled].buffer-allow:hover, .dark #btn-permission-allow[disabled]:active, html #user-permission-display .dark [disabled].permission-access-allow:active, .dark html .buffer-list [disabled].permission-access-allow:active, html .buffer-list .dark [disabled].permission-access-allow:active, .dark html .light .buffer-list [disabled].permission-access-allow:active, html .light .buffer-list .dark [disabled].permission-access-allow:active, .dark .light html .buffer-list [disabled].permission-access-allow:active, .light html .buffer-list .dark [disabled].permission-access-allow:active, html .dark .buffer-list [disabled].permission-access-allow:active, .dark html .buffer-list [disabled].permission-access-allow:active, .light #user-permission-display .dark [disabled].permission-access-allow:active, .dark .light .buffer-list [disabled].permission-access-allow:active, .light .buffer-list .dark [disabled].permission-access-allow:active, .light .dark .buffer-list [disabled].permission-access-allow:active, .dark .light .buffer-list [disabled].permission-access-allow:active, .dark #user-permission-display [disabled].permission-access-allow:active, .dark .buffer-list [disabled].permission-access-allow:active, .dark html .buffer-list [disabled].buffer-allow:active, html .buffer-list .dark [disabled].buffer-allow:active, .dark .light .buffer-list [disabled].buffer-allow:active, .light .buffer-list .dark [disabled].buffer-allow:active, .dark .buffer-list [disabled].buffer-allow:active {
   opacity: 0.5;
   background-color: #2aa198;
 }
-.light #btn-permission-allow:before, .light #user-permission-display .permission-access-allow:before, .light .buffer-list .permission-access-allow:before, .light .dark .buffer-list .permission-access-allow:before, .dark .light .buffer-list .permission-access-allow:before, .dark #user-permission-display .light .permission-access-allow:before, .light .dark .buffer-list .permission-access-allow:before, .dark .buffer-list .light .permission-access-allow:before, .light .buffer-list .buffer-allow:before, .light .dark .buffer-list .buffer-allow:before, .dark .buffer-list .light .buffer-allow:before, .dark #btn-permission-allow:before, .light #user-permission-display .dark .permission-access-allow:before, .dark .light .buffer-list .permission-access-allow:before, .light .buffer-list .dark .permission-access-allow:before, .light .dark .buffer-list .permission-access-allow:before, .dark .light .buffer-list .permission-access-allow:before, .dark #user-permission-display .permission-access-allow:before, .dark .buffer-list .permission-access-allow:before, .dark .light .buffer-list .buffer-allow:before, .light .buffer-list .dark .buffer-allow:before, .dark .buffer-list .buffer-allow:before {
+html #btn-permission-allow:before, html #user-permission-display .permission-access-allow:before, html .buffer-list .permission-access-allow:before, html .light .buffer-list .permission-access-allow:before, .light html .buffer-list .permission-access-allow:before, html .dark .buffer-list .permission-access-allow:before, .dark html .buffer-list .permission-access-allow:before, html .light #user-permission-display .permission-access-allow:before, .light #user-permission-display html .permission-access-allow:before, html .light .buffer-list .permission-access-allow:before, .light .buffer-list html .permission-access-allow:before, html .light .dark .buffer-list .permission-access-allow:before, .light .dark .buffer-list html .permission-access-allow:before, html .dark .light .buffer-list .permission-access-allow:before, .dark .light .buffer-list html .permission-access-allow:before, html .dark #user-permission-display .permission-access-allow:before, .dark #user-permission-display html .permission-access-allow:before, html .dark .buffer-list .permission-access-allow:before, .dark .buffer-list html .permission-access-allow:before, html .buffer-list .buffer-allow:before, html .light .buffer-list .buffer-allow:before, .light .buffer-list html .buffer-allow:before, html .dark .buffer-list .buffer-allow:before, .dark .buffer-list html .buffer-allow:before, .light #btn-permission-allow:before, html #user-permission-display .light .permission-access-allow:before, .light html .buffer-list .permission-access-allow:before, html .buffer-list .light .permission-access-allow:before, html .light .buffer-list .permission-access-allow:before, .light html .buffer-list .permission-access-allow:before, .light html .dark .buffer-list .permission-access-allow:before, html .dark .buffer-list .light .permission-access-allow:before, .light .dark html .buffer-list .permission-access-allow:before, .dark html .buffer-list .light .permission-access-allow:before, .light #user-permission-display .permission-access-allow:before, .light .buffer-list .permission-access-allow:before, .light .dark .buffer-list .permission-access-allow:before, .dark .light .buffer-list .permission-access-allow:before, .dark #user-permission-display .light .permission-access-allow:before, .light .dark .buffer-list .permission-access-allow:before, .dark .buffer-list .light .permission-access-allow:before, .light html .buffer-list .buffer-allow:before, html .buffer-list .light .buffer-allow:before, .light .buffer-list .buffer-allow:before, .light .dark .buffer-list .buffer-allow:before, .dark .buffer-list .light .buffer-allow:before, .dark #btn-permission-allow:before, html #user-permission-display .dark .permission-access-allow:before, .dark html .buffer-list .permission-access-allow:before, html .buffer-list .dark .permission-access-allow:before, .dark html .light .buffer-list .permission-access-allow:before, html .light .buffer-list .dark .permission-access-allow:before, .dark .light html .buffer-list .permission-access-allow:before, .light html .buffer-list .dark .permission-access-allow:before, html .dark .buffer-list .permission-access-allow:before, .dark html .buffer-list .permission-access-allow:before, .light #user-permission-display .dark .permission-access-allow:before, .dark .light .buffer-list .permission-access-allow:before, .light .buffer-list .dark .permission-access-allow:before, .light .dark .buffer-list .permission-access-allow:before, .dark .light .buffer-list .permission-access-allow:before, .dark #user-permission-display .permission-access-allow:before, .dark .buffer-list .permission-access-allow:before, .dark html .buffer-list .buffer-allow:before, html .buffer-list .dark .buffer-allow:before, .dark .light .buffer-list .buffer-allow:before, .light .buffer-list .dark .buffer-allow:before, .dark .buffer-list .buffer-allow:before {
   content: "✓";
   margin-right: 0.4em;
 }
-.light #btn-permission-deny, .light #user-permission-display .permission-access-deny, .light .buffer-list .permission-access-deny, .light .dark .buffer-list .permission-access-deny, .dark .light .buffer-list .permission-access-deny, .dark #user-permission-display .light .permission-access-deny, .light .dark .buffer-list .permission-access-deny, .dark .buffer-list .light .permission-access-deny, .light .buffer-list .buffer-deny, .light .dark .buffer-list .buffer-deny, .dark .buffer-list .light .buffer-deny, .dark #btn-permission-deny, .light #user-permission-display .dark .permission-access-deny, .dark .light .buffer-list .permission-access-deny, .light .buffer-list .dark .permission-access-deny, .light .dark .buffer-list .permission-access-deny, .dark .light .buffer-list .permission-access-deny, .dark #user-permission-display .permission-access-deny, .dark .buffer-list .permission-access-deny, .dark .light .buffer-list .buffer-deny, .light .buffer-list .dark .buffer-deny, .dark .buffer-list .buffer-deny {
+html #btn-permission-deny, html #user-permission-display .permission-access-deny, html .buffer-list .permission-access-deny, html .light .buffer-list .permission-access-deny, .light html .buffer-list .permission-access-deny, html .dark .buffer-list .permission-access-deny, .dark html .buffer-list .permission-access-deny, html .light #user-permission-display .permission-access-deny, .light #user-permission-display html .permission-access-deny, html .light .buffer-list .permission-access-deny, .light .buffer-list html .permission-access-deny, html .light .dark .buffer-list .permission-access-deny, .light .dark .buffer-list html .permission-access-deny, html .dark .light .buffer-list .permission-access-deny, .dark .light .buffer-list html .permission-access-deny, html .dark #user-permission-display .permission-access-deny, .dark #user-permission-display html .permission-access-deny, html .dark .buffer-list .permission-access-deny, .dark .buffer-list html .permission-access-deny, html .buffer-list .buffer-deny, html .light .buffer-list .buffer-deny, .light .buffer-list html .buffer-deny, html .dark .buffer-list .buffer-deny, .dark .buffer-list html .buffer-deny, .light #btn-permission-deny, html #user-permission-display .light .permission-access-deny, .light html .buffer-list .permission-access-deny, html .buffer-list .light .permission-access-deny, html .light .buffer-list .permission-access-deny, .light html .buffer-list .permission-access-deny, .light html .dark .buffer-list .permission-access-deny, html .dark .buffer-list .light .permission-access-deny, .light .dark html .buffer-list .permission-access-deny, .dark html .buffer-list .light .permission-access-deny, .light #user-permission-display .permission-access-deny, .light .buffer-list .permission-access-deny, .light .dark .buffer-list .permission-access-deny, .dark .light .buffer-list .permission-access-deny, .dark #user-permission-display .light .permission-access-deny, .light .dark .buffer-list .permission-access-deny, .dark .buffer-list .light .permission-access-deny, .light html .buffer-list .buffer-deny, html .buffer-list .light .buffer-deny, .light .buffer-list .buffer-deny, .light .dark .buffer-list .buffer-deny, .dark .buffer-list .light .buffer-deny, .dark #btn-permission-deny, html #user-permission-display .dark .permission-access-deny, .dark html .buffer-list .permission-access-deny, html .buffer-list .dark .permission-access-deny, .dark html .light .buffer-list .permission-access-deny, html .light .buffer-list .dark .permission-access-deny, .dark .light html .buffer-list .permission-access-deny, .light html .buffer-list .dark .permission-access-deny, html .dark .buffer-list .permission-access-deny, .dark html .buffer-list .permission-access-deny, .light #user-permission-display .dark .permission-access-deny, .dark .light .buffer-list .permission-access-deny, .light .buffer-list .dark .permission-access-deny, .light .dark .buffer-list .permission-access-deny, .dark .light .buffer-list .permission-access-deny, .dark #user-permission-display .permission-access-deny, .dark .buffer-list .permission-access-deny, .dark html .buffer-list .buffer-deny, html .buffer-list .dark .buffer-deny, .dark .light .buffer-list .buffer-deny, .light .buffer-list .dark .buffer-deny, .dark .buffer-list .buffer-deny {
   background-color: #cb4b16;
   border: solid #cb4b16 1px;
   color: #fdf6e3;
@@ -772,93 +812,93 @@ body {
   vertical-align: middle;
   transition: color 0.3s, background-color 0.3s, border-color 0.3s;
 }
-.light #btn-permission-deny:hover, .light #user-permission-display .permission-access-deny:hover, .light .buffer-list .permission-access-deny:hover, .light .dark .buffer-list .permission-access-deny:hover, .dark .light .buffer-list .permission-access-deny:hover, .dark #user-permission-display .light .permission-access-deny:hover, .light .dark .buffer-list .permission-access-deny:hover, .dark .buffer-list .light .permission-access-deny:hover, .light .buffer-list .buffer-deny:hover, .light .dark .buffer-list .buffer-deny:hover, .dark .buffer-list .light .buffer-deny:hover, .light #btn-permission-deny:active, .light #user-permission-display .permission-access-deny:active, .light .buffer-list .permission-access-deny:active, .light .dark .buffer-list .permission-access-deny:active, .dark .light .buffer-list .permission-access-deny:active, .dark #user-permission-display .light .permission-access-deny:active, .light .dark .buffer-list .permission-access-deny:active, .dark .buffer-list .light .permission-access-deny:active, .light .buffer-list .buffer-deny:active, .light .dark .buffer-list .buffer-deny:active, .dark .buffer-list .light .buffer-deny:active, .light #btn-permission-deny.state-flashing-on, .light #user-permission-display .state-flashing-on.permission-access-deny, .light .buffer-list .state-flashing-on.permission-access-deny, .light .dark .buffer-list .state-flashing-on.permission-access-deny, .dark .light .buffer-list .state-flashing-on.permission-access-deny, .dark #user-permission-display .light .state-flashing-on.permission-access-deny, .light .dark .buffer-list .state-flashing-on.permission-access-deny, .dark .buffer-list .light .state-flashing-on.permission-access-deny, .light .buffer-list .state-flashing-on.buffer-deny, .light .dark .buffer-list .state-flashing-on.buffer-deny, .dark .buffer-list .light .state-flashing-on.buffer-deny, .dark #btn-permission-deny:hover, .light #user-permission-display .dark .permission-access-deny:hover, .dark .light .buffer-list .permission-access-deny:hover, .light .buffer-list .dark .permission-access-deny:hover, .light .dark .buffer-list .permission-access-deny:hover, .dark .light .buffer-list .permission-access-deny:hover, .dark #user-permission-display .permission-access-deny:hover, .dark .buffer-list .permission-access-deny:hover, .dark .light .buffer-list .buffer-deny:hover, .light .buffer-list .dark .buffer-deny:hover, .dark .buffer-list .buffer-deny:hover, .dark #btn-permission-deny:active, .light #user-permission-display .dark .permission-access-deny:active, .dark .light .buffer-list .permission-access-deny:active, .light .buffer-list .dark .permission-access-deny:active, .light .dark .buffer-list .permission-access-deny:active, .dark .light .buffer-list .permission-access-deny:active, .dark #user-permission-display .permission-access-deny:active, .dark .buffer-list .permission-access-deny:active, .dark .light .buffer-list .buffer-deny:active, .light .buffer-list .dark .buffer-deny:active, .dark .buffer-list .buffer-deny:active, .dark #btn-permission-deny.state-flashing-on, .light #user-permission-display .dark .state-flashing-on.permission-access-deny, .dark .light .buffer-list .state-flashing-on.permission-access-deny, .light .buffer-list .dark .state-flashing-on.permission-access-deny, .light .dark .buffer-list .state-flashing-on.permission-access-deny, .dark .light .buffer-list .state-flashing-on.permission-access-deny, .dark #user-permission-display .state-flashing-on.permission-access-deny, .dark .buffer-list .state-flashing-on.permission-access-deny, .dark .light .buffer-list .state-flashing-on.buffer-deny, .light .buffer-list .dark .state-flashing-on.buffer-deny, .dark .buffer-list .state-flashing-on.buffer-deny {
+html #btn-permission-deny:hover, html #user-permission-display .permission-access-deny:hover, html .buffer-list .permission-access-deny:hover, html .light .buffer-list .permission-access-deny:hover, .light html .buffer-list .permission-access-deny:hover, html .dark .buffer-list .permission-access-deny:hover, .dark html .buffer-list .permission-access-deny:hover, .light #user-permission-display html .permission-access-deny:hover, html .light .buffer-list .permission-access-deny:hover, .light .buffer-list html .permission-access-deny:hover, html .light .dark .buffer-list .permission-access-deny:hover, .light .dark .buffer-list html .permission-access-deny:hover, html .dark .light .buffer-list .permission-access-deny:hover, .dark .light .buffer-list html .permission-access-deny:hover, .dark #user-permission-display html .permission-access-deny:hover, html .dark .buffer-list .permission-access-deny:hover, .dark .buffer-list html .permission-access-deny:hover, html .buffer-list .buffer-deny:hover, html .light .buffer-list .buffer-deny:hover, .light .buffer-list html .buffer-deny:hover, html .dark .buffer-list .buffer-deny:hover, .dark .buffer-list html .buffer-deny:hover, html #btn-permission-deny:active, html #user-permission-display .permission-access-deny:active, html .buffer-list .permission-access-deny:active, html .light .buffer-list .permission-access-deny:active, .light html .buffer-list .permission-access-deny:active, html .dark .buffer-list .permission-access-deny:active, .dark html .buffer-list .permission-access-deny:active, .light #user-permission-display html .permission-access-deny:active, html .light .buffer-list .permission-access-deny:active, .light .buffer-list html .permission-access-deny:active, html .light .dark .buffer-list .permission-access-deny:active, .light .dark .buffer-list html .permission-access-deny:active, html .dark .light .buffer-list .permission-access-deny:active, .dark .light .buffer-list html .permission-access-deny:active, .dark #user-permission-display html .permission-access-deny:active, html .dark .buffer-list .permission-access-deny:active, .dark .buffer-list html .permission-access-deny:active, html .buffer-list .buffer-deny:active, html .light .buffer-list .buffer-deny:active, .light .buffer-list html .buffer-deny:active, html .dark .buffer-list .buffer-deny:active, .dark .buffer-list html .buffer-deny:active, html #btn-permission-deny.state-flashing-on, html #user-permission-display .state-flashing-on.permission-access-deny, html .buffer-list .state-flashing-on.permission-access-deny, html .light .buffer-list .state-flashing-on.permission-access-deny, .light html .buffer-list .state-flashing-on.permission-access-deny, html .dark .buffer-list .state-flashing-on.permission-access-deny, .dark html .buffer-list .state-flashing-on.permission-access-deny, .light #user-permission-display html .state-flashing-on.permission-access-deny, html .light .buffer-list .state-flashing-on.permission-access-deny, .light .buffer-list html .state-flashing-on.permission-access-deny, html .light .dark .buffer-list .state-flashing-on.permission-access-deny, .light .dark .buffer-list html .state-flashing-on.permission-access-deny, html .dark .light .buffer-list .state-flashing-on.permission-access-deny, .dark .light .buffer-list html .state-flashing-on.permission-access-deny, .dark #user-permission-display html .state-flashing-on.permission-access-deny, html .dark .buffer-list .state-flashing-on.permission-access-deny, .dark .buffer-list html .state-flashing-on.permission-access-deny, html .buffer-list .state-flashing-on.buffer-deny, html .light .buffer-list .state-flashing-on.buffer-deny, .light .buffer-list html .state-flashing-on.buffer-deny, html .dark .buffer-list .state-flashing-on.buffer-deny, .dark .buffer-list html .state-flashing-on.buffer-deny, .light #btn-permission-deny:hover, html #user-permission-display .light .permission-access-deny:hover, .light html .buffer-list .permission-access-deny:hover, html .buffer-list .light .permission-access-deny:hover, html .light .buffer-list .permission-access-deny:hover, .light html .buffer-list .permission-access-deny:hover, .light html .dark .buffer-list .permission-access-deny:hover, html .dark .buffer-list .light .permission-access-deny:hover, .light .dark html .buffer-list .permission-access-deny:hover, .dark html .buffer-list .light .permission-access-deny:hover, .light #user-permission-display .permission-access-deny:hover, .light .buffer-list .permission-access-deny:hover, .light .dark .buffer-list .permission-access-deny:hover, .dark .light .buffer-list .permission-access-deny:hover, .dark #user-permission-display .light .permission-access-deny:hover, .light .dark .buffer-list .permission-access-deny:hover, .dark .buffer-list .light .permission-access-deny:hover, .light html .buffer-list .buffer-deny:hover, html .buffer-list .light .buffer-deny:hover, .light .buffer-list .buffer-deny:hover, .light .dark .buffer-list .buffer-deny:hover, .dark .buffer-list .light .buffer-deny:hover, .light #btn-permission-deny:active, html #user-permission-display .light .permission-access-deny:active, .light html .buffer-list .permission-access-deny:active, html .buffer-list .light .permission-access-deny:active, html .light .buffer-list .permission-access-deny:active, .light html .buffer-list .permission-access-deny:active, .light html .dark .buffer-list .permission-access-deny:active, html .dark .buffer-list .light .permission-access-deny:active, .light .dark html .buffer-list .permission-access-deny:active, .dark html .buffer-list .light .permission-access-deny:active, .light #user-permission-display .permission-access-deny:active, .light .buffer-list .permission-access-deny:active, .light .dark .buffer-list .permission-access-deny:active, .dark .light .buffer-list .permission-access-deny:active, .dark #user-permission-display .light .permission-access-deny:active, .light .dark .buffer-list .permission-access-deny:active, .dark .buffer-list .light .permission-access-deny:active, .light html .buffer-list .buffer-deny:active, html .buffer-list .light .buffer-deny:active, .light .buffer-list .buffer-deny:active, .light .dark .buffer-list .buffer-deny:active, .dark .buffer-list .light .buffer-deny:active, .light #btn-permission-deny.state-flashing-on, html #user-permission-display .light .state-flashing-on.permission-access-deny, .light html .buffer-list .state-flashing-on.permission-access-deny, html .buffer-list .light .state-flashing-on.permission-access-deny, html .light .buffer-list .state-flashing-on.permission-access-deny, .light html .buffer-list .state-flashing-on.permission-access-deny, .light html .dark .buffer-list .state-flashing-on.permission-access-deny, html .dark .buffer-list .light .state-flashing-on.permission-access-deny, .light .dark html .buffer-list .state-flashing-on.permission-access-deny, .dark html .buffer-list .light .state-flashing-on.permission-access-deny, .light #user-permission-display .state-flashing-on.permission-access-deny, .light .buffer-list .state-flashing-on.permission-access-deny, .light .dark .buffer-list .state-flashing-on.permission-access-deny, .dark .light .buffer-list .state-flashing-on.permission-access-deny, .dark #user-permission-display .light .state-flashing-on.permission-access-deny, .light .dark .buffer-list .state-flashing-on.permission-access-deny, .dark .buffer-list .light .state-flashing-on.permission-access-deny, .light html .buffer-list .state-flashing-on.buffer-deny, html .buffer-list .light .state-flashing-on.buffer-deny, .light .buffer-list .state-flashing-on.buffer-deny, .light .dark .buffer-list .state-flashing-on.buffer-deny, .dark .buffer-list .light .state-flashing-on.buffer-deny, .dark #btn-permission-deny:hover, html #user-permission-display .dark .permission-access-deny:hover, .dark html .buffer-list .permission-access-deny:hover, html .buffer-list .dark .permission-access-deny:hover, .dark html .light .buffer-list .permission-access-deny:hover, html .light .buffer-list .dark .permission-access-deny:hover, .dark .light html .buffer-list .permission-access-deny:hover, .light html .buffer-list .dark .permission-access-deny:hover, html .dark .buffer-list .permission-access-deny:hover, .dark html .buffer-list .permission-access-deny:hover, .light #user-permission-display .dark .permission-access-deny:hover, .dark .light .buffer-list .permission-access-deny:hover, .light .buffer-list .dark .permission-access-deny:hover, .light .dark .buffer-list .permission-access-deny:hover, .dark .light .buffer-list .permission-access-deny:hover, .dark #user-permission-display .permission-access-deny:hover, .dark .buffer-list .permission-access-deny:hover, .dark html .buffer-list .buffer-deny:hover, html .buffer-list .dark .buffer-deny:hover, .dark .light .buffer-list .buffer-deny:hover, .light .buffer-list .dark .buffer-deny:hover, .dark .buffer-list .buffer-deny:hover, .dark #btn-permission-deny:active, html #user-permission-display .dark .permission-access-deny:active, .dark html .buffer-list .permission-access-deny:active, html .buffer-list .dark .permission-access-deny:active, .dark html .light .buffer-list .permission-access-deny:active, html .light .buffer-list .dark .permission-access-deny:active, .dark .light html .buffer-list .permission-access-deny:active, .light html .buffer-list .dark .permission-access-deny:active, html .dark .buffer-list .permission-access-deny:active, .dark html .buffer-list .permission-access-deny:active, .light #user-permission-display .dark .permission-access-deny:active, .dark .light .buffer-list .permission-access-deny:active, .light .buffer-list .dark .permission-access-deny:active, .light .dark .buffer-list .permission-access-deny:active, .dark .light .buffer-list .permission-access-deny:active, .dark #user-permission-display .permission-access-deny:active, .dark .buffer-list .permission-access-deny:active, .dark html .buffer-list .buffer-deny:active, html .buffer-list .dark .buffer-deny:active, .dark .light .buffer-list .buffer-deny:active, .light .buffer-list .dark .buffer-deny:active, .dark .buffer-list .buffer-deny:active, .dark #btn-permission-deny.state-flashing-on, html #user-permission-display .dark .state-flashing-on.permission-access-deny, .dark html .buffer-list .state-flashing-on.permission-access-deny, html .buffer-list .dark .state-flashing-on.permission-access-deny, .dark html .light .buffer-list .state-flashing-on.permission-access-deny, html .light .buffer-list .dark .state-flashing-on.permission-access-deny, .dark .light html .buffer-list .state-flashing-on.permission-access-deny, .light html .buffer-list .dark .state-flashing-on.permission-access-deny, html .dark .buffer-list .state-flashing-on.permission-access-deny, .dark html .buffer-list .state-flashing-on.permission-access-deny, .light #user-permission-display .dark .state-flashing-on.permission-access-deny, .dark .light .buffer-list .state-flashing-on.permission-access-deny, .light .buffer-list .dark .state-flashing-on.permission-access-deny, .light .dark .buffer-list .state-flashing-on.permission-access-deny, .dark .light .buffer-list .state-flashing-on.permission-access-deny, .dark #user-permission-display .state-flashing-on.permission-access-deny, .dark .buffer-list .state-flashing-on.permission-access-deny, .dark html .buffer-list .state-flashing-on.buffer-deny, html .buffer-list .dark .state-flashing-on.buffer-deny, .dark .light .buffer-list .state-flashing-on.buffer-deny, .light .buffer-list .dark .state-flashing-on.buffer-deny, .dark .buffer-list .state-flashing-on.buffer-deny {
   background-color: #e8632c;
 }
-.light #btn-permission-deny[disabled], .light #user-permission-display [disabled].permission-access-deny, .light .buffer-list [disabled].permission-access-deny, .light .dark .buffer-list [disabled].permission-access-deny, .dark .light .buffer-list [disabled].permission-access-deny, .dark #user-permission-display .light [disabled].permission-access-deny, .light .dark .buffer-list [disabled].permission-access-deny, .dark .buffer-list .light [disabled].permission-access-deny, .light .buffer-list [disabled].buffer-deny, .light .dark .buffer-list [disabled].buffer-deny, .dark .buffer-list .light [disabled].buffer-deny, .light #btn-permission-deny[disabled]:hover, .light #user-permission-display [disabled].permission-access-deny:hover, .light .buffer-list [disabled].permission-access-deny:hover, .light .dark .buffer-list [disabled].permission-access-deny:hover, .dark .light .buffer-list [disabled].permission-access-deny:hover, .dark #user-permission-display .light [disabled].permission-access-deny:hover, .light .dark .buffer-list [disabled].permission-access-deny:hover, .dark .buffer-list .light [disabled].permission-access-deny:hover, .light .buffer-list [disabled].buffer-deny:hover, .light .dark .buffer-list [disabled].buffer-deny:hover, .dark .buffer-list .light [disabled].buffer-deny:hover, .light #btn-permission-deny[disabled]:active, .light #user-permission-display [disabled].permission-access-deny:active, .light .buffer-list [disabled].permission-access-deny:active, .light .dark .buffer-list [disabled].permission-access-deny:active, .dark .light .buffer-list [disabled].permission-access-deny:active, .dark #user-permission-display .light [disabled].permission-access-deny:active, .light .dark .buffer-list [disabled].permission-access-deny:active, .dark .buffer-list .light [disabled].permission-access-deny:active, .light .buffer-list [disabled].buffer-deny:active, .light .dark .buffer-list [disabled].buffer-deny:active, .dark .buffer-list .light [disabled].buffer-deny:active, .dark #btn-permission-deny[disabled], .light #user-permission-display .dark [disabled].permission-access-deny, .dark .light .buffer-list [disabled].permission-access-deny, .light .buffer-list .dark [disabled].permission-access-deny, .light .dark .buffer-list [disabled].permission-access-deny, .dark .light .buffer-list [disabled].permission-access-deny, .dark #user-permission-display [disabled].permission-access-deny, .dark .buffer-list [disabled].permission-access-deny, .dark .light .buffer-list [disabled].buffer-deny, .light .buffer-list .dark [disabled].buffer-deny, .dark .buffer-list [disabled].buffer-deny, .dark #btn-permission-deny[disabled]:hover, .light #user-permission-display .dark [disabled].permission-access-deny:hover, .dark .light .buffer-list [disabled].permission-access-deny:hover, .light .buffer-list .dark [disabled].permission-access-deny:hover, .light .dark .buffer-list [disabled].permission-access-deny:hover, .dark .light .buffer-list [disabled].permission-access-deny:hover, .dark #user-permission-display [disabled].permission-access-deny:hover, .dark .buffer-list [disabled].permission-access-deny:hover, .dark .light .buffer-list [disabled].buffer-deny:hover, .light .buffer-list .dark [disabled].buffer-deny:hover, .dark .buffer-list [disabled].buffer-deny:hover, .dark #btn-permission-deny[disabled]:active, .light #user-permission-display .dark [disabled].permission-access-deny:active, .dark .light .buffer-list [disabled].permission-access-deny:active, .light .buffer-list .dark [disabled].permission-access-deny:active, .light .dark .buffer-list [disabled].permission-access-deny:active, .dark .light .buffer-list [disabled].permission-access-deny:active, .dark #user-permission-display [disabled].permission-access-deny:active, .dark .buffer-list [disabled].permission-access-deny:active, .dark .light .buffer-list [disabled].buffer-deny:active, .light .buffer-list .dark [disabled].buffer-deny:active, .dark .buffer-list [disabled].buffer-deny:active {
+html #btn-permission-deny[disabled], html #user-permission-display [disabled].permission-access-deny, html .buffer-list [disabled].permission-access-deny, html .light .buffer-list [disabled].permission-access-deny, .light html .buffer-list [disabled].permission-access-deny, html .dark .buffer-list [disabled].permission-access-deny, .dark html .buffer-list [disabled].permission-access-deny, .light #user-permission-display html [disabled].permission-access-deny, html .light .buffer-list [disabled].permission-access-deny, .light .buffer-list html [disabled].permission-access-deny, html .light .dark .buffer-list [disabled].permission-access-deny, .light .dark .buffer-list html [disabled].permission-access-deny, html .dark .light .buffer-list [disabled].permission-access-deny, .dark .light .buffer-list html [disabled].permission-access-deny, .dark #user-permission-display html [disabled].permission-access-deny, html .dark .buffer-list [disabled].permission-access-deny, .dark .buffer-list html [disabled].permission-access-deny, html .buffer-list [disabled].buffer-deny, html .light .buffer-list [disabled].buffer-deny, .light .buffer-list html [disabled].buffer-deny, html .dark .buffer-list [disabled].buffer-deny, .dark .buffer-list html [disabled].buffer-deny, html #btn-permission-deny[disabled]:hover, html #user-permission-display [disabled].permission-access-deny:hover, html .buffer-list [disabled].permission-access-deny:hover, html .light .buffer-list [disabled].permission-access-deny:hover, .light html .buffer-list [disabled].permission-access-deny:hover, html .dark .buffer-list [disabled].permission-access-deny:hover, .dark html .buffer-list [disabled].permission-access-deny:hover, .light #user-permission-display html [disabled].permission-access-deny:hover, html .light .buffer-list [disabled].permission-access-deny:hover, .light .buffer-list html [disabled].permission-access-deny:hover, html .light .dark .buffer-list [disabled].permission-access-deny:hover, .light .dark .buffer-list html [disabled].permission-access-deny:hover, html .dark .light .buffer-list [disabled].permission-access-deny:hover, .dark .light .buffer-list html [disabled].permission-access-deny:hover, .dark #user-permission-display html [disabled].permission-access-deny:hover, html .dark .buffer-list [disabled].permission-access-deny:hover, .dark .buffer-list html [disabled].permission-access-deny:hover, html .buffer-list [disabled].buffer-deny:hover, html .light .buffer-list [disabled].buffer-deny:hover, .light .buffer-list html [disabled].buffer-deny:hover, html .dark .buffer-list [disabled].buffer-deny:hover, .dark .buffer-list html [disabled].buffer-deny:hover, html #btn-permission-deny[disabled]:active, html #user-permission-display [disabled].permission-access-deny:active, html .buffer-list [disabled].permission-access-deny:active, html .light .buffer-list [disabled].permission-access-deny:active, .light html .buffer-list [disabled].permission-access-deny:active, html .dark .buffer-list [disabled].permission-access-deny:active, .dark html .buffer-list [disabled].permission-access-deny:active, .light #user-permission-display html [disabled].permission-access-deny:active, html .light .buffer-list [disabled].permission-access-deny:active, .light .buffer-list html [disabled].permission-access-deny:active, html .light .dark .buffer-list [disabled].permission-access-deny:active, .light .dark .buffer-list html [disabled].permission-access-deny:active, html .dark .light .buffer-list [disabled].permission-access-deny:active, .dark .light .buffer-list html [disabled].permission-access-deny:active, .dark #user-permission-display html [disabled].permission-access-deny:active, html .dark .buffer-list [disabled].permission-access-deny:active, .dark .buffer-list html [disabled].permission-access-deny:active, html .buffer-list [disabled].buffer-deny:active, html .light .buffer-list [disabled].buffer-deny:active, .light .buffer-list html [disabled].buffer-deny:active, html .dark .buffer-list [disabled].buffer-deny:active, .dark .buffer-list html [disabled].buffer-deny:active, .light #btn-permission-deny[disabled], html #user-permission-display .light [disabled].permission-access-deny, .light html .buffer-list [disabled].permission-access-deny, html .buffer-list .light [disabled].permission-access-deny, html .light .buffer-list [disabled].permission-access-deny, .light html .buffer-list [disabled].permission-access-deny, .light html .dark .buffer-list [disabled].permission-access-deny, html .dark .buffer-list .light [disabled].permission-access-deny, .light .dark html .buffer-list [disabled].permission-access-deny, .dark html .buffer-list .light [disabled].permission-access-deny, .light #user-permission-display [disabled].permission-access-deny, .light .buffer-list [disabled].permission-access-deny, .light .dark .buffer-list [disabled].permission-access-deny, .dark .light .buffer-list [disabled].permission-access-deny, .dark #user-permission-display .light [disabled].permission-access-deny, .light .dark .buffer-list [disabled].permission-access-deny, .dark .buffer-list .light [disabled].permission-access-deny, .light html .buffer-list [disabled].buffer-deny, html .buffer-list .light [disabled].buffer-deny, .light .buffer-list [disabled].buffer-deny, .light .dark .buffer-list [disabled].buffer-deny, .dark .buffer-list .light [disabled].buffer-deny, .light #btn-permission-deny[disabled]:hover, html #user-permission-display .light [disabled].permission-access-deny:hover, .light html .buffer-list [disabled].permission-access-deny:hover, html .buffer-list .light [disabled].permission-access-deny:hover, html .light .buffer-list [disabled].permission-access-deny:hover, .light html .buffer-list [disabled].permission-access-deny:hover, .light html .dark .buffer-list [disabled].permission-access-deny:hover, html .dark .buffer-list .light [disabled].permission-access-deny:hover, .light .dark html .buffer-list [disabled].permission-access-deny:hover, .dark html .buffer-list .light [disabled].permission-access-deny:hover, .light #user-permission-display [disabled].permission-access-deny:hover, .light .buffer-list [disabled].permission-access-deny:hover, .light .dark .buffer-list [disabled].permission-access-deny:hover, .dark .light .buffer-list [disabled].permission-access-deny:hover, .dark #user-permission-display .light [disabled].permission-access-deny:hover, .light .dark .buffer-list [disabled].permission-access-deny:hover, .dark .buffer-list .light [disabled].permission-access-deny:hover, .light html .buffer-list [disabled].buffer-deny:hover, html .buffer-list .light [disabled].buffer-deny:hover, .light .buffer-list [disabled].buffer-deny:hover, .light .dark .buffer-list [disabled].buffer-deny:hover, .dark .buffer-list .light [disabled].buffer-deny:hover, .light #btn-permission-deny[disabled]:active, html #user-permission-display .light [disabled].permission-access-deny:active, .light html .buffer-list [disabled].permission-access-deny:active, html .buffer-list .light [disabled].permission-access-deny:active, html .light .buffer-list [disabled].permission-access-deny:active, .light html .buffer-list [disabled].permission-access-deny:active, .light html .dark .buffer-list [disabled].permission-access-deny:active, html .dark .buffer-list .light [disabled].permission-access-deny:active, .light .dark html .buffer-list [disabled].permission-access-deny:active, .dark html .buffer-list .light [disabled].permission-access-deny:active, .light #user-permission-display [disabled].permission-access-deny:active, .light .buffer-list [disabled].permission-access-deny:active, .light .dark .buffer-list [disabled].permission-access-deny:active, .dark .light .buffer-list [disabled].permission-access-deny:active, .dark #user-permission-display .light [disabled].permission-access-deny:active, .light .dark .buffer-list [disabled].permission-access-deny:active, .dark .buffer-list .light [disabled].permission-access-deny:active, .light html .buffer-list [disabled].buffer-deny:active, html .buffer-list .light [disabled].buffer-deny:active, .light .buffer-list [disabled].buffer-deny:active, .light .dark .buffer-list [disabled].buffer-deny:active, .dark .buffer-list .light [disabled].buffer-deny:active, .dark #btn-permission-deny[disabled], html #user-permission-display .dark [disabled].permission-access-deny, .dark html .buffer-list [disabled].permission-access-deny, html .buffer-list .dark [disabled].permission-access-deny, .dark html .light .buffer-list [disabled].permission-access-deny, html .light .buffer-list .dark [disabled].permission-access-deny, .dark .light html .buffer-list [disabled].permission-access-deny, .light html .buffer-list .dark [disabled].permission-access-deny, html .dark .buffer-list [disabled].permission-access-deny, .dark html .buffer-list [disabled].permission-access-deny, .light #user-permission-display .dark [disabled].permission-access-deny, .dark .light .buffer-list [disabled].permission-access-deny, .light .buffer-list .dark [disabled].permission-access-deny, .light .dark .buffer-list [disabled].permission-access-deny, .dark .light .buffer-list [disabled].permission-access-deny, .dark #user-permission-display [disabled].permission-access-deny, .dark .buffer-list [disabled].permission-access-deny, .dark html .buffer-list [disabled].buffer-deny, html .buffer-list .dark [disabled].buffer-deny, .dark .light .buffer-list [disabled].buffer-deny, .light .buffer-list .dark [disabled].buffer-deny, .dark .buffer-list [disabled].buffer-deny, .dark #btn-permission-deny[disabled]:hover, html #user-permission-display .dark [disabled].permission-access-deny:hover, .dark html .buffer-list [disabled].permission-access-deny:hover, html .buffer-list .dark [disabled].permission-access-deny:hover, .dark html .light .buffer-list [disabled].permission-access-deny:hover, html .light .buffer-list .dark [disabled].permission-access-deny:hover, .dark .light html .buffer-list [disabled].permission-access-deny:hover, .light html .buffer-list .dark [disabled].permission-access-deny:hover, html .dark .buffer-list [disabled].permission-access-deny:hover, .dark html .buffer-list [disabled].permission-access-deny:hover, .light #user-permission-display .dark [disabled].permission-access-deny:hover, .dark .light .buffer-list [disabled].permission-access-deny:hover, .light .buffer-list .dark [disabled].permission-access-deny:hover, .light .dark .buffer-list [disabled].permission-access-deny:hover, .dark .light .buffer-list [disabled].permission-access-deny:hover, .dark #user-permission-display [disabled].permission-access-deny:hover, .dark .buffer-list [disabled].permission-access-deny:hover, .dark html .buffer-list [disabled].buffer-deny:hover, html .buffer-list .dark [disabled].buffer-deny:hover, .dark .light .buffer-list [disabled].buffer-deny:hover, .light .buffer-list .dark [disabled].buffer-deny:hover, .dark .buffer-list [disabled].buffer-deny:hover, .dark #btn-permission-deny[disabled]:active, html #user-permission-display .dark [disabled].permission-access-deny:active, .dark html .buffer-list [disabled].permission-access-deny:active, html .buffer-list .dark [disabled].permission-access-deny:active, .dark html .light .buffer-list [disabled].permission-access-deny:active, html .light .buffer-list .dark [disabled].permission-access-deny:active, .dark .light html .buffer-list [disabled].permission-access-deny:active, .light html .buffer-list .dark [disabled].permission-access-deny:active, html .dark .buffer-list [disabled].permission-access-deny:active, .dark html .buffer-list [disabled].permission-access-deny:active, .light #user-permission-display .dark [disabled].permission-access-deny:active, .dark .light .buffer-list [disabled].permission-access-deny:active, .light .buffer-list .dark [disabled].permission-access-deny:active, .light .dark .buffer-list [disabled].permission-access-deny:active, .dark .light .buffer-list [disabled].permission-access-deny:active, .dark #user-permission-display [disabled].permission-access-deny:active, .dark .buffer-list [disabled].permission-access-deny:active, .dark html .buffer-list [disabled].buffer-deny:active, html .buffer-list .dark [disabled].buffer-deny:active, .dark .light .buffer-list [disabled].buffer-deny:active, .light .buffer-list .dark [disabled].buffer-deny:active, .dark .buffer-list [disabled].buffer-deny:active {
   opacity: 0.5;
   background-color: #cb4b16;
 }
-.light #btn-permission-deny:before, .light #user-permission-display .permission-access-deny:before, .light .buffer-list .permission-access-deny:before, .light .dark .buffer-list .permission-access-deny:before, .dark .light .buffer-list .permission-access-deny:before, .dark #user-permission-display .light .permission-access-deny:before, .light .dark .buffer-list .permission-access-deny:before, .dark .buffer-list .light .permission-access-deny:before, .light .buffer-list .buffer-deny:before, .light .dark .buffer-list .buffer-deny:before, .dark .buffer-list .light .buffer-deny:before, .dark #btn-permission-deny:before, .light #user-permission-display .dark .permission-access-deny:before, .dark .light .buffer-list .permission-access-deny:before, .light .buffer-list .dark .permission-access-deny:before, .light .dark .buffer-list .permission-access-deny:before, .dark .light .buffer-list .permission-access-deny:before, .dark #user-permission-display .permission-access-deny:before, .dark .buffer-list .permission-access-deny:before, .dark .light .buffer-list .buffer-deny:before, .light .buffer-list .dark .buffer-deny:before, .dark .buffer-list .buffer-deny:before {
+html #btn-permission-deny:before, html #user-permission-display .permission-access-deny:before, html .buffer-list .permission-access-deny:before, html .light .buffer-list .permission-access-deny:before, .light html .buffer-list .permission-access-deny:before, html .dark .buffer-list .permission-access-deny:before, .dark html .buffer-list .permission-access-deny:before, html .light #user-permission-display .permission-access-deny:before, .light #user-permission-display html .permission-access-deny:before, html .light .buffer-list .permission-access-deny:before, .light .buffer-list html .permission-access-deny:before, html .light .dark .buffer-list .permission-access-deny:before, .light .dark .buffer-list html .permission-access-deny:before, html .dark .light .buffer-list .permission-access-deny:before, .dark .light .buffer-list html .permission-access-deny:before, html .dark #user-permission-display .permission-access-deny:before, .dark #user-permission-display html .permission-access-deny:before, html .dark .buffer-list .permission-access-deny:before, .dark .buffer-list html .permission-access-deny:before, html .buffer-list .buffer-deny:before, html .light .buffer-list .buffer-deny:before, .light .buffer-list html .buffer-deny:before, html .dark .buffer-list .buffer-deny:before, .dark .buffer-list html .buffer-deny:before, .light #btn-permission-deny:before, html #user-permission-display .light .permission-access-deny:before, .light html .buffer-list .permission-access-deny:before, html .buffer-list .light .permission-access-deny:before, html .light .buffer-list .permission-access-deny:before, .light html .buffer-list .permission-access-deny:before, .light html .dark .buffer-list .permission-access-deny:before, html .dark .buffer-list .light .permission-access-deny:before, .light .dark html .buffer-list .permission-access-deny:before, .dark html .buffer-list .light .permission-access-deny:before, .light #user-permission-display .permission-access-deny:before, .light .buffer-list .permission-access-deny:before, .light .dark .buffer-list .permission-access-deny:before, .dark .light .buffer-list .permission-access-deny:before, .dark #user-permission-display .light .permission-access-deny:before, .light .dark .buffer-list .permission-access-deny:before, .dark .buffer-list .light .permission-access-deny:before, .light html .buffer-list .buffer-deny:before, html .buffer-list .light .buffer-deny:before, .light .buffer-list .buffer-deny:before, .light .dark .buffer-list .buffer-deny:before, .dark .buffer-list .light .buffer-deny:before, .dark #btn-permission-deny:before, html #user-permission-display .dark .permission-access-deny:before, .dark html .buffer-list .permission-access-deny:before, html .buffer-list .dark .permission-access-deny:before, .dark html .light .buffer-list .permission-access-deny:before, html .light .buffer-list .dark .permission-access-deny:before, .dark .light html .buffer-list .permission-access-deny:before, .light html .buffer-list .dark .permission-access-deny:before, html .dark .buffer-list .permission-access-deny:before, .dark html .buffer-list .permission-access-deny:before, .light #user-permission-display .dark .permission-access-deny:before, .dark .light .buffer-list .permission-access-deny:before, .light .buffer-list .dark .permission-access-deny:before, .light .dark .buffer-list .permission-access-deny:before, .dark .light .buffer-list .permission-access-deny:before, .dark #user-permission-display .permission-access-deny:before, .dark .buffer-list .permission-access-deny:before, .dark html .buffer-list .buffer-deny:before, html .buffer-list .dark .buffer-deny:before, .dark .light .buffer-list .buffer-deny:before, .light .buffer-list .dark .buffer-deny:before, .dark .buffer-list .buffer-deny:before {
   content: "✗";
   margin-right: 0.4em;
 }
-.light #user-permission-display, .light .buffer-list, .light .dark .buffer-list, .dark .light .buffer-list, .dark #user-permission-display, .dark .light .buffer-list, .light .dark .buffer-list, .dark .buffer-list {
+html #user-permission-display, html .buffer-list, html .light .buffer-list, .light html .buffer-list, html .dark .buffer-list, .dark html .buffer-list, .light #user-permission-display, .light html .buffer-list, html .light .buffer-list, .light .buffer-list, .light .dark .buffer-list, .dark .light .buffer-list, .dark #user-permission-display, .dark html .buffer-list, html .dark .buffer-list, .dark .light .buffer-list, .light .dark .buffer-list, .dark .buffer-list {
   border-radius: 10px;
   margin: 0;
   padding: 0.8em 1em;
 }
-.light .buffer-list, .dark .buffer-list {
+html .buffer-list, .light .buffer-list, .dark .buffer-list {
   display: flex;
   flex-flow: row wrap;
   justify-content: flex-start;
   align-items: stretch;
   vertical-align: middle;
 }
-.light .buffer-list li, .dark .buffer-list li {
+html .buffer-list li, .light .buffer-list li, .dark .buffer-list li {
   list-style: none;
 }
-.light .buffer-list .buffer-allow, .dark .buffer-list .buffer-allow {
+html .buffer-list .buffer-allow, .light .buffer-list .buffer-allow, .dark .buffer-list .buffer-allow {
   /* non-interactive */
 }
-.light .buffer-list .buffer-allow:hover, .dark .buffer-list .buffer-allow:hover {
+html .buffer-list .buffer-allow:hover, .light .buffer-list .buffer-allow:hover, .dark .buffer-list .buffer-allow:hover {
   cursor: inherit;
 }
-.light .buffer-list .buffer-deny, .dark .buffer-list .buffer-deny {
+html .buffer-list .buffer-deny, .light .buffer-list .buffer-deny, .dark .buffer-list .buffer-deny {
   /* non-interactive */
 }
-.light .buffer-list .buffer-deny:hover, .dark .buffer-list .buffer-deny:hover {
+html .buffer-list .buffer-deny:hover, .light .buffer-list .buffer-deny:hover, .dark .buffer-list .buffer-deny:hover {
   cursor: inherit;
 }
-.light .dijitComboBox, .dark .dijitComboBox {
+html .dijitComboBox, .light .dijitComboBox, .dark .dijitComboBox {
   display: flex;
   flex-flow: row-reverse nowrap;
   justify-content: space-between;
   align-items: center;
   align-content: center;
 }
-.light .dijitComboBox > div *, .dark .dijitComboBox > div * {
+html .dijitComboBox > div *, .light .dijitComboBox > div *, .dark .dijitComboBox > div * {
   vertical-align: middle;
 }
-.light .dijitComboBox .dijitArrowButtonContainer, .light .dijitComboBox .dijitValidationContainer, .dark .dijitComboBox .dijitArrowButtonContainer, .dark .dijitComboBox .dijitValidationContainer {
+html .dijitComboBox .dijitArrowButtonContainer, html .dijitComboBox .dijitValidationContainer, .light .dijitComboBox .dijitArrowButtonContainer, .light .dijitComboBox .dijitValidationContainer, .dark .dijitComboBox .dijitArrowButtonContainer, .dark .dijitComboBox .dijitValidationContainer {
   float: right;
 }
-.light .dijitComboBox .dijitArrowButtonContainer input, .light .dijitComboBox .dijitValidationContainer input, .dark .dijitComboBox .dijitArrowButtonContainer input, .dark .dijitComboBox .dijitValidationContainer input {
+html .dijitComboBox .dijitArrowButtonContainer input, html .dijitComboBox .dijitValidationContainer input, .light .dijitComboBox .dijitArrowButtonContainer input, .light .dijitComboBox .dijitValidationContainer input, .dark .dijitComboBox .dijitArrowButtonContainer input, .dark .dijitComboBox .dijitValidationContainer input {
   width: 1.5em;
   transition: color 0.3s, background-color 0.3s, border-color 0.3s;
 }
-.light .dijitComboBox .dijitArrowButtonContainer input:hover, .light .dijitComboBox .dijitValidationContainer input:hover, .dark .dijitComboBox .dijitArrowButtonContainer input:hover, .dark .dijitComboBox .dijitValidationContainer input:hover {
+html .dijitComboBox .dijitArrowButtonContainer input:hover, html .dijitComboBox .dijitValidationContainer input:hover, .light .dijitComboBox .dijitArrowButtonContainer input:hover, .light .dijitComboBox .dijitValidationContainer input:hover, .dark .dijitComboBox .dijitArrowButtonContainer input:hover, .dark .dijitComboBox .dijitValidationContainer input:hover {
   cursor: pointer;
 }
-.light .dijitComboBox .dijitValidationContainer, .dark .dijitComboBox .dijitValidationContainer {
+html .dijitComboBox .dijitValidationContainer, .light .dijitComboBox .dijitValidationContainer, .dark .dijitComboBox .dijitValidationContainer {
   visibility: hidden;
   opacity: 0;
   transition: opacity 0.3s;
 }
-.light .dijitComboBox .dijitInputField, .dark .dijitComboBox .dijitInputField {
+html .dijitComboBox .dijitInputField, .light .dijitComboBox .dijitInputField, .dark .dijitComboBox .dijitInputField {
   flex-grow: 1;
 }
-.light .dijitComboBox .dijitInputField input, .dark .dijitComboBox .dijitInputField input {
+html .dijitComboBox .dijitInputField input, .light .dijitComboBox .dijitInputField input, .dark .dijitComboBox .dijitInputField input {
   width: 100%;
 }
-.light .dijitHover .dijitValidationContainer, .light .dijitFocused .dijitValidationContainer, .dark .dijitHover .dijitValidationContainer, .dark .dijitFocused .dijitValidationContainer {
+html .dijitHover .dijitValidationContainer, html .dijitFocused .dijitValidationContainer, .light .dijitHover .dijitValidationContainer, .light .dijitFocused .dijitValidationContainer, .dark .dijitHover .dijitValidationContainer, .dark .dijitFocused .dijitValidationContainer {
   opacity: 1;
   visibility: visible;
 }
-.light .dijitTooltip, .light .dijitComboBoxMenuPopup, .dark .dijitTooltip, .dark .dijitComboBoxMenuPopup {
+html .dijitTooltip, html .dijitComboBoxMenuPopup, html .light .dijitComboBoxMenuPopup, .light html .dijitComboBoxMenuPopup, html .dark .dijitComboBoxMenuPopup, .dark html .dijitComboBoxMenuPopup, .light .dijitTooltip, .light .dijitComboBoxMenuPopup, .dark .dijitTooltip, .dark .dijitComboBoxMenuPopup {
   position: absolute;
   border: 1px solid !important;
   border-radius: 10px;
   padding: 0.3em 1em;
 }
-.light .dijitComboBoxMenuPopup .dijitMenuItem, .dark .dijitComboBoxMenuPopup .dijitMenuItem {
+html .dijitComboBoxMenuPopup .dijitMenuItem, .light .dijitComboBoxMenuPopup .dijitMenuItem, .dark .dijitComboBoxMenuPopup .dijitMenuItem {
   cursor: pointer;
 }
-.light .label-extra, .dark .label-extra {
+html .label-extra, .light .label-extra, .dark .label-extra {
   font-size: 80%;
   padding: 0 0.5em;
 }
-.light .label-extra + .label-extra:before, .dark .label-extra + .label-extra:before {
+html .label-extra + .label-extra:before, .light .label-extra + .label-extra:before, .dark .label-extra + .label-extra:before {
   content: "|";
   position: relative;
   left: -0.5em;

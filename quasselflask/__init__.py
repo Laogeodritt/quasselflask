@@ -13,7 +13,7 @@ import flask_user
 import quasselflask.startup
 from quasselflask.startup import init_app
 
-__version_info__ = ('0', '1', '0')
+__version_info__ = ('0', '6', '0')
 __version__ = '.'.join(__version_info__)
 __author__ = 'Marc-Alexandre Chan <laogeodritt@arenthil.net>'
 __maintainer__ = 'Marc-Alexandre Chan <laogeodritt@arenthil.net>'
