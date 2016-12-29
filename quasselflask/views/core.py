@@ -35,6 +35,21 @@ def flask_user_redirect_patch():
     flask_user.views.redirect = flask_user.views.safe_redirect = safe_redirect
 
 
+@app.before_first_request
+def qf_setup_themes():
+    """ Reads the theme config (default and custom) and generates the structures used by the template. """
+    from quasselflask.views.themes import Theme
+
+    themes_dict = {}
+    for id_, name, file, cls in app.config.get('QF_DEFAULT_THEMES', []):
+        theme = Theme(id_, name, file=file, root_class=cls)
+        themes_dict[theme.id] = theme
+    for id_, name, file, cls in app.config.get('QF_CUSTOM_THEMES', []):
+        theme = Theme(id_, name, file=file, root_class=cls, custom=True)
+        themes_dict[theme.id] = theme
+    app.config['QF_THEMES'] = themes_dict
+
+
 @app.before_request
 def globals_init():
     g.start_time = time.time()

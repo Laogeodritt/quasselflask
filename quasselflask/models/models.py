@@ -57,6 +57,9 @@ class QfUser(db.Model, UserMixin):
     active = db.Column('is_active', db.Boolean(), nullable=False, server_default='0')
     superuser = db.Column('is_superuser', db.Boolean(), nullable=False, server_default='0')
 
+    # User settings
+    themeid = db.Column(db.Integer, nullable=False, server_default='0')
+
     # default access (allow|deny), when no specific permission is specified
     access = db.Column(db.Enum(PermissionAccess), nullable=False, server_default='deny')
 
@@ -230,6 +233,11 @@ class QfAnonymousUserMixin(AnonymousUserMixin):
     @property
     def is_superuser(self):
         return False
+
+    @property
+    def themeid(self):
+        from quasselflask import app
+        return app.config.get('QF_DEFAULT_THEME', 0)
 
 
 def qf_create_all():

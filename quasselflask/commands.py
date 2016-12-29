@@ -9,6 +9,7 @@ from datetime import datetime
 
 import sqlalchemy.orm
 from sqlalchemy import func
+from quasselflask import app
 from flask_script import prompt_bool, prompt_pass
 from flask_script.commands import InvalidCommand
 
@@ -82,6 +83,7 @@ def init_superuser(name, email, password=''):
     user_fields['active'] = True
     user_fields['superuser'] = True
     user_fields['confirmed_at'] = datetime.utcnow()
+    user_fields['themeid'] = app.config.get('QF_DEFAULT_THEME', 0)
 
     # Add User record using named arguments 'user_fields'
     db_adapter.add_object(User, **user_fields)

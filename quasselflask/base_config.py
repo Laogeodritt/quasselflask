@@ -30,6 +30,17 @@ class DefaultConfig:
 
     QF_ADMIN_CONFIRM_TIME = 600  # seconds - max time for admin user to respond to a confirm dialog for some actions
 
+    # List of custom themes (2 themes as examples). Parameters:
+    # ID: a unique ID in the range [100, 1000). Should not change (else users will find their preferred theme changed!)
+    # Name: name to be displayed
+    # File: CSS file to link in header, if applicable. Must be a Flask static file (in static/). None otherwise.
+    # Class: CSS class to add to the <body> element. Can be None.
+    # QF_CUSTOM_THEMES = [
+    #   (100, "Name1", "file1.css", "class1"),
+    #   (101, "Name2", "file2.css", "class2"),
+    # ]
+    QF_DEFAULT_THEME = 0
+
     USER_PASSWORD_HASH = 'sha512_crypt'
     USER_CONFIRM_EMAIL_EXPIRATION = 3*24*3600  # seconds
     USER_RESET_PASSWORD_EXPIRATION = 24*3600  # seconds
@@ -50,6 +61,12 @@ class InternalConfig:
     Internal configuration of Flask and its extensions or other libraries. Generally don't change these unless you're
     very sure of what you're doing.
     """
+
+    # IDs for default themes in range [0, 100)
+    QF_DEFAULT_THEMES = (
+        (0, 'Solarized Light', None, 'light'),
+        (1, 'Solarized Dark', None, 'dark'),
+    )
 
     SQLALCHEMY_TRACK_MODIFICATIONS = False
     SQLALCHEMY_RECORD_QUERIES = bool(os.environ.get('FLASK_DEBUG', 0))

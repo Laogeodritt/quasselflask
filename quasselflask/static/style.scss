@@ -49,12 +49,6 @@ $fadein-transition: opacity $transition-time;
 
 @import 'https://fonts.googleapis.com/css?family=PT+Sans|PT+Serif';
 
-.dijitReset {
-  padding: 0;
-  margin: 0;
-  border: 0;
-}
-
 @mixin rebase($rebase03,$rebase02,$rebase01,$rebase00,$rebase0,$rebase1,$rebase2,$rebase3)
 {
   background-color: $rebase02;
@@ -211,519 +205,529 @@ body {
   font-family: 'PT Sans', sans-serif;
 }
 
-header h1, h1, h2, h3, h4, h5, h6 {
-  color: $blue;
-  font-family: 'PT Serif', serif;
-  font-weight: normal;
-  border-bottom: 1px solid;
-  margin-top: 0.4em;
-  margin-bottom: 0.8em;
-  padding: 0 0.5em;
-}
+.light, .dark {
 
-main, section {
-  border: 1px solid;
-  border-radius: $content-border-radius;
-  margin-top: 0.8em;
-  margin-bottom: 1.5em;
-  padding: 1.0em 1.5em 1.5em 1.5em;
-}
-
-section#error, .dijitComboBoxError, .dijitComboBoxError div, .dijitComboBoxError input {
-  background-color: lighten($red, 25%);
-}
-
-section#warning {
-  background-color: lighten($yellow, 25%);
-}
-
-section#notice {
-  background-color: lighten($cyan, 25%);
-}
-
-footer {
-  @extend section;
-  font-size: $small-font-size;
-  font-style: italic;
-  text-align: center;
-}
-
-aside, article { @extend section; }
-
-/** General elements **/
-.links-bar {
-  float: right;
-  padding: 0;
-  margin: 0.5em 0 1em 0;
-}
-
-.links-bar a {
-  @include link_button($blue);
-}
-
-.links-bar a, .links-bar a:visited, .links-bar a:hover, .links-bar a:active {
-  color: $base3;
-  text-decoration: none;
-}
-
-.links-bar a:hover, .links-bar a:active {
-  background-color: lighten($blue, $bg-hover-amount);
-}
-
-.animate-start-hidden {
-  visibility: hidden;
-  display: inline-block;
-}
-
-/** Form styling **/
-
-form {
-  display: flex;
-  flex-direction: column;
-  align-items: flex-end;
-  vertical-align: middle;
-
-  &#form-login {
-    .forgot-password {
-      font-size: $small-font-size;
-    }
+  .dijitReset {
+    padding: 0;
+    margin: 0;
+    border: 0;
   }
 
-  &.narrow {
-    width: 33%;
-    margin-left: auto;
-    margin-right: auto;
+  header h1, h1, h2, h3, h4, h5, h6 {
+    color: $blue;
+    font-family: 'PT Serif', serif;
+    font-weight: normal;
+    border-bottom: 1px solid;
+    margin-top: 0.4em;
+    margin-bottom: 0.8em;
+    padding: 0 0.5em;
+  }
+
+  main, section {
+    border: 1px solid;
+    border-radius: $content-border-radius;
+    margin-top: 0.8em;
+    margin-bottom: 1.5em;
+    padding: 1.0em 1.5em 1.5em 1.5em;
+  }
+
+  section#error, .dijitComboBoxError, .dijitComboBoxError div, .dijitComboBoxError input {
+    background-color: lighten($red, 25%);
+  }
+
+  section#warning {
+    background-color: lighten($yellow, 25%);
+  }
+
+  section#notice {
+    background-color: lighten($cyan, 25%);
+  }
+
+  footer {
+    @extend section;
+    font-size: $small-font-size;
+    font-style: italic;
+    text-align: center;
+  }
+
+  aside, article { @extend section; }
+
+  /** General elements **/
+  .links-bar {
+    float: right;
+    padding: 0;
+    margin: 0.5em 0 1em 0;
+  }
+
+  .links-bar a {
+    @include link_button($blue);
+  }
+
+  .links-bar a, .links-bar a:visited, .links-bar a:hover, .links-bar a:active {
+    color: $base3;
+    text-decoration: none;
+  }
+
+  .links-bar a:hover, .links-bar a:active {
+    background-color: lighten($blue, $bg-hover-amount);
+  }
+
+  .animate-start-hidden {
+    visibility: hidden;
+    display: inline-block;
+  }
+
+  /** Form styling **/
+
+  form {
+    display: flex;
+    flex-direction: column;
+    align-items: flex-end;
+    vertical-align: middle;
+
+    &#form-login {
+      .forgot-password {
+        font-size: $small-font-size;
+      }
+    }
+
+    &.narrow {
+      width: 33%;
+      margin-left: auto;
+      margin-right: auto;
+
+      > div {
+        justify-content: space-between;
+      }
+    }
 
     > div {
-      justify-content: space-between;
+      width: 100%;
+      display: flex;
+      flex-direction: row;
+      justify-content: center;
+      align-items: baseline;
+
+      &.form-row-end {
+        justify-content: flex-end;
+      }
     }
+
+    input[type="text"], input[type="password"], input[type="number"], input[type="textarea"], .dijitTextBox {
+      flex-grow: 1;
+    }
+
+    .help-block {
+      margin: 0 0.4em 0.2em;
+      color: $red;
+      font-size: $small-font-size;
+    }
+
+    #search-query {
+      text-align: left;
+    }
+
+    #search-maxlines { max-width: 4em; }
   }
 
-  > div {
-    width: 100%;
-    display: flex;
-    flex-direction: row;
-    justify-content: center;
-    align-items: baseline;
+  input, button, .dijitTextBox {
+    border: 1px solid;
+    border-radius: $content-border-radius;
+    margin: 0 0.4em 0.6em;
+    padding: 0.3em 0.6em;
+    vertical-align: middle;
+  }
 
-    &.form-row-end {
-      justify-content: flex-end;
-    }
+  label, input[type="checkbox"], input[type="radio"] {
+    margin: 0 0.2em 0.6em;
+    padding: 0;
   }
 
   input[type="text"], input[type="password"], input[type="number"], input[type="textarea"], .dijitTextBox {
-    flex-grow: 1;
+    text-align: center;
   }
 
-  .help-block {
-    margin: 0 0.4em 0.2em;
-    color: $red;
-    font-size: $small-font-size;
+  input[type="text"], input[type="number"] { text-align: center; }
+
+  > div.has-error input {
+    border-color: $red;
+    background-color: lighten($red, 30%)
   }
 
-  #search-query {
-    text-align: left;
+  button, input[type="submit"] {
+    @include button_color($blue);
   }
 
-  #search-maxlines { max-width: 4em; }
-}
+  button[type="reset"], input[type="reset"] {
+    @include button_color($violet);
+  }
 
-
-input, button, .dijitTextBox {
-  border: 1px solid;
-  border-radius: $content-border-radius;
-  margin: 0 0.4em 0.6em;
-  padding: 0.3em 0.6em;
-  vertical-align: middle;
-}
-
-label, input[type="checkbox"], input[type="radio"] {
-  margin: 0 0.2em 0.6em;
-  padding: 0;
-}
-
-input[type="text"], input[type="password"], input[type="number"], input[type="textarea"], .dijitTextBox {
-  text-align: center;
-}
-
-input[type="text"], input[type="number"] { text-align: center; }
-
-> div.has-error input {
-  border-color: $red;
-  background-color: lighten($red, 30%)
-}
-
-button, input[type="submit"] {
-  @include button_color($blue);
-}
-
-button[type="reset"], input[type="reset"] {
-  @include button_color($violet);
-}
-
-/* forms for single-button POST request or single-button for Javascript-based forms */
-form.linkform {
-  display: inline-block;
-  vertical-align: middle;
-  margin: 0;
-  padding: 0;
-
-  input[type='submit'] {
+  /* forms for single-button POST request or single-button for Javascript-based forms */
+  form.linkform {
     display: inline-block;
-    margin: 0 0.3em;
+    vertical-align: middle;
+    margin: 0;
+    padding: 0;
 
-    &.user-enabled, &.confirmed {
-      @include button_color($enable-color);
-    }
+    input[type='submit'] {
+      display: inline-block;
+      margin: 0 0.3em;
 
-    &.user-disabled, &.unconfirmed {
-      @include button_color($disable-color);
-    }
+      &.user-enabled, &.confirmed {
+        @include button_color($enable-color);
+      }
 
-    &.user-superuser {
-      @include button_color($superuser-color);
-    }
+      &.user-disabled, &.unconfirmed {
+        @include button_color($disable-color);
+      }
 
-    &.user-normaluser {
-      @include button_color($normaluser-color);
-    }
+      &.user-superuser {
+        @include button_color($superuser-color);
+      }
 
-    &.delete {
-      @include button_color($red)
+      &.user-normaluser {
+        @include button_color($normaluser-color);
+      }
+
+      &.delete {
+        @include button_color($red)
+      }
     }
   }
-}
 
-/** Results styling **/
-html .result {
-  table.irc-log {
-    margin: 0.3em 0 1em;
+  /** Results styling **/
+  html .result {
+    table.irc-log {
+      margin: 0.3em 0 1em;
 
-    td {
-      vertical-align: baseline;
-      padding: 0.11em 0.2em;
+      td {
+        vertical-align: baseline;
+        padding: 0.11em 0.2em;
+      }
+
+      .timestamp {
+        text-align: left;
+        white-space: nowrap;
+        font-size: $small-font-size;
+        font-style: normal;
+        font-weight: normal;
+        &:before { content: '['; }
+        &:after { content: ']'; }
+      }
+      .icon {
+        text-align: center;
+      }
+      .sender {
+        text-align: right;
+        white-space: nowrap;
+
+        &.nick-yellow { color: $yellow; }
+        &.nick-orange { color: $orange; }
+        &.nick-red { color: $red; }
+        &.nick-magenta { color: $magenta; }
+        &.nick-violet { color: $violet; }
+        &.nick-blue { color: $blue; }
+        &.nick-cyan { color: $cyan; }
+        &.nick-green { color: $green; }
+      }
+      .message {
+        text-align: left;
+        white-space: normal;
+
+        .irc-bold { font-weight: bold; }
+        .irc-italic { font-style: italic; }
+        .irc-underline { text-decoration: underline; }
+
+        .irc-color00 { color: $base3; }
+        .irc-color01 { color: $base03; }
+        .irc-color02 { color: $base02; }
+        .irc-color03 { color: $green; }
+        .irc-color04 { color: $red; }
+        .irc-color05 { color: $base01; }
+        .irc-color06 { color: $violet; }
+        .irc-color07 { color: $orange; }
+        .irc-color08 { color: $yellow; }
+        .irc-color09 { color: lighten($green, 10%); }
+        .irc-color10 { color: $cyan; }
+        .irc-color11 { color: lighten($cyan, 10%); }
+        .irc-color12 { color: $blue }
+        .irc-color13 { color: $magenta; }
+        .irc-color14 { color: $base00; }
+        .irc-color15 { color: $base1; }
+
+        .irc-bgcolor00 { background-color: $base3; }
+        .irc-bgcolor01 { background-color: $base03; }
+        .irc-bgcolor02 { background-color: $base02; }
+        .irc-bgcolor03 { background-color: $green; }
+        .irc-bgcolor04 { background-color: $red; }
+        .irc-bgcolor05 { background-color: $base01; }
+        .irc-bgcolor06 { background-color: $violet; }
+        .irc-bgcolor07 { background-color: $orange; }
+        .irc-bgcolor08 { background-color: $yellow; }
+        .irc-bgcolor09 { background-color: lighten($green, 10%); }
+        .irc-bgcolor10 { background-color: $cyan; }
+        .irc-bgcolor11 { background-color: lighten($cyan, 10%); }
+        .irc-bgcolor12 { background-color: $blue }
+        .irc-bgcolor13 { background-color: $magenta; }
+        .irc-bgcolor14 { background-color: $base00; }
+        .irc-bgcolor15 { background-color: $base1; }
+      }
+
+      /* different message classes */
+      /* grey/deemph colour set by the light/dark rebase above */
+      .privmsg {
+        .sender {
+          &:before { content: '<'; }
+          &:after { content: '>'; }
+        }
+      }
+
+      .notice, .server {
+        td { color: $yellow; }
+        .sender {
+          &:before { content: '['; color: $yellow; }
+          &:after { content: ']'; color: $yellow; }
+        }
+      }
+      .action {
+        font-style: italic;
+      }
+      .mode {
+        td { color: $blue; }
+        .message:before { content: 'Mode '; }
+      }
+      .join {
+        .message:before { content: 'has joined channel '; }
+      }
+      .netsplit_join {
+        .message:before { content: 'has joined channel '; }
+        .message:after { content: ' (netsplit ended)'; }
+      }
+      .part {
+        .message:before { content: ' has left ('; }
+        .message:after { content: ')'; }
+      }
+      .quit {
+        .message:before { content: 'has quit ('; }
+        .message:after { content: ')'; }
+      }
+      .netsplit_quit {
+        .message:before { content: 'has quit (netsplit: '; }
+        .message:after { content: ')'; }
+      }
+      .kick {
+        td { color: $violet; }
+        .message:before { content: 'has kicked '; }
+      }
+      .kill {
+        td { color: $violet; }
+        .message:before { content: 'has killed '; }
+      }
+      .invite {
+        .message:before { content: 'has invited '; }
+        .message:after { content: ' to the channel'; }
+      }
+      .info, .daychange, .topic {
+        /* color set by the light/dark rebase above */
+      }
+      .error {
+        td { color: $superuser-color; }
+      }
+      .nick {
+        /* color set by the light/dark rebase above */
+      }
     }
+  }
 
-    .timestamp {
-      text-align: left;
-      white-space: nowrap;
-      font-size: $small-font-size;
-      font-style: normal;
-      font-weight: normal;
-      &:before { content: '['; }
-      &:after { content: ']'; }
-    }
-    .icon {
+  /* Userlist styling */
+  .userlist-container {
+    width: 60%;
+    margin-left: auto;
+    margin-right: auto;
+    clear: both;
+  }
+
+  table.userlist {
+    width: 100%;
+
+    th {
+      font-size: $large-font-size;
+      font-weight: bold;
       text-align: center;
     }
-    .sender {
+
+    td {
+      padding: 0.8em 0.6em;
+    }
+
+    tr.superuser .username {
+      color: $superuser-color;
+
+      &:after {
+        display: inline-block;
+        margin-left: 0.6em;
+        content: 'SU';
+        font-size: 60%;
+      }
+    }
+
+    .uid {
       text-align: right;
-      white-space: nowrap;
-
-      &.nick-yellow { color: $yellow; }
-      &.nick-orange { color: $orange; }
-      &.nick-red { color: $red; }
-      &.nick-magenta { color: $magenta; }
-      &.nick-violet { color: $violet; }
-      &.nick-blue { color: $blue; }
-      &.nick-cyan { color: $cyan; }
-      &.nick-green { color: $green; }
-    }
-    .message {
-      text-align: left;
-      white-space: normal;
-
-      .irc-bold { font-weight: bold; }
-      .irc-italic { font-style: italic; }
-      .irc-underline { text-decoration: underline; }
-
-      .irc-color00 { color: $base3; }
-      .irc-color01 { color: $base03; }
-      .irc-color02 { color: $base02; }
-      .irc-color03 { color: $green; }
-      .irc-color04 { color: $red; }
-      .irc-color05 { color: $base01; }
-      .irc-color06 { color: $violet; }
-      .irc-color07 { color: $orange; }
-      .irc-color08 { color: $yellow; }
-      .irc-color09 { color: lighten($green, 10%); }
-      .irc-color10 { color: $cyan; }
-      .irc-color11 { color: lighten($cyan, 10%); }
-      .irc-color12 { color: $blue }
-      .irc-color13 { color: $magenta; }
-      .irc-color14 { color: $base00; }
-      .irc-color15 { color: $base1; }
-
-      .irc-bgcolor00 { background-color: $base3; }
-      .irc-bgcolor01 { background-color: $base03; }
-      .irc-bgcolor02 { background-color: $base02; }
-      .irc-bgcolor03 { background-color: $green; }
-      .irc-bgcolor04 { background-color: $red; }
-      .irc-bgcolor05 { background-color: $base01; }
-      .irc-bgcolor06 { background-color: $violet; }
-      .irc-bgcolor07 { background-color: $orange; }
-      .irc-bgcolor08 { background-color: $yellow; }
-      .irc-bgcolor09 { background-color: lighten($green, 10%); }
-      .irc-bgcolor10 { background-color: $cyan; }
-      .irc-bgcolor11 { background-color: lighten($cyan, 10%); }
-      .irc-bgcolor12 { background-color: $blue }
-      .irc-bgcolor13 { background-color: $magenta; }
-      .irc-bgcolor14 { background-color: $base00; }
-      .irc-bgcolor15 { background-color: $base1; }
     }
 
+    .email {
+      form.linkform, input[type="submit"] {
+        padding: 0;
+        margin: 0;
+        background-color: transparent;
+        border: none;
 
-    /* different message classes */
-    /* grey/deemph colour set by the light/dark rebase above */
-    .privmsg {
-      .sender {
-        &:before { content: '<'; }
-        &:after { content: '>'; }
+        &.confirmed { color: $enable-color; }
+        &.unconfirmed { color: $disable-color; }
       }
     }
 
-    .notice, .server {
-      td { color: $yellow; }
-      .sender {
-        &:before { content: '['; color: $yellow; }
-        &:after { content: ']'; color: $yellow; }
-      }
+    .actions {
+      text-align: center;
     }
-    .action {
-      font-style: italic;
-    }
-    .mode {
-      td { color: $blue; }
-      .message:before { content: 'Mode '; }
-    }
-    .join {
-      .message:before { content: 'has joined channel '; }
-    }
-    .netsplit_join {
-      .message:before { content: 'has joined channel '; }
-      .message:after { content: ' (netsplit ended)'; }
-    }
-    .part {
-      .message:before { content: ' has left ('; }
-      .message:after { content: ')'; }
-    }
-    .quit {
-      .message:before { content: 'has quit ('; }
-      .message:after { content: ')'; }
-    }
-    .netsplit_quit {
-      .message:before { content: 'has quit (netsplit: '; }
-      .message:after { content: ')'; }
-    }
-    .kick {
-      td { color: $violet; }
-      .message:before { content: 'has kicked '; }
-    }
-    .kill {
-      td { color: $violet; }
-      .message:before { content: 'has killed '; }
-    }
-    .invite {
-      .message:before { content: 'has invited '; }
-      .message:after { content: ' to the channel'; }
-    }
-    .info, .daychange, .topic {
-      /* color set by the light/dark rebase above */
-    }
-    .error {
-      td { color: $superuser-color; }
-    }
-    .nick {
-      /* color set by the light/dark rebase above */
-    }
-  }
-}
 
-/* Userlist styling */
-.userlist-container {
-  width: 60%;
-  margin-left: auto;
-  margin-right: auto;
-  clear: both;
-}
-
-table.userlist {
-  width: 100%;
-
-  th {
-    font-size: $large-font-size;
-    font-weight: bold;
-    text-align: center;
-  }
-
-  td {
-    padding: 0.8em 0.6em;
-  }
-
-  tr.superuser .username {
-    color: $superuser-color;
-
-    &:after {
-      display: inline-block;
-      margin-left: 0.6em;
-      content: 'SU';
-      font-size: 60%;
+    .actions .action-edit {
+      @include link_button($blue);
     }
   }
 
-  .uid {
-    text-align: right;
-  }
-
-  .email {
-    form.linkform, input[type="submit"] {
-      padding: 0;
-      margin: 0;
-      background-color: transparent;
-      border: none;
-
-      &.confirmed { color: $enable-color; }
-      &.unconfirmed { color: $disable-color; }
-    }
-  }
-
-  .actions {
-    text-align: center;
-  }
-
-  .actions .action-edit {
-    @include link_button($blue);
-  }
-}
-
-.user-manage-row {
-  margin-top: 0;
-  margin-bottom: 1em;
-
-  * {
-    display: inline-block;
-    vertical-align: middle;
-  }
-
-  form input {
+  .user-manage-row {
     margin-top: 0;
-    margin-bottom: 0;
+    margin-bottom: 1em;
 
-    &[type='email'] { width: 20em; }
-  }
-}
+    * {
+      display: inline-block;
+      vertical-align: middle;
+    }
 
-.user-manage-delete {
-  float: right;
-}
+    form input {
+      margin-top: 0;
+      margin-bottom: 0;
 
-#user-permission-entry-form {
-  margin-bottom: 1.5em;
-
-  > div {
-    margin-bottom: 0.6em;
-  }
-}
-
-#btn-permission-allow {
-  @include button_color($enable-color);
-  transition: $color-transition;
-  &:before { content: "✓"; margin-right: 0.4em; }
-}
-
-#btn-permission-deny {
-  @include button_color($disable-color);
-  transition: $color-transition;
-  &:before { content: "✗"; margin-right: 0.4em; }
-}
-
-#user-permission-display {
-  border-radius: $content-border-radius;
-  margin: 0;
-  padding: 0.8em 1em;
-
-  .permission-access-allow { @extend #btn-permission-allow; }
-  .permission-access-deny { @extend #btn-permission-deny; }
-}
-
-.buffer-list {
-  @extend #user-permission-display;
-  display: flex;
-  flex-flow: row wrap;
-  justify-content: flex-start;
-  align-items: stretch;
-  vertical-align: middle;
-
-  li { list-style: none; }
-
-  .buffer-allow {
-    @extend button;
-    @extend #btn-permission-allow;
-    &:hover { cursor: inherit; } /* non-interactive */
-  }
-  .buffer-deny {
-    @extend button;
-    @extend #btn-permission-deny;
-    &:hover { cursor: inherit; } /* non-interactive */
-  }
-}
-
-/* Dojo/Dijit stuff (also mixed into some blocks above) */
-
-.dijitComboBox {
-  display: flex;
-  flex-flow: row-reverse nowrap;
-  justify-content: space-between;
-  align-items: center;
-  align-content: center;
-
-  > div * {
-    vertical-align: middle;
-  }
-
-  .dijitArrowButtonContainer, .dijitValidationContainer {
-    float: right;
-
-    input {
-      width: 1.5em;
-      transition: $color-transition;
-      &:hover { cursor: pointer; }
+      &[type='email'] { width: 20em; }
     }
   }
-  .dijitValidationContainer {
-    visibility: hidden;
-    opacity: 0;
-    transition: $fadein-transition;
+
+  .user-manage-delete {
+    float: right;
   }
 
-  .dijitInputField {
-    flex-grow: 1;
-    input { width: 100%; }
+  #user-permission-entry-form {
+    margin-bottom: 1.5em;
+
+    > div {
+      margin-bottom: 0.6em;
+    }
   }
-}
 
-.dijitHover, .dijitFocused {
-  .dijitValidationContainer {
-    opacity: 1;
-    visibility: visible;
+  #btn-permission-allow {
+    @include button_color($enable-color);
+    transition: $color-transition;
+    &:before { content: "✓"; margin-right: 0.4em; }
   }
-}
 
-.dijitTooltip {
-  position: absolute;
-  border: 1px solid !important;
-  border-radius: $content-border-radius;
-  padding: 0.3em 1em;
-}
+  #btn-permission-deny {
+    @include button_color($disable-color);
+    transition: $color-transition;
+    &:before { content: "✗"; margin-right: 0.4em; }
+  }
 
-.dijitComboBoxMenuPopup {
-  @extend .dijitTooltip;
+  #user-permission-display {
+    border-radius: $content-border-radius;
+    margin: 0;
+    padding: 0.8em 1em;
 
-  .dijitMenuItem { cursor: pointer; }
-}
+    .permission-access-allow { @extend #btn-permission-allow; }
+    .permission-access-deny { @extend #btn-permission-deny; }
+  }
 
-.label-extra {
-  font-size: $small-font-size;
-  padding: 0 0.5em;
-  &+ .label-extra:before { content: "|"; position: relative; left: -0.5em; }
+  .buffer-list {
+    @extend #user-permission-display;
+    display: flex;
+    flex-flow: row wrap;
+    justify-content: flex-start;
+    align-items: stretch;
+    vertical-align: middle;
+
+    li { list-style: none; }
+
+    .buffer-allow {
+      @extend button;
+      @extend #btn-permission-allow;
+      &:hover { cursor: inherit; }
+      /* non-interactive */
+    }
+    .buffer-deny {
+      @extend button;
+      @extend #btn-permission-deny;
+      &:hover { cursor: inherit; }
+      /* non-interactive */
+    }
+  }
+
+  /* Dojo/Dijit stuff (also mixed into some blocks above) */
+
+  .dijitComboBox {
+    display: flex;
+    flex-flow: row-reverse nowrap;
+    justify-content: space-between;
+    align-items: center;
+    align-content: center;
+
+    > div * {
+      vertical-align: middle;
+    }
+
+    .dijitArrowButtonContainer, .dijitValidationContainer {
+      float: right;
+
+      input {
+        width: 1.5em;
+        transition: $color-transition;
+        &:hover { cursor: pointer; }
+      }
+    }
+    .dijitValidationContainer {
+      visibility: hidden;
+      opacity: 0;
+      transition: $fadein-transition;
+    }
+
+    .dijitInputField {
+      flex-grow: 1;
+      input { width: 100%; }
+    }
+  }
+
+  .dijitHover, .dijitFocused {
+    .dijitValidationContainer {
+      opacity: 1;
+      visibility: visible;
+    }
+  }
+
+  .dijitTooltip {
+    position: absolute;
+    border: 1px solid !important;
+    border-radius: $content-border-radius;
+    padding: 0.3em 1em;
+  }
+
+  .dijitComboBoxMenuPopup {
+    @extend .dijitTooltip;
+
+    .dijitMenuItem { cursor: pointer; }
+  }
+
+  .label-extra {
+    font-size: $small-font-size;
+    padding: 0 0.5em;
+    & + .label-extra:before { content: "|"; position: relative; left: -0.5em; }
+  }
+
 }

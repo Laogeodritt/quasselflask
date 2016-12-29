@@ -105,6 +105,9 @@ def admin_create_user():
             pass_length = 128
         user_fields['password'] = userman.hash_password(random_string(pass_length))
 
+        # User preference defaults
+        user_fields['themeid'] = app.config.get('QF_DEFAULT_THEME', 0)
+
         # Add User record using named arguments 'user_fields'
         user = db_adapter.add_object(User, **user_fields)
         db_adapter.commit()  # needed to generate ID for email token

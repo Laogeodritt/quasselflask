@@ -13,11 +13,15 @@
  # content: main content area, should contain one or more top-level <section> elements.
  # footer: content of the <footer>. Contains QuasselFlask link, version, generation time - super() recommended.
  #}<!DOCTYPE html>
-<html lang="en">
+{% set user_theme = config.get('QF_THEMES', []).get(current_user.themeid, config.get('QF_DEFAULT_THEME', 0)) %}
+<html lang="en" {% if user_theme.root_class %} class="{{ user_theme.root_class }}"{% endif %}>
 <head>
     <meta charset="UTF-8">
     <link rel="stylesheet" href="{{ url_for('static', filename='reset.min.css') }}">
     <link rel="stylesheet" href="{{ url_for('static', filename='style.min.css') }}">
+    {% if user_theme.file %}
+    <link rel="stylesheet" href="{{ url_for('static', filename=user_theme.file) }}">
+    {% endif %}
     <script src="https://ajax.googleapis.com/ajax/libs/jquery/3.1.0/jquery.min.js"></script>
     <script src="{{ url_for('static', filename='quasselflask.js') }}"></script>
     {% block head %}
