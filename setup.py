@@ -9,7 +9,7 @@ setup(
     author='Marc-Alexandre Chan',
     author_email='marcalexc@arenthil.net',
     setup_requires=['Flask>=0.10',
-                    'Flask-User>=0.6.8',
+                    'Flask-User>=0.6.8,<0.7',
                     'Flask-SQLAlchemy>=1.0',
                     'Flask-Mail>=0.9.0',  # this was just the latest at the time
                     'Flask-Script>=2.0.0',  # version? "latest" on readthedocs.io say 0.4.0... no version notations...
