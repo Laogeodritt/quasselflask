@@ -55,25 +55,26 @@ $fadein-transition: opacity $transition-time;
 
   main, section, article, footer, aside {
     background-color: $rebase03;
-    border-color: $rebase0;
+    border: 1px solid $rebase01;
   }
+
+  footer { color: $rebase01; }
 
   .dijitComboBoxMenuPopup, .dijitTooltip {
     background-color: $rebase03;
-    border-color: $rebase0 !important;
+    border: 1px solid $rebase01 !important;
   }
 
   color: $rebase0;
 
-  input { color: $rebase0; }
+  input, button, .dijitTextBox {
+    color: $rebase0;
+    border: 1px solid $rebase01;
+  }
 
-  header h1, h1, h2, h3, h4, h5, h6 { border-color: $rebase0; }
+  header h1, h1, h2, h3, h4, h5, h6 { border-color: $rebase01; }
 
   /* a, a:active, a:visited { color: $rebase1; } */
-
-  section#error, section#warning, section#notice {
-    color: $rebase1;
-  }
 
   form {
     input { background-color: $rebase03; }
@@ -99,8 +100,6 @@ $fadein-transition: opacity $transition-time;
 
   code { background-color: $rebase02; }
 
-  footer { color: $rebase01; border-color: $rebase0; }
-
   .result {
     table.irc-log {
       .timestamp { color: $rebase01 !important; }
@@ -115,7 +114,7 @@ $fadein-transition: opacity $transition-time;
   }
 
   table.userlist tr {
-    border-bottom: 1px solid $rebase0;
+    border-bottom: 1px solid $rebase01;
 
     /*&.superuser {
       @include rebase_bgcolor($red, $rebase03);
@@ -123,7 +122,7 @@ $fadein-transition: opacity $transition-time;
   }
 
   #user-permission-display {
-    border: 1px solid $rebase0;
+    border: 1px solid $rebase01;
     .label-extra { color: $rebase02; }
   }
 
@@ -204,7 +203,7 @@ body {
   font-family: 'PT Sans', sans-serif;
 }
 
-html, .light, .dark {
+.light, .dark {
 
   .dijitReset {
     padding: 0;
@@ -223,7 +222,6 @@ html, .light, .dark {
   }
 
   main, section {
-    border: 1px solid;
     border-radius: $content-border-radius;
     margin-top: 0.8em;
     margin-bottom: 1.5em;
@@ -231,14 +229,17 @@ html, .light, .dark {
   }
 
   section#error, .dijitComboBoxError, .dijitComboBoxError div, .dijitComboBoxError input {
+    color: $base01;
     background-color: lighten($red, 25%);
   }
 
   section#warning {
+    color: $base01;
     background-color: lighten($yellow, 25%);
   }
 
   section#notice {
+    color: $base01;
     background-color: lighten($cyan, 25%);
   }
 
@@ -348,7 +349,6 @@ html, .light, .dark {
   }
 
   input, button, .dijitTextBox {
-    border: 1px solid;
     border-radius: $content-border-radius;
     margin: 0 0.4em 0.6em;
     padding: 0.3em 0.6em;
