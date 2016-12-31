@@ -44,7 +44,6 @@ def admin_create_user():
     Modified from Flask-User 0.6.8 - BSD Licence.
     """
 
-    from flask_user import emails
     from quasselflask.forms import CreateUserForm
 
     logger.info(log_access())
@@ -90,7 +89,7 @@ def admin_create_user():
         db_adapter.commit()  # needed to generate ID for email token
         try:
             # email
-            send_forgot_password_email(user)
+            send_new_user_set_password_email(user)
 
             # Prepare one-time system message
             if userman.enable_confirm_email:
