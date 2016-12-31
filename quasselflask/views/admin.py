@@ -35,6 +35,18 @@ def _get_qfuser_log(user):
     return '[QFUSER={user.qfuserid:d} {user.username}]'.format(user=user)
 
 
+def make_reset_password():
+    """
+    Make an unusable password (too long) to "disable" an account until password reset
+    # (avoid using blank in case 'plaintext' password storage is configured... not that anyone should be!)
+    :return: an impossible password
+    """
+    pass_length = app.config['QF_PASSWORD_MAX'] + 1
+    if pass_length <= 0:
+        pass_length = 128
+    return random_string(pass_length)
+
+
 @app.route('/admin/create-user', methods=['GET', 'POST'])
 @roles_required('superuser')
 def admin_create_user():
@@ -74,12 +86,7 @@ def admin_create_user():
             if field_name in user_class_fields:
                 user_fields[field_name] = field_value
 
-        # set an unusable password (too long) to "disable" the account until password reset
-        # (avoid using blank in case 'plaintext' password storage is configured... not that anyone should be!)
-        pass_length = app.config['QF_PASSWORD_MAX'] + 1
-        if pass_length <= 0:
-            pass_length = 128
-        user_fields['password'] = userman.hash_password(random_string(pass_length))
+        user_fields['password'] = userman.hash_password(make_reset_password())
 
         # User preference defaults
         user_fields['themeid'] = app.config.get('QF_DEFAULT_THEME', 0)
@@ -109,7 +116,7 @@ def admin_create_user():
             else:
                 flash('Error occurred while creating user. Please try again later, or contact the server administrator '
                       'with the date/time of this error and your IP address in order to trace error information in the'
-                      'logs.')
+                      'logs.', 'error')
                 return redirect(url_for('admin_manage_user', userid=user.qfuserid))
 
         logger.info(log_action('create user', ('id', user.qfuserid), ('name', user.username),
@@ -128,7 +135,7 @@ def admin_users():
     return render_template('admin/user_list.html', users=users)
 
 
-@app.route('/admin/users/<userid>', methods=['GET', 'POST'])
+@app.route('/admin/users/<int:userid>', methods=['GET', 'POST'])
 @roles_required('superuser')
 def admin_manage_user(userid):
     """
@@ -213,7 +220,7 @@ def admin_manage_user(userid):
                            user_permissions=user_permissions)
 
 
-@app.route('/admin/users/<userid>/update', methods=['POST'])
+@app.route('/admin/users/<int:userid>/update', methods=['POST'])
 @roles_required('superuser')
 def admin_update_user(userid):
     """
@@ -351,7 +358,7 @@ def admin_update_user_email(user):
     return safe_redirect(get_next_url('POST'))
 
 
-@app.route('/admin/users/<userid>/permissions', methods=['POST'])
+@app.route('/admin/users/<int:userid>/permissions', methods=['POST'])
 @roles_required('superuser')
 def admin_permissions(userid):
     """
@@ -426,7 +433,7 @@ def admin_permissions(userid):
     return safe_redirect(get_next_url('POST'))
 
 
-@app.route('/admin/users/<userid>/check_permissions', methods=['GET'])
+@app.route('/admin/users/<int:userid>/check_permissions', methods=['GET'])
 @roles_required('superuser')
 def admin_check_permissions(userid):
     """
@@ -439,16 +446,13 @@ def admin_check_permissions(userid):
     return render_template("check_permissions.html", user=user, buffers=permitted_buffers)
 
 
-@app.route('/admin/users/<userid>/delete', methods=['POST'])
+@app.route('/admin/users/<int:userid>/delete', methods=['GET', 'POST'])
 @roles_required('superuser')
 def admin_delete_user(userid):
     """
-    Delete a user. Any fields not included will remain unchanged.
+    Delete a user. The current user cannot be deleted.
 
     This action return a confirmation page. It is necessary to submit the confirmation form to complete the action.
-
-    If acting on the current user, only the email address may be updated.  This prevents the current user from locking
-    themselves out of the application or removing a sole superuser.
 
     POST command parameters:
 
@@ -495,7 +499,7 @@ def admin_delete_user(userid):
         valid_request = data.get('target_user', -1) == user.qfuserid and \
                         data.get('current_user', -1) == current_user.qfuserid
         if not valid_request:
-            logger.error(log_action_error('update user', 'invalid confirmation key', ('user', _get_qfuser_log(user))))
+            logger.error(log_action_error('delete user', 'invalid confirmation key', ('user', _get_qfuser_log(user))))
             logger.debug('confirmation data=' + repr_user_input(data))
             logger.debug('request.form=' + repr_user_input(request.form))
             raise BadRequest('Invalid confirmation key.')
@@ -505,3 +509,84 @@ def admin_delete_user(userid):
         db.session.commit()
         logger.info(log_action('delete user', ('user', _get_qfuser_log(user))))
         return redirect(url_for('admin_users'))
+
+
+@app.route('/admin/users/<int:userid>/reset-password', methods=['GET', 'POST'])
+@roles_required('superuser')
+def admin_user_reset_password(userid):
+    """
+    Reset the user's password and send them an email inviting them to change their password.
+
+    This action return a confirmation page. It is necessary to submit the confirmation form to complete the action.
+
+    POST command parameters:
+
+    * `confirm_token`: Confirmation token. Optional (returns the confirmation page if not present).
+    * `next`: URL, the URL to return to after the update.
+
+    :param userid: The user ID to modify.
+    :return:
+    """
+
+    from quasselflask import forms
+
+    logger.info(log_access())
+
+    if userid == current_user.get_id():
+        flash("Can't force reset your own password: go change it from the user profile like a normal person, "
+              "you dummy!", 'error')
+        return safe_redirect(get_next_url('POST'))
+
+    user = query_qfuser(db.session, userid)
+
+    # check if confirmed
+    is_confirmed = False
+    data = {}
+    if 'confirm_token' in request.form:
+        try:
+            data = forms.check_confirm_key(request.form.get('confirm_token'), 'admin_user_reset_password')
+            is_confirmed = True
+        except BadSignature:
+            logger.error(log_action_error('update user', 'invalid confirmation key', ('user', _get_qfuser_log(user))))
+            logger.debug('request.form=' + repr_user_input(request.form))
+            is_confirmed = False
+
+    if not is_confirmed:
+        confirm_key = forms.generate_confirm_key({'current_user': current_user.qfuserid, 'target_user': user.qfuserid},
+                                                 'admin_user_reset_password')
+        return render_template('admin/update_user_confirm.html',
+                               target=url_for('admin_user_reset_password', userid=userid),
+                               user=user, action='reset password', next_url=get_next_url('POST'),
+                               confirm_key=confirm_key)
+    else:
+        valid_request = data.get('target_user', -1) == user.qfuserid and \
+                        data.get('current_user', -1) == current_user.qfuserid
+        if not valid_request:
+            logger.error(log_action_error('reset user password', 'invalid confirmation key',
+                                          ('user', _get_qfuser_log(user))))
+            logger.debug('confirmation data=' + repr_user_input(data))
+            logger.debug('request.form=' + repr_user_input(request.form))
+            raise BadRequest('Invalid confirmation key.')
+
+        try:
+            user.password = userman.hash_password(make_reset_password())
+            send_new_user_set_password_email(user)
+            db.session.commit()
+            flash('User {user} login disabled; this user cannot login until they reset their password. A password '
+                  'reset email has been sent to {email}.'
+                  .format(user=user.username, email=user.email), 'success')
+        except Exception as e:
+            logger.error(log_action_error('error while creating user', repr(e.args),
+                                          ('id', user.qfuserid), ('name', user.username),
+                                          ('email', user.email), ('superuser', repr(user.superuser))), exc_info=True)
+            db.session.rollback()
+            if app.debug:
+                raise  # let us debug this
+            else:
+                flash('Error occurred resetting password. Please try again later, or contact the server administrator '
+                      'with the date/time of this error and your IP address in order to trace error information in the'
+                      'logs.', 'error')
+                return redirect(url_for('admin_manage_user', userid=user.qfuserid))
+
+        logger.info(log_action('reset user password', ('user', _get_qfuser_log(user))))
+        return safe_redirect(get_next_url('POST'))

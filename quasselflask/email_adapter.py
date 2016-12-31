@@ -29,7 +29,7 @@ def send_new_user_set_password_email(user: QfUser):
         reset_password_link = url_for('user.reset_password', token=token, _external=True)
 
         # send password reset email (when reset, marks email as confirmed: see flask_user/views.py:578 v0.6.8)
-        emails.send_forgot_password_email(user, None, reset_password_link)
+        emails.send_registered_email(user, None, reset_password_link)
         db_adapter.update_object(user, reset_password_token=token)
         db_adapter.commit()
 

@@ -55,6 +55,19 @@
             {%- endif -%}
         </div>
 
+        <div class="user-manage-row user-manage-password">
+            <label>Password</label>
+            {% if not is_current_user %}
+                <form method="post" class="linkform" action="{{ url_for('admin_user_reset_password', userid=user.get_id()) }}">
+                    <input type="hidden" name="csrf_token" value="{{ csrf_token() }}">
+                    <input type="hidden" name="next" value="{{ request.url }}">
+                    <input type="submit" value="Reset" class="reset-password">
+                </form>
+            {% else %}
+                <a id="btn-user-change-password" class="link-button" href="{{ url_for('user.change_password') }}">Reset</a>
+            {% endif %}
+        </div>
+
         <h3>Permissions</h3>
     {% if not call_or_get(user.is_superuser) %}
         <form id="user-permission-entry-form">

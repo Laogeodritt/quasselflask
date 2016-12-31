@@ -14,7 +14,7 @@ from urllib.parse import urlparse, urljoin
 # modules like quasselflask.base_config. Otherwise, circular dependencies or breaking the startup sequence may result.
 
 from flask import request
-from flask.ext.login import current_user
+from flask_user import current_user
 from werkzeug.utils import redirect as unsafe_redirect
 
 import quasselflask
