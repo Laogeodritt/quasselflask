@@ -1,0 +1,46 @@
+{% extends 'skel_main.html' %}
+{% block head %}{{ super() }}
+{% endblock %}
+
+{% block title %}User Profile - {{ current_user.username }}{% endblock %}
+
+{% block content %}
+    <main data-page="manage-user" data-user-id="{{ current_user.get_id() }}">
+        {% from "admin/_qf_macros.html" import user_disable_link, user_action_link %}
+        <h2>User profile - {{ current_user.username }}</h2>
+
+        <div class="user-manage-row user-manage-status"><label>Status</label>
+
+            {%- if call_or_get(current_user.is_superuser) -%}
+                <form class="linkform">
+                    <input class="user-superuser" value="@ Superuser" disabled type="button">
+                </form>
+            {%- else -%}
+                <form class="linkform">
+                    <input class="user-normaluser" value="∗ User" disabled type="button">
+                </form>
+            {%- endif -%}
+        </div>
+
+        <div class="user-manage-row user-manage-email">
+            <label>Email</label>
+            <form class="linkform" method="post" action="{{ url_for('user_update', userid=current_user.get_id()) }}">
+                <input type="hidden" name="csrf_token" value="{{ csrf_token() }}">
+                <input type="hidden" name="next" value="{{ request.url }}">
+                <input type="hidden" name="confirm_email" value="0">
+                <input type="email" name="email" value="{{ current_user.email }}" data-animate-event="input" data-animate-once data-animate-target="email-submit">
+                <input type="submit" value="Save" class="animate-slide animate-start-hidden" data-animate-id="email-submit" data-animate-type="width" data-animate-highlight-class="state-flashing-on"> (Change requires re-confirmation)
+            </form>
+        </div>
+
+        <div class="user-manage-row user-manage-password">
+            <label>Password</label>
+            <a id="btn-user-change-password" class="link-button" href="{{ url_for('user.change_password') }}">Change</a>
+        </div>
+
+        <div class="user-manage-row user-manage-permissions-view">
+            <label>Permissions</label>
+            <a id="btn-user-permissions-view" class="link-button" href="{{ url_for('check_permissions') }}">View</a>
+        </div>
+    </main>
+{% endblock %}

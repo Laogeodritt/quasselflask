@@ -8,12 +8,12 @@
     </script>
 {% endblock %}
 
-{% block title %}Manage User - {{ user.username }}{% endblock %}
+{% block title %}Manage user - {{ user.username }}{% endblock %}
 
 {% block content %}
     <main data-page="manage-user" data-user-id="{{ user.get_id() }}">
         {% from "admin/_qf_macros.html" import user_disable_link, user_action_link %}
-        <h2>Manage User - {{ user.username }}</h2>
+        <h2>Manage user - {{ user.username }}</h2>
         {% set is_current_user = user is sameas current_user %}
 
         <div class="user-manage-row user-manage-delete">

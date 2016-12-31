@@ -14,6 +14,7 @@ from urllib.parse import urlparse, urljoin
 # modules like quasselflask.base_config. Otherwise, circular dependencies or breaking the startup sequence may result.
 
 from flask import request
+from flask.ext.login import current_user
 from werkzeug.utils import redirect as unsafe_redirect
 
 import quasselflask
@@ -98,3 +99,28 @@ def get_next_url(method='GET', default='home'):
         return request.args.get('next', request.referrer or url_for(default))
     else:
         return request.form.get('next', request.referrer or url_for(default))
+
+
+def log_access():
+    return 'ACCESS [QFUSER={user.qfuserid:d} {user.username}] {endpoint}' \
+                .format(user=current_user, endpoint=request.endpoint)
+
+
+def log_action(action: str, *args: tuple):
+    if args:
+        str_params = ', '.join(('{}={}'.format(key, value) for key, value in args))
+    else:
+        str_params = ''
+    logmsg = 'ACTION [QFUSER={user.qfuserid:d} {user.username}] {action} {params}'\
+        .format(user=current_user, action=action, params=str_params)
+    return logmsg
+
+
+def log_action_error(action: str, msg: str, *args: tuple):
+    if args:
+        str_params = ', '.join(('{}={}'.format(key, value) for key, value in args))
+    else:
+        str_params = ''
+    logmsg = 'ERROR [QFUSER={user.qfuserid:d} {user.username}] {action} {params}: {errmsg}' \
+        .format(user=current_user, action=action, params=str_params, errmsg=msg)
+    return logmsg

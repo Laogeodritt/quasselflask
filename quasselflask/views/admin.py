@@ -15,10 +15,12 @@ from itsdangerous import BadSignature
 from werkzeug.exceptions import BadRequest
 
 from quasselflask import app, userman, db, forms
+from quasselflask.email_adapter import send_new_user_set_password_email
 from quasselflask.models.query import *
 from quasselflask.models.types import *
 from quasselflask.parsing.convert_json import convert_permissions_lists, convert_user_permissions
-from quasselflask.util import random_string, safe_redirect, get_next_url, repr_user_input
+from quasselflask.util import random_string, safe_redirect, get_next_url, repr_user_input, log_access, log_action, \
+    log_action_error
 
 
 @app.before_first_request
@@ -27,31 +29,6 @@ def setup_signer():
 
 
 logger = app.logger  # type: logging.Logger
-
-
-def _log_access():
-    return 'ACCESS [QFUSER={user.qfuserid:d} {user.username}] {endpoint}' \
-                .format(user=current_user, endpoint=request.endpoint)
-
-
-def _log_action(action: str, *args: tuple):
-    if args:
-        str_params = ', '.join(('{}={}'.format(key, value) for key, value in args))
-    else:
-        str_params = ''
-    logmsg = 'ACTION [QFUSER={user.qfuserid:d} {user.username}] {action} {params}'\
-        .format(user=current_user, action=action, params=str_params)
-    return logmsg
-
-
-def _log_action_error(action: str, msg: str, *args: tuple):
-    if args:
-        str_params = ', '.join(('{}={}'.format(key, value) for key, value in args))
-    else:
-        str_params = ''
-    logmsg = 'ERROR [QFUSER={user.qfuserid:d} {user.username}] {action} {params}: {errmsg}' \
-        .format(user=current_user, action=action, params=str_params, errmsg=msg)
-    return logmsg
 
 
 def _get_qfuser_log(user):
@@ -70,7 +47,7 @@ def admin_create_user():
     from flask_user import emails
     from quasselflask.forms import CreateUserForm
 
-    logger.info(_log_access())
+    logger.info(log_access())
 
     db_adapter = userman.db_adapter
 
@@ -112,19 +89,8 @@ def admin_create_user():
         user = db_adapter.add_object(User, **user_fields)
         db_adapter.commit()  # needed to generate ID for email token
         try:
-            # Send 'registered' email and delete new User object if send fails
-            if userman.enable_email and (userman.send_registered_email or userman.enable_confirm_email):
-                # Generate confirm email link
-                object_id = int(user.get_id())
-                token = userman.generate_token(object_id)
-                # confirm_email_link = url_for('user.confirm_email', token=token, _external=True)
-                reset_password_link = url_for('user.reset_password', token=token, _external=True)
-
-                # send password reset email (when reset, marks email as confirmed: see flask_user/views.py:578 v0.6.8)
-                # emails.send_registered_email(user, None, confirm_email_link)
-                emails.send_forgot_password_email(user, None, reset_password_link)
-                db_adapter.update_object(user, reset_password_token=token)
-                db_adapter.commit()
+            # email
+            send_forgot_password_email(user)
 
             # Prepare one-time system message
             if userman.enable_confirm_email:
@@ -134,15 +100,21 @@ def admin_create_user():
                 flash('User {user} created.'.format(user=user.username), 'success')
 
         except Exception as e:
-            logger.error(_log_action_error('error while creating user', repr(e.args),
-                              ('id', user.qfuserid), ('name', user.username),
-                              ('email', user.email), ('superuser', repr(user.superuser))))
+            logger.error(log_action_error('error while creating user', repr(e.args),
+                                          ('id', user.qfuserid), ('name', user.username),
+                                          ('email', user.email), ('superuser', repr(user.superuser))), exc_info=True)
             db_adapter.delete_object(user)
             db_adapter.commit()
-            raise
+            if app.debug:
+                raise  # let us debug this
+            else:
+                flash('Error occurred while creating user. Please try again later, or contact the server administrator '
+                      'with the date/time of this error and your IP address in order to trace error information in the'
+                      'logs.')
+                return redirect(url_for('admin_manage_user', userid=user.qfuserid))
 
-        logger.info(_log_action('create user', ('id', user.qfuserid), ('name', user.username),
-                    ('email', user.email), ('superuser', repr(user.superuser))))
+        logger.info(log_action('create user', ('id', user.qfuserid), ('name', user.username),
+                               ('email', user.email), ('superuser', repr(user.superuser))))
         return redirect(url_for('admin_manage_user', userid=user.qfuserid))
 
     # Process GET or invalid POST
@@ -152,7 +124,7 @@ def admin_create_user():
 @app.route('/admin/users', methods=['GET'])
 @roles_required('superuser')
 def admin_users():
-    logger.info(_log_access())
+    logger.info(log_access())
     users = query_all_qf_users(db.session)
     return render_template('admin/user_list.html', users=users)
 
@@ -224,7 +196,7 @@ def admin_manage_user(userid):
     :return:
 """
 
-    logger.info(_log_access())
+    logger.info(log_access())
 
     # get current user to manage
     user = query_qfuser(db.session, userid)
@@ -270,7 +242,7 @@ def admin_update_user(userid):
     :return:
     """
 
-    logger.info(_log_access())
+    logger.info(log_access())
 
     commands = frozenset(('status', 'superuser', 'email', 'confirm_email', 'confirm_token'))
     request_commands = set(request.form.keys()) & commands
@@ -301,8 +273,8 @@ def admin_update_user(userid):
         return admin_update_user_email(user)
 
     flash("Something happened. You shouldn't have gotten this far.", "error")
-    logger.error(_log_action_error('update user', 'should have returned earlier in code - bug?',
-                                   ('user', _get_qfuser_log(user))))
+    logger.error(log_action_error('update user', 'should have returned earlier in code - bug?',
+                                  ('user', _get_qfuser_log(user))))
     logger.debug('request.form=' + repr_user_input(request.form))
     return safe_redirect(get_next_url('POST'))
 
@@ -313,8 +285,8 @@ def admin_update_user_status(user: QfUser):
     user.active = status_val
     db.session.commit()
     flash(('Enabled' if status_val else 'Disabled') + ' user {}'.format(user.username), 'notice')
-    logger.info(_log_action('update user', ('user', _get_qfuser_log(user)),
-                            ('set', 'status'), ('to', repr(user.active))))
+    logger.info(log_action('update user', ('user', _get_qfuser_log(user)),
+                           ('set', 'status'), ('to', repr(user.active))))
     return safe_redirect(get_next_url('POST'))
 
 
@@ -340,7 +312,7 @@ def admin_update_user_superuser(user):
     try:
         data = forms.check_confirm_key(request.form.get('confirm_token'), 'admin_update_user')
     except BadSignature:
-        logger.error(_log_action_error('update user', 'invalid confirmation key', ('user', _get_qfuser_log(user))))
+        logger.error(log_action_error('update user', 'invalid confirmation key', ('user', _get_qfuser_log(user))))
         logger.debug('request.form=' + repr_user_input(request.form))
         raise BadRequest('Invalid confirmation key.')
 
@@ -348,7 +320,7 @@ def admin_update_user_superuser(user):
         current_user.qfuserid == data['current_user'] and \
         'superuser' == data['update']
     if not valid_request:
-        logger.error(_log_action_error('update user', 'invalid confirmation data', ('user', _get_qfuser_log(user))))
+        logger.error(log_action_error('update user', 'invalid confirmation data', ('user', _get_qfuser_log(user))))
         logger.debug('confirmation data=' + repr_user_input(data))
         logger.debug('request.form=' + repr_user_input(request.form))
         raise BadRequest('Invalid confirmation key.')
@@ -356,8 +328,8 @@ def admin_update_user_superuser(user):
     user.superuser = bool(data.get('value', '0') == '1')
     flash('Set user {} as {}'.format(user.username, 'superuser' if user.superuser else 'normal user'), 'notice')
     db.session.commit()
-    logger.info(_log_action('update user', ('user', _get_qfuser_log(user)),
-                            ('set', 'superuser'), ('to', repr(user.superuser))))
+    logger.info(log_action('update user', ('user', _get_qfuser_log(user)),
+                           ('set', 'superuser'), ('to', repr(user.superuser))))
     return safe_redirect(get_next_url('POST'))
 
 
@@ -374,9 +346,9 @@ def admin_update_user_email(user):
                   email=user.email,
                   confirm='must confirm' if user.confirmed_at is None else 'confirmed'),
           'notice')
-    logger.info(_log_action('update user', ('user', _get_qfuser_log(user)),
-                            ('set', 'email'), ('email', user.email),
-                            ('confirmed', 'True' if user.confirmed_at else 'False')))
+    logger.info(log_action('update user', ('user', _get_qfuser_log(user)),
+                           ('set', 'email'), ('email', user.email),
+                           ('confirmed', 'True' if user.confirmed_at else 'False')))
     return safe_redirect(get_next_url('POST'))
 
 
@@ -410,18 +382,18 @@ def admin_permissions(userid):
     :return:
     """
 
-    logger.info(_log_access())
+    logger.info(log_access())
     user = query_qfuser(db.session, userid)
     try:
         perm_data = json.loads(request.form.get('permissions'))
     except json.JSONDecodeError:
-        logger.error(_log_action_error('update permissions', 'invalid JSON', ('user', _get_qfuser_log(user))))
+        logger.error(log_action_error('update permissions', 'invalid JSON', ('user', _get_qfuser_log(user))))
         logger.debug('request.form=' + repr_user_input(request.form))
         raise BadRequest('Invalid permissions data.')
 
     try:
-        logger.debug(_log_action('old permissions', ('user', _get_qfuser_log(user)),
-                                 ('default', user.access), ('permissions', user.permissions)))
+        logger.debug(log_action('old permissions', ('user', _get_qfuser_log(user)),
+                                ('default', user.access), ('permissions', user.permissions)))
         user.access = PermissionAccess.from_name(perm_data['default'])
 
         # If any permissions for this user, delete them first
@@ -442,11 +414,11 @@ def admin_permissions(userid):
 
         db.session.commit()
 
-        logger.info(_log_action('update permissions', ('user', _get_qfuser_log(user)),
-                                ('default', user.access), ('permissions', user.permissions)))
+        logger.info(log_action('update permissions', ('user', _get_qfuser_log(user)),
+                               ('default', user.access), ('permissions', user.permissions)))
 
     except (KeyError, TypeError, ValueError, sqlalchemy.exc.NoReferencedColumnError):
-        logger.error(_log_action_error('update permissions', 'invalid perm data', ('user', _get_qfuser_log(user))))
+        logger.error(log_action_error('update permissions', 'invalid perm data', ('user', _get_qfuser_log(user))))
         logger.debug('perm_data=' + repr_user_input(perm_data), exc_info=True, stack_info=True)
         db.session.rollback()
         raise BadRequest('Invalid permissions data.')
@@ -491,7 +463,7 @@ def admin_delete_user(userid):
 
     from quasselflask import forms
 
-    logger.info(_log_access())
+    logger.info(log_access())
 
     # validate
     if userid == current_user.qfuserid:
@@ -509,7 +481,7 @@ def admin_delete_user(userid):
             data = forms.check_confirm_key(request.form.get('confirm_token'), 'admin_user_delete')
             is_confirmed = True
         except BadSignature:
-            logger.error(_log_action_error('update user', 'invalid confirmation key', ('user', _get_qfuser_log(user))))
+            logger.error(log_action_error('update user', 'invalid confirmation key', ('user', _get_qfuser_log(user))))
             logger.debug('request.form=' + repr_user_input(request.form))
             is_confirmed = False
 
@@ -524,7 +496,7 @@ def admin_delete_user(userid):
         valid_request = data.get('target_user', -1) == user.qfuserid and \
                         data.get('current_user', -1) == current_user.qfuserid
         if not valid_request:
-            logger.error(_log_action_error('update user', 'invalid confirmation key', ('user', _get_qfuser_log(user))))
+            logger.error(log_action_error('update user', 'invalid confirmation key', ('user', _get_qfuser_log(user))))
             logger.debug('confirmation data=' + repr_user_input(data))
             logger.debug('request.form=' + repr_user_input(request.form))
             raise BadRequest('Invalid confirmation key.')
@@ -532,5 +504,5 @@ def admin_delete_user(userid):
         db.session.delete(user)
         flash('Deleted user {}'.format(user.username))
         db.session.commit()
-        logger.info(_log_action('delete user', ('user', _get_qfuser_log(user))))
+        logger.info(log_action('delete user', ('user', _get_qfuser_log(user))))
         return redirect(url_for('admin_users'))

@@ -67,7 +67,7 @@ $fadein-transition: opacity $transition-time;
 
   color: $rebase0;
 
-  input, button, .dijitTextBox {
+  input, button, div.dijitTextBox {
     color: $rebase0;
     border: 1px solid $rebase01;
   }
@@ -277,17 +277,16 @@ body {
     margin: 0.5em 0 1em 0;
   }
 
-  .links-bar a {
+  .links-bar a, a.link-button {
     @include link_button($blue);
-  }
 
-  .links-bar a, .links-bar a:visited, .links-bar a:hover, .links-bar a:active {
-    color: $base3;
-    text-decoration: none;
-  }
-
-  .links-bar a:hover, .links-bar a:active {
-    background-color: lighten($blue, $bg-hover-amount);
+    &, &:visited, &:hover, &:active {
+      color: $base3;
+      text-decoration: none;
+    }
+    &:hover, &:active {
+      background-color: lighten($blue, $bg-hover-amount);
+    }
   }
 
   .animate-start-hidden {
@@ -386,7 +385,7 @@ body {
     margin: 0;
     padding: 0;
 
-    input[type='submit'] {
+    input {
       display: inline-block;
       margin: 0 0.3em;
 

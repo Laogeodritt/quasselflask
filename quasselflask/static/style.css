@@ -25,7 +25,7 @@ html .dijitComboBoxMenuPopup, html .dijitTooltip, html .light .dijitComboBoxMenu
   background-color: #fdf6e3;
   border: 1px solid #93a1a1 !important;
 }
-html input, html button, html .light .buffer-list .buffer-allow, .light .buffer-list html .buffer-allow, html .dark .buffer-list .buffer-allow, .dark .buffer-list html .buffer-allow, html .light .buffer-list .buffer-deny, .light .buffer-list html .buffer-deny, html .dark .buffer-list .buffer-deny, .dark .buffer-list html .buffer-deny, html .dijitTextBox, .light input, .light button, .light .buffer-list .buffer-allow, .dark .buffer-list .light .buffer-allow, .light .buffer-list .buffer-deny, .dark .buffer-list .light .buffer-deny, .light .dijitTextBox {
+html input, html button, html .light .buffer-list .buffer-allow, .light .buffer-list html .buffer-allow, html .dark .buffer-list .buffer-allow, .dark .buffer-list html .buffer-allow, html .light .buffer-list .buffer-deny, .light .buffer-list html .buffer-deny, html .dark .buffer-list .buffer-deny, .dark .buffer-list html .buffer-deny, html div.dijitTextBox, .light input, .light button, .light .buffer-list .buffer-allow, .dark .buffer-list .light .buffer-allow, .light .buffer-list .buffer-deny, .dark .buffer-list .light .buffer-deny, .light div.dijitTextBox {
   color: #657b83;
   border: 1px solid #93a1a1;
 }
@@ -96,7 +96,7 @@ html .label-extra, .light .label-extra {
   background-color: #073642;
   border: 1px solid #586e75 !important;
 }
-.dark input, .dark button, .light .buffer-list .dark .buffer-allow, .dark .buffer-list .buffer-allow, .light .buffer-list .dark .buffer-deny, .dark .buffer-list .buffer-deny, .dark .dijitTextBox {
+.dark input, .dark button, .light .buffer-list .dark .buffer-allow, .dark .buffer-list .buffer-allow, .light .buffer-list .dark .buffer-deny, .dark .buffer-list .buffer-deny, .dark div.dijitTextBox {
   color: #839496;
   border: 1px solid #586e75;
 }
@@ -220,7 +220,7 @@ body {
   padding: 0;
   margin: 0.5em 0 1em 0;
 }
-.light .links-bar a, .dark .links-bar a {
+.light .links-bar a, .light a.link-button, .dark .links-bar a, .dark a.link-button {
   display: inline-block;
   margin: 0 0.3em;
   padding: 0.3em 0.6em;
@@ -232,22 +232,22 @@ body {
   color: #fdf6e3;
   text-decoration: none;
 }
-.light .links-bar a:visited, .light .links-bar a:hover, .light .links-bar a:active, .dark .links-bar a:visited, .dark .links-bar a:hover, .dark .links-bar a:active {
+.light .links-bar a:visited, .light .links-bar a:hover, .light .links-bar a:active, .light a.link-button:visited, .light a.link-button:hover, .light a.link-button:active, .dark .links-bar a:visited, .dark .links-bar a:hover, .dark .links-bar a:active, .dark a.link-button:visited, .dark a.link-button:hover, .dark a.link-button:active {
   color: #fdf6e3;
   text-decoration: none;
 }
-.light .links-bar a:hover, .light .links-bar a:active, .light .links-bar a.state-flashing-on, .dark .links-bar a:hover, .dark .links-bar a:active, .dark .links-bar a.state-flashing-on {
+.light .links-bar a:hover, .light .links-bar a:active, .light .links-bar a.state-flashing-on, .light a.link-button:hover, .light a.link-button:active, .light a.link-button.state-flashing-on, .dark .links-bar a:hover, .dark .links-bar a:active, .dark .links-bar a.state-flashing-on, .dark a.link-button:hover, .dark a.link-button:active, .dark a.link-button.state-flashing-on {
   background-color: #4ca2df;
 }
-.light .links-bar a[disabled], .light .links-bar a[disabled]:hover, .light .links-bar a[disabled]:active, .dark .links-bar a[disabled], .dark .links-bar a[disabled]:hover, .dark .links-bar a[disabled]:active {
+.light .links-bar a[disabled], .light .links-bar a[disabled]:hover, .light .links-bar a[disabled]:active, .light a.link-button[disabled], .light a.link-button[disabled]:hover, .light a.link-button[disabled]:active, .dark .links-bar a[disabled], .dark .links-bar a[disabled]:hover, .dark .links-bar a[disabled]:active, .dark a.link-button[disabled], .dark a.link-button[disabled]:hover, .dark a.link-button[disabled]:active {
   opacity: 0.5;
   background-color: #268bd2;
 }
-.light .links-bar a, .light .links-bar a:visited, .light .links-bar a:hover, .light .links-bar a:active, .dark .links-bar a, .dark .links-bar a:visited, .dark .links-bar a:hover, .dark .links-bar a:active {
+.light .links-bar a, .light .links-bar a:visited, .light .links-bar a:hover, .light .links-bar a:active, .light a.link-button, .light a.link-button:visited, .light a.link-button:hover, .light a.link-button:active, .dark .links-bar a, .dark .links-bar a:visited, .dark .links-bar a:hover, .dark .links-bar a:active, .dark a.link-button, .dark a.link-button:visited, .dark a.link-button:hover, .dark a.link-button:active {
   color: #fdf6e3;
   text-decoration: none;
 }
-.light .links-bar a:hover, .light .links-bar a:active, .dark .links-bar a:hover, .dark .links-bar a:active {
+.light .links-bar a:hover, .light .links-bar a:active, .light a.link-button:hover, .light a.link-button:active, .dark .links-bar a:hover, .dark .links-bar a:active, .dark a.link-button:hover, .dark a.link-button:active {
   background-color: #4ca2df;
 }
 .light .animate-start-hidden, .dark .animate-start-hidden {
@@ -349,77 +349,77 @@ body {
   margin: 0;
   padding: 0;
 }
-.light form.linkform input[type='submit'], .dark form.linkform input[type='submit'] {
+.light form.linkform input, .dark form.linkform input {
   display: inline-block;
   margin: 0 0.3em;
 }
-.light form.linkform input[type='submit'].user-enabled, .light form.linkform input[type='submit'].confirmed, .dark form.linkform input[type='submit'].user-enabled, .dark form.linkform input[type='submit'].confirmed {
+.light form.linkform input.user-enabled, .light form.linkform input.confirmed, .dark form.linkform input.user-enabled, .dark form.linkform input.confirmed {
   background-color: #2aa198;
   border: solid #2aa198 1px;
   color: #fdf6e3;
   transition: color 0.3s, background-color 0.3s, border-color 0.3s;
   vertical-align: middle;
 }
-.light form.linkform input[type='submit'].user-enabled:hover, .light form.linkform input[type='submit'].user-enabled:active, .light form.linkform input[type='submit'].user-enabled.state-flashing-on, .light form.linkform input[type='submit'].confirmed:hover, .light form.linkform input[type='submit'].confirmed:active, .light form.linkform input[type='submit'].confirmed.state-flashing-on, .dark form.linkform input[type='submit'].user-enabled:hover, .dark form.linkform input[type='submit'].user-enabled:active, .dark form.linkform input[type='submit'].user-enabled.state-flashing-on, .dark form.linkform input[type='submit'].confirmed:hover, .dark form.linkform input[type='submit'].confirmed:active, .dark form.linkform input[type='submit'].confirmed.state-flashing-on {
+.light form.linkform input.user-enabled:hover, .light form.linkform input.user-enabled:active, .light form.linkform input.user-enabled.state-flashing-on, .light form.linkform input.confirmed:hover, .light form.linkform input.confirmed:active, .light form.linkform input.confirmed.state-flashing-on, .dark form.linkform input.user-enabled:hover, .dark form.linkform input.user-enabled:active, .dark form.linkform input.user-enabled.state-flashing-on, .dark form.linkform input.confirmed:hover, .dark form.linkform input.confirmed:active, .dark form.linkform input.confirmed.state-flashing-on {
   background-color: #35c9be;
 }
-.light form.linkform input[type='submit'].user-enabled[disabled], .light form.linkform input[type='submit'].user-enabled[disabled]:hover, .light form.linkform input[type='submit'].user-enabled[disabled]:active, .light form.linkform input[type='submit'].confirmed[disabled], .light form.linkform input[type='submit'].confirmed[disabled]:hover, .light form.linkform input[type='submit'].confirmed[disabled]:active, .dark form.linkform input[type='submit'].user-enabled[disabled], .dark form.linkform input[type='submit'].user-enabled[disabled]:hover, .dark form.linkform input[type='submit'].user-enabled[disabled]:active, .dark form.linkform input[type='submit'].confirmed[disabled], .dark form.linkform input[type='submit'].confirmed[disabled]:hover, .dark form.linkform input[type='submit'].confirmed[disabled]:active {
+.light form.linkform input.user-enabled[disabled], .light form.linkform input.user-enabled[disabled]:hover, .light form.linkform input.user-enabled[disabled]:active, .light form.linkform input.confirmed[disabled], .light form.linkform input.confirmed[disabled]:hover, .light form.linkform input.confirmed[disabled]:active, .dark form.linkform input.user-enabled[disabled], .dark form.linkform input.user-enabled[disabled]:hover, .dark form.linkform input.user-enabled[disabled]:active, .dark form.linkform input.confirmed[disabled], .dark form.linkform input.confirmed[disabled]:hover, .dark form.linkform input.confirmed[disabled]:active {
   opacity: 0.5;
   background-color: #2aa198;
 }
-.light form.linkform input[type='submit'].user-disabled, .light form.linkform input[type='submit'].unconfirmed, .dark form.linkform input[type='submit'].user-disabled, .dark form.linkform input[type='submit'].unconfirmed {
+.light form.linkform input.user-disabled, .light form.linkform input.unconfirmed, .dark form.linkform input.user-disabled, .dark form.linkform input.unconfirmed {
   background-color: #cb4b16;
   border: solid #cb4b16 1px;
   color: #fdf6e3;
   transition: color 0.3s, background-color 0.3s, border-color 0.3s;
   vertical-align: middle;
 }
-.light form.linkform input[type='submit'].user-disabled:hover, .light form.linkform input[type='submit'].user-disabled:active, .light form.linkform input[type='submit'].user-disabled.state-flashing-on, .light form.linkform input[type='submit'].unconfirmed:hover, .light form.linkform input[type='submit'].unconfirmed:active, .light form.linkform input[type='submit'].unconfirmed.state-flashing-on, .dark form.linkform input[type='submit'].user-disabled:hover, .dark form.linkform input[type='submit'].user-disabled:active, .dark form.linkform input[type='submit'].user-disabled.state-flashing-on, .dark form.linkform input[type='submit'].unconfirmed:hover, .dark form.linkform input[type='submit'].unconfirmed:active, .dark form.linkform input[type='submit'].unconfirmed.state-flashing-on {
+.light form.linkform input.user-disabled:hover, .light form.linkform input.user-disabled:active, .light form.linkform input.user-disabled.state-flashing-on, .light form.linkform input.unconfirmed:hover, .light form.linkform input.unconfirmed:active, .light form.linkform input.unconfirmed.state-flashing-on, .dark form.linkform input.user-disabled:hover, .dark form.linkform input.user-disabled:active, .dark form.linkform input.user-disabled.state-flashing-on, .dark form.linkform input.unconfirmed:hover, .dark form.linkform input.unconfirmed:active, .dark form.linkform input.unconfirmed.state-flashing-on {
   background-color: #e8632c;
 }
-.light form.linkform input[type='submit'].user-disabled[disabled], .light form.linkform input[type='submit'].user-disabled[disabled]:hover, .light form.linkform input[type='submit'].user-disabled[disabled]:active, .light form.linkform input[type='submit'].unconfirmed[disabled], .light form.linkform input[type='submit'].unconfirmed[disabled]:hover, .light form.linkform input[type='submit'].unconfirmed[disabled]:active, .dark form.linkform input[type='submit'].user-disabled[disabled], .dark form.linkform input[type='submit'].user-disabled[disabled]:hover, .dark form.linkform input[type='submit'].user-disabled[disabled]:active, .dark form.linkform input[type='submit'].unconfirmed[disabled], .dark form.linkform input[type='submit'].unconfirmed[disabled]:hover, .dark form.linkform input[type='submit'].unconfirmed[disabled]:active {
+.light form.linkform input.user-disabled[disabled], .light form.linkform input.user-disabled[disabled]:hover, .light form.linkform input.user-disabled[disabled]:active, .light form.linkform input.unconfirmed[disabled], .light form.linkform input.unconfirmed[disabled]:hover, .light form.linkform input.unconfirmed[disabled]:active, .dark form.linkform input.user-disabled[disabled], .dark form.linkform input.user-disabled[disabled]:hover, .dark form.linkform input.user-disabled[disabled]:active, .dark form.linkform input.unconfirmed[disabled], .dark form.linkform input.unconfirmed[disabled]:hover, .dark form.linkform input.unconfirmed[disabled]:active {
   opacity: 0.5;
   background-color: #cb4b16;
 }
-.light form.linkform input[type='submit'].user-superuser, .dark form.linkform input[type='submit'].user-superuser {
+.light form.linkform input.user-superuser, .dark form.linkform input.user-superuser {
   background-color: #cb4b16;
   border: solid #cb4b16 1px;
   color: #fdf6e3;
   transition: color 0.3s, background-color 0.3s, border-color 0.3s;
   vertical-align: middle;
 }
-.light form.linkform input[type='submit'].user-superuser:hover, .light form.linkform input[type='submit'].user-superuser:active, .light form.linkform input[type='submit'].user-superuser.state-flashing-on, .dark form.linkform input[type='submit'].user-superuser:hover, .dark form.linkform input[type='submit'].user-superuser:active, .dark form.linkform input[type='submit'].user-superuser.state-flashing-on {
+.light form.linkform input.user-superuser:hover, .light form.linkform input.user-superuser:active, .light form.linkform input.user-superuser.state-flashing-on, .dark form.linkform input.user-superuser:hover, .dark form.linkform input.user-superuser:active, .dark form.linkform input.user-superuser.state-flashing-on {
   background-color: #e8632c;
 }
-.light form.linkform input[type='submit'].user-superuser[disabled], .light form.linkform input[type='submit'].user-superuser[disabled]:hover, .light form.linkform input[type='submit'].user-superuser[disabled]:active, .dark form.linkform input[type='submit'].user-superuser[disabled], .dark form.linkform input[type='submit'].user-superuser[disabled]:hover, .dark form.linkform input[type='submit'].user-superuser[disabled]:active {
+.light form.linkform input.user-superuser[disabled], .light form.linkform input.user-superuser[disabled]:hover, .light form.linkform input.user-superuser[disabled]:active, .dark form.linkform input.user-superuser[disabled], .dark form.linkform input.user-superuser[disabled]:hover, .dark form.linkform input.user-superuser[disabled]:active {
   opacity: 0.5;
   background-color: #cb4b16;
 }
-.light form.linkform input[type='submit'].user-normaluser, .dark form.linkform input[type='submit'].user-normaluser {
+.light form.linkform input.user-normaluser, .dark form.linkform input.user-normaluser {
   background-color: #2aa198;
   border: solid #2aa198 1px;
   color: #fdf6e3;
   transition: color 0.3s, background-color 0.3s, border-color 0.3s;
   vertical-align: middle;
 }
-.light form.linkform input[type='submit'].user-normaluser:hover, .light form.linkform input[type='submit'].user-normaluser:active, .light form.linkform input[type='submit'].user-normaluser.state-flashing-on, .dark form.linkform input[type='submit'].user-normaluser:hover, .dark form.linkform input[type='submit'].user-normaluser:active, .dark form.linkform input[type='submit'].user-normaluser.state-flashing-on {
+.light form.linkform input.user-normaluser:hover, .light form.linkform input.user-normaluser:active, .light form.linkform input.user-normaluser.state-flashing-on, .dark form.linkform input.user-normaluser:hover, .dark form.linkform input.user-normaluser:active, .dark form.linkform input.user-normaluser.state-flashing-on {
   background-color: #35c9be;
 }
-.light form.linkform input[type='submit'].user-normaluser[disabled], .light form.linkform input[type='submit'].user-normaluser[disabled]:hover, .light form.linkform input[type='submit'].user-normaluser[disabled]:active, .dark form.linkform input[type='submit'].user-normaluser[disabled], .dark form.linkform input[type='submit'].user-normaluser[disabled]:hover, .dark form.linkform input[type='submit'].user-normaluser[disabled]:active {
+.light form.linkform input.user-normaluser[disabled], .light form.linkform input.user-normaluser[disabled]:hover, .light form.linkform input.user-normaluser[disabled]:active, .dark form.linkform input.user-normaluser[disabled], .dark form.linkform input.user-normaluser[disabled]:hover, .dark form.linkform input.user-normaluser[disabled]:active {
   opacity: 0.5;
   background-color: #2aa198;
 }
-.light form.linkform input[type='submit'].delete, .dark form.linkform input[type='submit'].delete {
+.light form.linkform input.delete, .dark form.linkform input.delete {
   background-color: #dc322f;
   border: solid #dc322f 1px;
   color: #fdf6e3;
   transition: color 0.3s, background-color 0.3s, border-color 0.3s;
   vertical-align: middle;
 }
-.light form.linkform input[type='submit'].delete:hover, .light form.linkform input[type='submit'].delete:active, .light form.linkform input[type='submit'].delete.state-flashing-on, .dark form.linkform input[type='submit'].delete:hover, .dark form.linkform input[type='submit'].delete:active, .dark form.linkform input[type='submit'].delete.state-flashing-on {
+.light form.linkform input.delete:hover, .light form.linkform input.delete:active, .light form.linkform input.delete.state-flashing-on, .dark form.linkform input.delete:hover, .dark form.linkform input.delete:active, .dark form.linkform input.delete.state-flashing-on {
   background-color: #e35d5b;
 }
-.light form.linkform input[type='submit'].delete[disabled], .light form.linkform input[type='submit'].delete[disabled]:hover, .light form.linkform input[type='submit'].delete[disabled]:active, .dark form.linkform input[type='submit'].delete[disabled], .dark form.linkform input[type='submit'].delete[disabled]:hover, .dark form.linkform input[type='submit'].delete[disabled]:active {
+.light form.linkform input.delete[disabled], .light form.linkform input.delete[disabled]:hover, .light form.linkform input.delete[disabled]:active, .dark form.linkform input.delete[disabled], .dark form.linkform input.delete[disabled]:hover, .dark form.linkform input.delete[disabled]:active {
   opacity: 0.5;
   background-color: #dc322f;
 }

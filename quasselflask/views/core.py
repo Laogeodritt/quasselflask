@@ -4,19 +4,23 @@ Main flask endpoints for this application.
 Project: QuasselFlask
 """
 
-import os
 import time
 
+from flask import flash
 from flask import request, g, render_template, url_for, redirect
 from flask_sqlalchemy import get_debug_queries
 from flask_user import login_required, current_user
+from werkzeug.exceptions import BadRequest
 
 import quasselflask
-from quasselflask import app, db
+from quasselflask import app, db, userman
+from quasselflask.email_adapter import send_confirm_email_email
 from quasselflask.models.query import *
 from quasselflask.parsing.form import process_search_params
 from quasselflask.parsing.irclog import DisplayBacklog
-from quasselflask.util import safe_redirect
+from quasselflask.util import safe_redirect, get_next_url, log_access, log_action, log_action_error
+
+logger = app.logger  # type: logging.Logger
 
 
 @app.before_first_request
@@ -143,8 +147,6 @@ def search():
 
     return render_template('results.html', records=results_display, **render_args)
 
-# TODO: look at flask_users/core.py login() endpoint - security issue with 'next' GET parameter?
-
 
 @app.route('/user/permissions', methods=['GET'])
 @login_required
@@ -155,6 +157,71 @@ def check_permissions():
     """
     permitted_buffers = query_permitted_buffers(db.session, current_user)
     return render_template("check_permissions.html", user=current_user, buffers=permitted_buffers)
+
+# TODO: 'next' parameter hack - add version check on Flask-User version
+
+
+@app.route('/user/update', methods=['POST'])
+@login_required
+def user_update():
+    """
+    Update current user's information. Any fields not included will remain unchanged.
+
+    Some actions return a confirmation page. It is necessary to submit the confirmation form to complete the action.
+
+    If acting on the current user, only the email address may be updated.  This prevents the current user from locking
+    themselves out of the application or removing a sole superuser.
+
+    POST command parameter (exactly one required):
+
+    * `email`: new email address. This will require the user to reconfirm their email address before their account is
+        re-enabled.
+
+    Other POST parameters, common to all requests:
+
+    * `next`: URL, the URL to return to after the update.
+
+    :return:
+    """
+
+    logger.info(log_access())
+
+    commands = frozenset(('email',))
+    request_commands = set(request.form.keys()) & commands
+
+    # validate
+    request_valid = len(request_commands) == 1
+
+    if not request_valid:
+        raise BadRequest("No command or multiple commands to user update API endpoint")
+
+    # Valid - let's process it
+    user = current_user  # laziness and because this mirrors the admin_update_user endpoint
+
+    try:
+        user.email = request.form.get('email')
+        if userman.enable_confirm_email:
+            user.confirmed_at = None
+
+        # confirmation email
+        send_confirm_email_email(user)
+
+        db.session.commit()
+        flash('Updated email to {email} (must re-confirm to reactivate account)'.format(email=user.email), 'notice')
+        logger.info(log_action('update user', ('set', 'email'), ('email', user.email)))
+        return safe_redirect(get_next_url('POST'))
+    except Exception as e:
+        logger.error(log_action_error('error while updating user profile', repr(e.args),
+                                      ('id', user.qfuserid), ('name', user.username),
+                                      ('email', user.email), ('superuser', repr(user.superuser))), exc_info=True)
+        db.session.rollback()
+        if app.debug:
+            raise  # let us debug this
+        else:
+            flash('Error occurred while updating user. Please try again later, or contact the server administrator '
+                  'with the date/time of this error and your IP address in order to trace error information in the'
+                  'logs.')
+            return safe_redirect(get_next_url('POST'))
 
 
 @app.route('/context/<int:post_id>/<int:num_context>')
