@@ -1,0 +1,11 @@
+{% extends 'flask_user/emails/base_message.html' %}
+
+{% block message %}
+
+<p>An account has been created for you at {{ app_name }}. It is disabled until you {% if user_manager.enable_confirm_email and not user.confirmed_at %}confirm your email and{% endif %} set your password.</p>
+
+<p>Please <a href="{{ confirm_email_link }}">{% if user_manager.enable_confirm_email and not user.confirmed_at %}confirm your email and{% endif %} set password</a> by clicking this link.</p>
+
+<p>(Note: This email is also sent out if an administrator manually resets your password. In this case, your account is disabled until you follow these steps to reset your password again.)</p>
+
+{% endblock %}

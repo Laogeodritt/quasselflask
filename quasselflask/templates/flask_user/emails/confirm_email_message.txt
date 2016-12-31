@@ -1,0 +1,10 @@
+{% extends 'flask_user/emails/base_message.txt' %}
+
+{% block message %}
+Your email address was changed. To continue using {{ app_name }}, you will need to confirm your email address.
+
+If you initiated this registration, please visit the link below:
+    {{ confirm_email_link }}
+
+If you did not initiate this registration, you may safely ignore this email.
+{% endblock %}

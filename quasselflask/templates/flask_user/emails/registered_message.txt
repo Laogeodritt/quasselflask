@@ -1,0 +1,11 @@
+{% extends 'flask_user/emails/base_message.txt' %}
+
+{% block message %}
+An account has been created for you at {{ app_name }}.
+
+Please visit the link below to {% if user_manager.enable_confirm_email and not user.confirmed_at %}confirm your email and{% endif %} set your password:
+    {{ confirm_email_link }}
+
+(Note: This email is also sent out if an administrator manually resets your password. In this case, your account is disabled until you follow these steps to reset your password again.)
+
+{% endblock %}
