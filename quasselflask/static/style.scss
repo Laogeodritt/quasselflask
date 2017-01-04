@@ -79,6 +79,7 @@ $nav-space-horiz: $nav-space;
 
     h1 {
       font-size: inherit;
+      border-bottom: none;
       a, a:link, a:visited { color: $blue; }
       a:hover, a:active { color: lighten($blue, $bg-hover-amount); }
     }
@@ -795,7 +796,7 @@ body {
     margin-top: 0;
     margin-bottom: 1em;
 
-    * {
+    > * {
       display: inline-block;
       vertical-align: middle;
     }

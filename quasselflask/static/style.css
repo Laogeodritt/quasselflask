@@ -3073,6 +3073,7 @@ html nav, .light nav {
 }
 html nav h1, .light nav h1 {
   font-size: inherit;
+  border-bottom: none;
 }
 html nav h1 a, html nav h1 a:link, html nav h1 a:visited, .light nav h1 a, .light nav h1 a:link, .light nav h1 a:visited {
   color: #268bd2;
@@ -3193,6 +3194,7 @@ html .label-extra, .light .label-extra {
 }
 .dark nav h1 {
   font-size: inherit;
+  border-bottom: none;
 }
 .dark nav h1 a, .dark nav h1 a:link, .dark nav h1 a:visited {
   color: #268bd2;
@@ -3996,7 +3998,7 @@ body {
   margin-top: 0;
   margin-bottom: 1em;
 }
-.light .user-manage-row *, .dark .user-manage-row * {
+.light .user-manage-row > *, .dark .user-manage-row > * {
   display: inline-block;
   vertical-align: middle;
 }
