@@ -6,7 +6,7 @@
 
 {% block content %}
     <main data-page="manage-user" data-user-id="{{ current_user.get_id() }}">
-        {% from "admin/_qf_macros.html" import user_disable_link, user_action_link %}
+        {% from "admin/_qf_macros.html" import user_action_link %}
         <h2>User profile - {{ current_user.username }}</h2>
 
         <div class="user-manage-row user-manage-status"><label>Status</label>
@@ -36,6 +36,20 @@
         <div class="user-manage-row user-manage-password">
             <label>Password</label>
             <a id="btn-user-change-password" class="link-button" href="{{ url_for('user.change_password') }}">Change</a>
+        </div>
+
+        <div class="user-manage-row user-manage-theme">
+            <label>Theme</label>
+            <form class="linkform" method="post" action="{{ url_for('user_update') }}">
+                <input type="hidden" name="csrf_token" value="{{ csrf_token() }}">
+                <input type="hidden" name="next" value="{{ request.url }}">
+                <select name="themeid" data-animate-event="change" data-animate-once data-animate-target="theme-submit">
+                    {% for theme_obj in themes.values() %}
+                        <option value="{{ theme_obj.id }}"{% if current_user.themeid == theme_obj.id %} selected{% endif %}>{{ theme_obj.name }}</option>
+                    {% endfor %}
+                </select>
+                <input type="submit" value="Save" class="animate-slide animate-start-hidden" data-animate-id="theme-submit" data-animate-type="width" data-animate-highlight-class="state-flashing-on">
+            </form>
         </div>
 
         <div class="user-manage-row user-manage-permissions-view">

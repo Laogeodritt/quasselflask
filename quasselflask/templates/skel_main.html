@@ -13,7 +13,6 @@
  # content: main content area, should contain one or more top-level <section> elements.
  # footer: content of the <footer>. Contains QuasselFlask link, version, generation time - super() recommended.
  #}<!DOCTYPE html>
-{% set user_theme = config.get('QF_THEMES', []).get(current_user.themeid, config.get('QF_DEFAULT_THEME', 0)) %}
 <html lang="en" {% if user_theme.root_class %} class="{{ user_theme.root_class }}"{% endif %}>
 <head>
     <meta charset="UTF-8">

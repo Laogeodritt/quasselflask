@@ -18,9 +18,18 @@ from quasselflask.email_adapter import send_confirm_email_email
 from quasselflask.models.query import *
 from quasselflask.parsing.form import process_search_params
 from quasselflask.parsing.irclog import DisplayBacklog
-from quasselflask.util import safe_redirect, get_next_url, log_access, log_action, log_action_error
+from quasselflask.util import safe_redirect, get_next_url, log_access, log_action, log_action_error, repr_user_input
 
 logger = app.logger  # type: logging.Logger
+
+
+@app.context_processor
+def inject_themes():
+    themeid = current_user.themeid
+    default_themeid = app.config.get('QF_DEFAULT_THEME', 0)
+    themes_dict = app.config.get('QF_THEMES', {})
+    theme = themes_dict.get(themeid, default_themeid)
+    return dict(user_theme=theme, themes=themes_dict)
 
 
 @app.before_first_request
@@ -176,6 +185,7 @@ def user_update():
 
     * `email`: new email address. This will require the user to reconfirm their email address before their account is
         re-enabled.
+    * `themeid`: new theme ID (int).
 
     Other POST parameters, common to all requests:
 
@@ -186,7 +196,7 @@ def user_update():
 
     logger.info(log_access())
 
-    commands = frozenset(('email',))
+    commands = frozenset(('email', 'themeid'))
     request_commands = set(request.form.keys()) & commands
 
     # validate
@@ -198,30 +208,51 @@ def user_update():
     # Valid - let's process it
     user = current_user  # laziness and because this mirrors the admin_update_user endpoint
 
-    try:
-        user.email = request.form.get('email')
-        if userman.enable_confirm_email:
-            user.confirmed_at = None
+    if 'email' in request_commands:
+        try:
+            user.email = request.form.get('email')
+            if userman.enable_confirm_email:
+                user.confirmed_at = None
 
-        # confirmation email
-        send_confirm_email_email(user)
+            # confirmation email
+            send_confirm_email_email(user)
 
-        db.session.commit()
-        flash('Updated email to {email} (must re-confirm to reactivate account)'.format(email=user.email), 'notice')
-        logger.info(log_action('update user', ('set', 'email'), ('email', user.email)))
-        return safe_redirect(get_next_url('POST'))
-    except Exception as e:
-        logger.error(log_action_error('error while updating user profile', repr(e.args),
-                                      ('id', user.qfuserid), ('name', user.username),
-                                      ('email', user.email), ('superuser', repr(user.superuser))), exc_info=True)
-        db.session.rollback()
-        if app.debug:
-            raise  # let us debug this
-        else:
-            flash('Error occurred while updating user. Please try again later, or contact the server administrator '
-                  'with the date/time of this error and your IP address in order to trace error information in the'
-                  'logs.')
+            db.session.commit()
+            flash('Updated email to {email} (must re-confirm to reactivate account)'.format(email=user.email), 'notice')
+            logger.info(log_action('update user', ('set', 'email'), ('email', user.email)))
             return safe_redirect(get_next_url('POST'))
+        except Exception as e:
+            logger.error(log_action_error('error while updating user profile', repr(e.args),
+                                          ('id', user.qfuserid), ('name', user.username),
+                                          ('email', user.email), ('superuser', repr(user.superuser))), exc_info=True)
+            db.session.rollback()
+            if app.debug:
+                raise  # let us debug this
+            else:
+                flash('Error occurred while updating user. Please try again later, or contact the server administrator '
+                      'with the date/time of this error and your IP address in order to trace error information in the'
+                      'logs.')
+                return safe_redirect(get_next_url('POST'))
+
+    elif 'themeid' in request_commands:
+        try:
+            newid = int(request.form.get('themeid'))
+        except ValueError:
+            newid = None
+
+        logger.debug(repr(app.config['QF_THEMES']))
+        logger.debug(repr(newid))
+        if newid in app.config['QF_THEMES']:
+            user.themeid = newid
+            db.session.commit()
+            return safe_redirect(get_next_url('POST'))
+        else:
+            raise BadRequest("Invalid theme ID.")
+
+    flash("Something happened. You shouldn't have gotten this far.", "error")
+    logger.error(log_action_error('user update', 'should have returned earlier in code - bug?'))
+    logger.debug('request.form=' + repr_user_input(request.form))
+    return safe_redirect(get_next_url('POST'))
 
 
 @app.route('/context/<int:post_id>/<int:num_context>')
