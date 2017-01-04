@@ -9,6 +9,9 @@
 
 /* This is a total mess. Sorry! */
 
+@import 'https://fonts.googleapis.com/css?family=PT+Sans|PT+Serif';
+@import 'scss/font-awesome';
+
 $base03:    #002b36;
 $base02:    #073642;
 $base01:    #586e75;
@@ -47,7 +50,11 @@ $bg-hover-transition: background-color $transition-time;
 $fg-hover-transition: color $transition-time;
 $fadein-transition: opacity $transition-time;
 
-@import 'https://fonts.googleapis.com/css?family=PT+Sans|PT+Serif';
+$font-title: 'PT Serif', serif;
+
+$nav-space: 0.5em;
+$nav-space-vert: $nav-space;
+$nav-space-horiz: $nav-space;
 
 @mixin rebase($rebase03,$rebase02,$rebase01,$rebase00,$rebase0,$rebase1,$rebase2,$rebase3)
 {
@@ -58,7 +65,47 @@ $fadein-transition: opacity $transition-time;
     border: 1px solid $rebase01;
   }
 
+  header h1, h1, h2, h3, h4, h5, h6 {
+    text-shadow: 1px 1px $rebase01;
+  }
+
   footer { color: $rebase01; }
+
+  nav {
+    background-color: $rebase03;
+    border-bottom: 1px solid $rebase01;
+    border-left: 1px solid $rebase01;
+    border-right: 1px solid $rebase01;
+
+    h1 {
+      font-size: inherit;
+      a, a:link, a:visited { color: $blue; }
+      a:hover, a:active { color: lighten($blue, $bg-hover-amount); }
+    }
+
+    a, a:link, a:visited {
+      color: $rebase0;
+      transition: color $transition-time ease;
+    }
+
+    a:hover, a:active {
+      color: $blue;
+    }
+
+    li.disabled, div.disabled {
+      color: $rebase1;
+    }
+
+    .dropdown .dropdown-inner {
+      background-color: $rebase03;
+      border-bottom: 1px solid $rebase01;
+      border-left: 1px solid $rebase01;
+      border-right: 1px solid $rebase01;
+      li { border-bottom: 1px dashed $rebase0; }
+      li:hover { background-color: $rebase02; }
+      li:last-child { border-bottom: none; }
+    }
+  }
 
   .dijitComboBoxMenuPopup, .dijitTooltip {
     background-color: $rebase03;
@@ -103,7 +150,13 @@ $fadein-transition: opacity $transition-time;
   .result {
     table.irc-log {
       .timestamp { color: $rebase01 !important; }
-      tr.irc-backlog-details { color: $rebase01; }
+      tr.irc-line {
+        td { transition: $bg-hover-transition; }
+        &:hover td { background-color: $rebase02; }
+      }
+      tr.irc-backlog-details {
+        color: $rebase01;
+      }
       .mode, .join, .part,  .quit, .kick, .kill,
       .info, .daychange, .topic, .invite
       .netsplit_join, .netsplit_quit,
@@ -197,7 +250,7 @@ html, .light {
 
 body {
   max-width: 1156px;
-  padding: 3em 4em 6em;
+  padding: 4em 4em 6em;
   margin-left: auto;
   margin-right: auto;
   font-family: 'PT Sans', sans-serif;
@@ -213,7 +266,7 @@ body {
 
   header h1, h1, h2, h3, h4, h5, h6 {
     color: $blue;
-    font-family: 'PT Serif', serif;
+    font-family: $font-title;
     font-weight: normal;
     border-bottom: 1px solid;
     margin-top: 0.4em;
@@ -241,6 +294,112 @@ body {
   section#notice {
     color: $base01;
     background-color: lighten($cyan, 25%);
+  }
+
+  nav {
+    margin: 0;
+    padding: 0 1em;
+
+    display: flex;
+    flex-flow: row wrap;
+    justify-content: space-between;
+    align-items: center;
+    align-content: center;
+
+    position: fixed;
+    top: 0;
+    left: $nav-space-horiz/2;
+    right: $nav-space-horiz/2;
+
+    border-bottom-left-radius: $content-border-radius;
+    border-bottom-right-radius: $content-border-radius;
+
+    a {
+      text-decoration: none;
+    }
+
+    h1 {
+      flex: 0 1 auto;
+      margin: 0 $nav-space-horiz;
+      padding: $nav-space-vert 0;
+      text-transform: uppercase;
+      font-weight: 800;
+    }
+
+    ul {
+      flex: 1 1 auto;
+      margin: 0;
+      padding: 0;
+
+      li {
+        list-style: none;
+        display: inline-block;
+        margin: 0 $nav-space-horiz/2;
+        padding: $nav-space-vert $nav-space-horiz/2;
+      }
+    }
+
+    div {
+      margin: 0 $nav-space-horiz;
+      padding: $nav-space-vert 0;
+    }
+
+    .right {
+      float: right;
+    }
+
+    .dropdown {
+      position: relative;
+      display: inline-block;
+      li { display: block; }
+
+      .dropdown-inner {
+        border-bottom-left-radius: $content-border-radius;
+        border-bottom-right-radius: $content-border-radius;
+
+        min-width: 160px;
+        max-height: 0;
+        overflow: hidden;
+
+        margin-left: -$nav-space-horiz;
+        margin-top: $nav-space-vert;
+        padding: 0 $nav-space-horiz $nav-space-vert;
+
+        position: absolute;
+        left: -9999px; /* more accessible than display: none */
+        &.dropdown-js { left: 0; max-height: none; transition: none; }
+        transition: max-height $transition-time ease;
+
+        li, div {
+          transition: $bg-hover-transition;
+        }
+
+        li.disabled {
+          font-style: italic;
+          cursor: default;
+        }
+      }
+
+      &:hover .dropdown-inner {
+        left: 0;
+        max-height: 512px; /* graceful degradation: set in JS to animate more nicely */
+      }
+
+      &.right {
+        .dropdown-inner {
+          left: auto;
+          right: 9999px;
+          &.dropdown-js { left: auto; right: 0; }
+          text-align: right;
+          margin-left: 0;
+          margin-right: -$nav-space-horiz;
+        }
+        &:hover .dropdown-inner {
+          left: auto;
+          right: 0;
+        }
+      }
+    }
   }
 
   footer {
@@ -406,7 +565,7 @@ body {
       }
 
       &.delete {
-        @include button_color($red)
+        @include button_color($red);
       }
     }
   }
@@ -756,7 +915,6 @@ body {
 
   .dijitComboBoxMenuPopup {
     @extend .dijitTooltip;
-
     .dijitMenuItem { cursor: pointer; }
   }
 

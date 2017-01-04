@@ -21,17 +21,71 @@ var ANIMATE_OPACITY_INVISIBLE = 0;
 var ANIMATE_FLASH_REPEAT = 2;
 var ANIMATE_FLASH_DELAY = 300;
 
-/*
- * Bootstrap
- */
+/********************************
+ * Menu animation
+ ********************************/
+$(document).ready(function() {
+    var $dropdowns = $('.dropdown');
+    var $inner = $dropdowns.find('.dropdown-inner');
+    $inner.addClass('dropdown-js');
+    $inner.css('max-height', 'none'); // override the CSS animation (used forgraceful fallback)
+    $inner.hide();
+    $dropdowns.hover(
+            function() {
+                $(this).find('.dropdown-inner').stop().show(ANIMATE_SLIDE_TIME);
+            },
+            function() {
+                $(this).find('.dropdown-inner').stop().hide(ANIMATE_SLIDE_TIME);
+            }
+    );
+});
+
+/********************************
+ * IRC Backlog Details Expansion
+ ********************************/
+
+/* Bootstrap */
 $(document).ready(function() {
     /*
      * IRC backlog row details - expando
      */
-    $('table.irc-log tr.irc-line').click(function(event) {
+    $('table.irc-log tr.irc-line').click(function(event)
+    {
         toggleIrcLineDetails(event.delegateTarget);
     });
+});
 
+function toggleIrcLineDetails(el) {
+    var $target = $(el).next();
+    if($target.hasClass('expanded'))
+        $target.addClass('collapsed')
+               .removeClass('expanded');
+    else
+        $target.addClass('expanded')
+               .removeClass('collapsed');
+    // slideUp() and slideDown(), or other anims, not supported on tables. Gah!
+}
+
+function expandAllIrcLineDetails() {
+    $('table.irc-log tr.irc-backlog-details.collapsed')
+            .addClass('expanded')
+            .removeClass('collapsed');
+    return false; // when used as a click event on <a>
+}
+
+function collapseAllIrcLineDetails() {
+    $('table.irc-log tr.irc-backlog-details.expanded')
+            .addClass('collapsed')
+            .removeClass('expanded');
+    return false; // when used as a click event on <a>
+}
+
+/************
+ * Animation
+ ************/
+
+/* Bootstrap */
+$(document).ready(function() {
     /*
      * Generic slide animations
      *
@@ -58,33 +112,6 @@ $(document).ready(function() {
     }); // each
 });
 
-/* IRC line expansion */
-function toggleIrcLineDetails(el) {
-    var $target = $(el).next();
-    if($target.hasClass('expanded'))
-        $target.addClass('collapsed')
-               .removeClass('expanded');
-    else
-        $target.addClass('expanded')
-               .removeClass('collapsed');
-    // slideUp() and slideDown(), or other anims, not supported on tables. Gah!
-}
-
-function expandAllIrcLineDetails() {
-    $('table.irc-log tr.irc-backlog-details.collapsed')
-            .addClass('expanded')
-            .removeClass('collapsed');
-    return false; // when used as a click event on <a>
-}
-
-function collapseAllIrcLineDetails() {
-    $('table.irc-log tr.irc-backlog-details.expanded')
-            .addClass('collapsed')
-            .removeClass('expanded');
-    return false; // when used as a click event on <a>
-}
-
-/* Animation */
 /**
  * Initialise one or more animation targets, if properties are already set for this element.
  * @param $targets Jquery object of one or more elements corresponding to animation targets. If non-animation targets
