@@ -46,13 +46,28 @@ $(document).ready(function() {
 
 /* Bootstrap */
 $(document).ready(function() {
-    /*
-     * IRC backlog row details - expando
-     */
+    // IRC backlog row details - expando
     $('table.irc-log tr.irc-line').click(function(event)
     {
         toggleIrcLineDetails(event.delegateTarget);
     });
+
+    // Search form functionality
+    var $searchForm = $('#form-search');
+    $searchForm.find('input[type=radio][name=type]').change(function() {
+        if (this.checked)
+        {
+            if(this.value == 'backlog') {
+                $searchForm.attr('action', $searchForm.data('action-backlog'));
+            }
+            else if(this.value == 'usermask') {
+                $searchForm.attr('action', $searchForm.data('action-usermask'));
+            }
+        }
+    });
+    $searchForm.submit(function() {
+
+    })
 });
 
 function toggleIrcLineDetails(el) {

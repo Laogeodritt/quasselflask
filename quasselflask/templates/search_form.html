@@ -9,6 +9,7 @@
  # search_limit:int: Pre-populated maxlines in form. Optional.
  # search_query:str: The search string
  # search_query_wildcard:bool: Whether the "wildcard" checkbox is checked for the query.
+ # search_type:quasselflask.parsingo.form.SearchType: results to return (backlog lines or unique users)
  #
  # Blocks (non-inherited):
  # content_after_form: after the <section> containing the form. Should have one or more <section> elements
@@ -19,7 +20,7 @@
 {% block title %}Search{% endblock %}
 {% block content %}<section>
     <h2>Search</h2>
-    <form action="/search" method="get" id="form-search">
+    <form action="{{ url_for('search') }}" data-action-backlog="{{ url_for('search') }}" data-action-usermask="{{ url_for('search_users') }}" method="get" id="form-search">
         <div class="search-query-container">
             <input type="text" name="query" id="search-query" title="Search Query" placeholder="Search Query" {% if search_query is defined %}value="{{ search_query|e }}"{% endif %}>
             <input type="checkbox" name="query_wildcard" id="search-query-wildcard" value="1" {% if search_query_wildcard is defined and search_query_wildcard %}checked="checked"{% endif %}>
@@ -37,9 +38,12 @@
             <input type="text" name="end" id="search-time-end" placeholder="YYYY-MM-DD HH:MM:SS" {% if search_end is defined %}value="{{ search_end|e }}"{% endif %}>
         </div>
         <div>
-            Retrieve the <input type="radio" name="order" id="search-newest" value="recent" {% if search_order is defined and search_order == 'newest' %}checked="checked"{% endif %}><label for="search-newest">newest</label>
-            <input type="radio" name="order" id="search-oldest" value="oldest" {% if search_order is defined and search_order == 'oldest' %}checked="checked"{% endif %}><label for="search-oldest">oldest</label>
+            Retrieve the <input type="radio" name="order" id="search-newest" value="recent" {% if search_order is defined and search_order == 'newest' %}checked{% endif %}><label for="search-newest">newest</label>
+            <input type="radio" name="order" id="search-oldest" value="oldest" {% if search_order is defined and search_order == 'oldest' %}checked{% endif %}><label for="search-oldest">oldest</label>
             <input type="number" max="{{ config.RESULTS_NUM_MAX }}" name="limit" id="search-maxlines" value="{{ search_limit|default(config.RESULTS_NUM_DEFAULT)|e }}"> <label for="search-maxlines">lines</label>
+            and show as
+            <input type="radio" name="type" id="search-show-backlog" value="backlog" {% if search_type is not defined or search_type is sameas SearchType['backlog'] %}checked{% endif %}><label for="search-show-backlog">chat</label>
+            <input type="radio" name="type" id="search-show-users" value="usermask" {% if search_type is defined and search_type is sameas SearchType['usermask'] %}checked{% endif %}><label for="search-show-users">usermask summary</label>
         </div>
         <div id="buttons">
             <button type="reset">Clear</button> <button type="submit">Submit</button>

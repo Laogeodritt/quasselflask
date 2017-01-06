@@ -16,8 +16,8 @@ import quasselflask
 from quasselflask import app, db, userman
 from quasselflask.email_adapter import send_confirm_email_email
 from quasselflask.models.query import *
-from quasselflask.parsing.form import process_search_params
-from quasselflask.parsing.irclog import DisplayBacklog
+from quasselflask.parsing.form import process_search_params, SearchType
+from quasselflask.parsing.irclog import DisplayBacklog, DisplayUserSummary
 from quasselflask.util import safe_redirect, get_next_url, log_access, log_action, log_action_error, repr_user_input
 
 logger = app.logger  # type: logging.Logger
@@ -30,6 +30,15 @@ def inject_themes():
     themes_dict = app.config.get('QF_THEMES', {})
     theme = themes_dict.get(themeid, default_themeid)
     return dict(user_theme=theme, themes=themes_dict)
+
+
+@app.context_processor
+def inject_search():
+    """
+    Inject search variables/constants universal to search form-based templates.
+    :return:
+    """
+    return dict(SearchType=SearchType)
 
 
 @app.before_first_request
@@ -76,59 +85,20 @@ def home():
     return render_template('search_form.html')
 
 
-@app.route('/search')
+@app.route('/search/logs')
 @login_required
 def search():
-    # some helpful constants for the request argument processing
-    # type of extraction/processing - this is more documentation as it's not used to process at the moment
-    unique_args = {'start', 'end', 'limit', 'query_wildcard'}
-    list_wildcard_args = {'channel', 'usermask'}  # space-separated lists; if any arg repeated, list is concatenated
-    query_args = {'query'}  # requires query parsing
-    search_args = unique_args | list_wildcard_args | query_args
-
-    form_args = request.args
-    available_args = search_args & set(form_args.keys())
-
-    # if no arguments passed, we can just redirect to the home
-    if not available_args:
-        return redirect(url_for('home'))
-
-    # For rendering in templates - will be updated after processing search params (if successful) before render
-    render_args = {
-        'search_channel': form_args.get('channel'),
-        'search_usermask': form_args.get('usermask'),
-        'search_start': form_args.get('start'),
-        'search_end': form_args.get('end'),
-        'search_query': form_args.get('query'),
-        'search_query_wildcard': form_args.get('search_query_wildcard', int),
-        'search_limit': form_args.get('limit', app.config['RESULTS_NUM_DEFAULT'], int),
-        'search_order': form_args.get('order'),
-        'expand_line_details': False,
-    }
-
-    # Process and parse the args
+    # process the args passed in from the query string in the request
+    # this also documents the POST form parameters - check this method's source along with the readme
     try:
-        sql_args = process_search_params(form_args)
-        sql_args['permissions'] = query_permitted_buffers(db.session, current_user)
-    except ValueError as e:
-        errtext = e.args[0]
-        return render_template('search_form.html', error=errtext, **render_args)
-
-    app.logger.debug("Args|SQL-processed: limit=%i order=%s channel%s usermask%s start[%s] end[%s] query%s %s",
-                     sql_args['limit'], sql_args['order'], sql_args['channels'], sql_args['usermasks'],
-                     sql_args['start'].isoformat() if sql_args['start'] else '',
-                     sql_args['end'].isoformat() if sql_args['end'] else '',
-                     sql_args['query'].get_parsed(), '[wildcard]' if sql_args['query_wildcard'] else '[no_wildcard]')
-
-    # update after processing params
-    render_args['search_query_wildcard'] = sql_args.get('query_wildcard')
-    render_args['search_limit'] = sql_args.get('limit')
-    render_args['search_order'] = sql_args.get('order')
+        sql_args, render_args = _process_search_form_params()
+    except BadRequest:
+        return redirect(url_for('home'))
 
     # build and execute the query
     results_cursor = build_query_backlog(db.session, sql_args).all()
 
-    if sql_args['order'] == 'newest':
+    if sql_args['order'] == 'newest':  # we still want the display listing in chronological order
         results_cursor = reversed(results_cursor)
 
     if (app.debug or app.testing) and get_debug_queries():
@@ -155,6 +125,89 @@ def search():
     render_args['expand_line_details'] = not has_single_channel or is_user_search or is_keyword_search
 
     return render_template('results.html', records=results_display, **render_args)
+
+
+@app.route('/search/users')
+@login_required
+def search_users():
+    # process the args passed in from the query string in the request
+    # this also documents the POST form parameters - check this method's source along with the readme
+    try:
+        sql_args, render_args = _process_search_form_params()
+    except BadRequest:
+        return redirect(url_for('home'))
+
+    # build and execute the query
+    results_cursor = build_query_usermask(db.session, sql_args).all()
+
+    if (app.debug or app.testing) and get_debug_queries():
+        info = get_debug_queries()[0]
+        app.logger.debug("SQL: {}\nParameters: {}\nDuration: {:.3f}s".format(
+            info.statement, repr(info.parameters), info.duration))
+
+    results_raw = list(results_cursor)
+    results_display = [DisplayUserSummary(sender, count) for sender, count in results_raw]
+
+    return render_template('results_users.html', records=results_display, **render_args)
+
+
+def _process_search_form_params() -> (dict, dict):
+    """
+    Process the params in request.args. This method is a wrapper method that a) outputs useful debugging messages; and
+    b) returns both the processed SQL parameters, and the sanitized "display" parameters that can be passed to the
+    template to prepopulate the form.
+    :return: Two dicts: first is sql args, second is render (template) args after sanitisation. See ``search()`` for
+        example usage of this function.
+    :raise BadRequest: set of search parameters is invalid
+    """
+    # some helpful constants for the request argument processing
+    # type of extraction/processing - this is more documentation as it's not used to process at the moment
+    unique_args = {'start', 'end', 'limit', 'query_wildcard'}
+    list_wildcard_args = {'channel', 'usermask'}  # space-separated lists; if any arg repeated, list is concatenated
+    query_args = {'query'}  # requires query parsing
+    search_args = unique_args | list_wildcard_args | query_args
+
+    form_args = request.args
+    available_args = search_args & set(form_args.keys())
+
+    # if no arguments passed, we can just redirect to the home
+    if not available_args:
+        raise BadRequest("Invalid search: no search parameters")
+
+    # For rendering in templates - will be updated after processing search params (if successful) before render
+    render_args = {
+        'search_channel': form_args.get('channel'),
+        'search_usermask': form_args.get('usermask'),
+        'search_start': form_args.get('start'),
+        'search_end': form_args.get('end'),
+        'search_query': form_args.get('query'),
+        'search_query_wildcard': form_args.get('search_query_wildcard', int),
+        'search_limit': form_args.get('limit', app.config['RESULTS_NUM_DEFAULT'], int),
+        'search_order': form_args.get('order'),
+        'search_type': form_args.get('type'),
+        'expand_line_details': False,
+    }
+
+    # Process and parse the args
+    try:
+        sql_args = process_search_params(form_args)
+        sql_args['permissions'] = query_permitted_buffers(db.session, current_user)
+    except ValueError as e:
+        errtext = e.args[0]
+        return render_template('search_form.html', error=errtext, **render_args)
+
+    app.logger.debug("Args|SQL: limit=%i order=%s channel%s usermask%s start[%s] end[%s] query%s %s",
+                     sql_args['limit'], sql_args['order'], sql_args['channels'], sql_args['usermasks'],
+                     sql_args['start'].isoformat() if sql_args['start'] else '',
+                     sql_args['end'].isoformat() if sql_args['end'] else '',
+                     sql_args['query'].get_parsed(), '[wildcard]' if sql_args['query_wildcard'] else '[no_wildcard]')
+
+    # update after processing params
+    render_args['search_query_wildcard'] = sql_args.get('query_wildcard')
+    render_args['search_limit'] = sql_args.get('limit')
+    render_args['search_order'] = sql_args.get('order')
+    render_args['search_type'] = sql_args.get('type')
+    return sql_args, render_args
 
 
 @app.route('/user/permissions', methods=['GET'])

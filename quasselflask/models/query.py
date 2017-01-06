@@ -8,7 +8,7 @@ Project: QuasselFlask
 """
 
 import sqlalchemy.orm
-from sqlalchemy import desc, asc, and_, or_
+from sqlalchemy import desc, asc, and_, or_, func
 
 from quasselflask.models.models import QfPermission
 from quasselflask.models.models import QuasselUser, Network, Backlog, Buffer, Sender, QfUser
@@ -18,7 +18,7 @@ from quasselflask.parsing.irclog import BufferType
 from quasselflask.parsing.query import BooleanQuery
 
 
-def build_query_backlog(session, args) -> sqlalchemy.orm.query.Query:
+def build_query_backlog(session, args) -> sqlalchemy.orm.Query:
     """
     Builds database query (as an SQLAlchemy Query object) for an IRC backlog search, given various search parameters.
     This function does very little checking on the structure of ``args``, as it assumes the args have already been
@@ -31,7 +31,49 @@ def build_query_backlog(session, args) -> sqlalchemy.orm.query.Query:
     """
     # prepare SQL query joins
     query = session.query(Backlog).join(Buffer).join(Sender)  # type: sqlalchemy.orm.query.Query
+    query = _apply_backlog_search_filter(query, args)
 
+    if args.get('order') == 'newest':
+        query = query.order_by(desc(Backlog.time))
+    else:
+        query = query.order_by(asc(Backlog.time))
+
+    query = query.limit(args.get('limit'))
+
+    return query
+
+
+def build_query_usermask(session, args) -> sqlalchemy.orm.Query:
+    """
+    Builds database query (as an SQLAlchemy Query object) for an IRC usermask search, given various search parameters
+    on the user and backlog where the user may have been seen speaking, joining or otherwise active.
+    This function does very little checking on the structure of ``args``, as it assumes the args have already been
+    processed and validated and reasonable defaults set.
+
+    :param session: Database session (SQLAlchemy)
+    :param args: Search parameters as returned by quasselflask.parsing.form.process_search_params(). Refer to that
+        function for structure information.
+    :return:
+    """
+    backlog_query = build_query_backlog(session, args).subquery()
+    query = session.query(Sender, func.count('*').label('line_count'))\
+        .join(backlog_query, Sender.senderid == backlog_query.c.senderid)\
+        .group_by(Sender.senderid)\
+        .order_by(desc('line_count'))
+    return query
+
+
+def _apply_backlog_search_filter(query: sqlalchemy.orm.Query, args: dict) -> sqlalchemy.orm.Query:
+    """
+    Applies the filter criteria from ``args`` (Backlog start/end time, Backlog message text search, Buffer name,
+    current user Buffer permissions) onto an existing query ``query``.
+
+    See ``build_query_backlog()`` for example usage.
+
+    :param query:
+    :param args:
+    :return:
+    """
     if args.get('start'):
         query = query.filter(Backlog.time >= args.get('start'))
 
@@ -50,13 +92,6 @@ def build_query_backlog(session, args) -> sqlalchemy.orm.query.Query:
         query = query.filter(query_message_filter)
 
     query = query.filter(Buffer.bufferid.in_(pbuf.bufferid for pbuf in args['permissions']))
-
-    if args.get('order') == 'newest':
-        query = query.order_by(desc(Backlog.time))
-    else:
-        query = query.order_by(asc(Backlog.time))
-
-    query = query.limit(args.get('limit'))
 
     return query
 

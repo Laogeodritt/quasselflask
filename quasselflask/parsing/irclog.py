@@ -73,7 +73,45 @@ class Color(Enum):
     green = 7
 
 
-class DisplayBacklog:
+class DisplayRecordSenderMixin:
+    def __init__(self, sender):
+        self.sender = sender
+        self.nickname = self.sender.split('!', 1)[0]  # type: str
+
+    def get_nick_hash(self):
+        """
+        Hashes the nick and returns a four-bit value. This method internally uses CRC16 x-25 implementation, which
+        corresponds to Quassel's implementation (qChecksum() on Quassel 0.10.0, Qt 4.8.5) according to a quick
+        empirical check (6 nicknames).
+
+        See: http://crcmod.sourceforge.net/crcmod.predefined.html
+        :return:
+        """
+        lower_nick = self.nickname.lower().rstrip('_')
+        stripped_nick = lower_nick.rstrip('_')
+        normalized_nick = stripped_nick if stripped_nick else lower_nick  # in case nickname is all underscores
+        return calculateNicknameHash(normalized_nick.encode('latin-1')) & 0xF
+
+    def get_nick_color(self):
+        """
+        Return the nick's colour based on hash. Corresponds to Quassel's own implementation.
+
+        The colours will correspond in QuasselFlask's default colour scheme and in the Solarized Light/Dark themes for
+        Quassel by antoligy <https://github.com/antoligy/SolarizedQuassel>.
+
+        Otherwise, to make this work with other themes, you can customise the Color enum. Usually, Quassel supports 16
+        colours. If you want the colours here to correspond to your Quassel colour scheme, specify all 16 colours you
+        used in Quassel (or specify 8 colours - corresponds to repeating the list of 8 colours twice in Quassel's nick
+        colour settings).
+
+        For Quassel's hash implementation, see:
+        https://github.com/quassel/quassel/blob/6509162911c0ceb3658f6a7ece1a1d82c97b577e/src/uisupport/uistyle.cpp#L874
+        :return: Color object
+        """
+        return Color(self.get_nick_hash() % len(Color))
+
+
+class DisplayBacklog(DisplayRecordSenderMixin):
     _icon_type_map = {
         BacklogType.privmsg: '',
         BacklogType.notice: '',
@@ -123,13 +161,12 @@ class DisplayBacklog:
 
     def __init__(self, backlog):
         """
-        :param backlog: Backlog string
+        :param backlog: Backlog object
         """
+        DisplayRecordSenderMixin.__init__(self, backlog.sender.sender)
         self.time = DisplayBacklog._time_format.format(backlog.time)  # type: str
         self.network = backlog.buffer.network.networkname  # type: str
         self.channel = backlog.buffer.buffername  # type: str
-        self.sender = backlog.sender.sender  # type: str
-        self.nickname = self.sender.split('!', 1)[0]  # type: str
         try:
             self.type = BacklogType(backlog.type)
         except ValueError:
@@ -138,38 +175,6 @@ class DisplayBacklog:
 
     def get_icon_text(self):
         return self._icon_type_map.get(self.type, '')
-
-    def get_nick_hash(self):
-        """
-        Hashes the nick and returns a four-bit value. This method internally uses CRC16 x-25 implementation, which
-        corresponds to Quassel's implementation (qChecksum() on Quassel 0.10.0, Qt 4.8.5) according to a quick
-        empirical check (6 nicknames).
-
-        See: http://crcmod.sourceforge.net/crcmod.predefined.html
-        :return:
-        """
-        lower_nick = self.nickname.lower().rstrip('_')
-        stripped_nick = lower_nick.rstrip('_')
-        normalized_nick = stripped_nick if stripped_nick else lower_nick  # in case nickname is all underscores
-        return calculateNicknameHash(normalized_nick.encode('latin-1')) & 0xF
-
-    def get_nick_color(self):
-        """
-        Return the nick's colour based on hash. Corresponds to Quassel's own implementation.
-
-        The colours will correspond in QuasselFlask's default colour scheme and in the Solarized Light/Dark themes for
-        Quassel by antoligy <https://github.com/antoligy/SolarizedQuassel>.
-
-        Otherwise, to make this work with other themes, you can customise the Color enum. Usually, Quassel supports 16
-        colours. If you want the colours here to correspond to your Quassel colour scheme, specify all 16 colours you
-        used in Quassel (or specify 8 colours - corresponds to repeating the list of 8 colours twice in Quassel's nick
-        colour settings).
-
-        For Quassel's hash implementation, see:
-        https://github.com/quassel/quassel/blob/6509162911c0ceb3658f6a7ece1a1d82c97b577e/src/uisupport/uistyle.cpp#L874
-        :return: Color object
-        """
-        return Color(self.get_nick_hash() % len(Color))
 
     def format_html_message(self):
         """
@@ -295,3 +300,15 @@ class DisplayBacklog:
                 output.append('</span>')
             return True
         return False
+
+
+class DisplayUserSummary(DisplayRecordSenderMixin):
+    def __init__(self, sender, count):
+        """
+        :param sender: Sender object from query
+        :param count: number of backlog lines, as obtained from query
+        """
+        DisplayRecordSenderMixin.__init__(self, sender.sender)
+        self.count = count
+
+

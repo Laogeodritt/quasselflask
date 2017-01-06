@@ -3155,6 +3155,12 @@ html .result table.irc-log .nick td, .light .result table.irc-log .mode td, .lig
 .light .result table.irc-log .nick td {
   color: #93a1a1;
 }
+html .result table.irc-users tr:first-child, .light .result table.irc-users tr:first-child {
+  border-bottom: 1px solid #657b83;
+}
+html .result table.irc-users tr.irc-user-line, .light .result table.irc-users tr.irc-user-line {
+  border-bottom: 1px dashed #657b83;
+}
 html table.userlist tr, .light table.userlist tr {
   border-bottom: 1px solid #93a1a1;
   /*&.superuser {
@@ -3272,6 +3278,12 @@ html .label-extra, .light .label-extra {
 .netsplit_join td, .dark .result table.irc-log .netsplit_quit td,
 .dark .result table.irc-log .nick td {
   color: #586e75;
+}
+.dark .result table.irc-users tr:first-child {
+  border-bottom: 1px solid #839496;
+}
+.dark .result table.irc-users tr.irc-user-line {
+  border-bottom: 1px dashed #839496;
 }
 .dark table.userlist tr {
   border-bottom: 1px solid #586e75;
@@ -3926,6 +3938,19 @@ body {
 }
 .light .result table.irc-log .nick, .dark .result table.irc-log .nick {
   /* color set by the light/dark rebase above */
+}
+.light .result table.irc-users, .dark .result table.irc-users {
+  margin-left: auto;
+  margin-right: auto;
+}
+.light .result table.irc-users td, .light .result table.irc-users th, .dark .result table.irc-users td, .dark .result table.irc-users th {
+  padding: 0.2em 0.8em 0.6em;
+}
+.light .result table.irc-users td.sender, .light .result table.irc-users th.sender, .dark .result table.irc-users td.sender, .dark .result table.irc-users th.sender {
+  text-align: left;
+}
+.light .result table.irc-users td.record-count, .light .result table.irc-users th.record-count, .dark .result table.irc-users td.record-count, .dark .result table.irc-users th.record-count {
+  text-align: right;
 }
 .light .userlist-container, .dark .userlist-container {
   width: 60%;

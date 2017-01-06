@@ -6,11 +6,17 @@ Project: QuasselFlask
 
 import re
 from datetime import datetime, timedelta
+from enum import Enum
 
 from wtforms import ValidationError
 
 import quasselflask
 from quasselflask.parsing.query import BooleanQuery
+
+
+class SearchType(Enum):
+    backlog = 0
+    usermask = 1
 
 
 def process_search_params(in_args) -> dict:
@@ -62,6 +68,11 @@ def process_search_params(in_args) -> dict:
     # Flat-list arguments
     out_args['channels'] = extract_glob_list(in_args.get('channel', ''))
     out_args['usermasks'] = extract_glob_list(in_args.get('usermask', ''))
+
+    try:
+        out_args['type'] = SearchType[in_args.get('type', '')]
+    except KeyError:
+        out_args['type'] = SearchType.backlog
 
     # fulltext string
     out_args['query'] = BooleanQuery(in_args.get('query', ''), quasselflask.app.logger)
