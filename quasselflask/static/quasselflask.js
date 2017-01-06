@@ -47,7 +47,9 @@ $(document).ready(function() {
 /* Bootstrap */
 $(document).ready(function() {
     // IRC backlog row details - expando
-    $('table.irc-log tr.irc-line').click(function(event)
+    // jquery.on(event, selector, function) - applying to table.irc-log and delegating to selector 'tr.irc-line'
+    // requires only one event in memory, which is more efficient
+    $('table.irc-log').on('click', 'tr.irc-line', function(event)
     {
         toggleIrcLineDetails(event.delegateTarget);
     });
