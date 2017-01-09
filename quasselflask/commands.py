@@ -6,6 +6,7 @@ Project: Quasselflask
 
 from sys import stderr
 from datetime import datetime
+import time
 
 import sqlalchemy.orm
 from sqlalchemy import func
@@ -13,11 +14,22 @@ from quasselflask import app
 from flask_script import prompt_bool, prompt_pass
 from flask_script.commands import InvalidCommand
 
-from quasselflask import db, cmdman, userman
+from quasselflask import db, cmdman, userman, __version__ as qf_version
+
+_start_time = None
+
+
+def _timer_start():
+    global _start_time
+    _start_time = time.time()
+
+
+def _timer_print():
+    print('Completed in {:.3f}s'.format(time.time() - _start_time))
 
 
 @cmdman.command
-def init_superuser(name, email, password=''):
+def create_superuser(name, email, password=''):
     """
     Creates a new superuser for Quasselflask, so that you can login. Will only work if no superuser currently exists
     (if there is,
@@ -68,6 +80,8 @@ def init_superuser(name, email, password=''):
         except KeyboardInterrupt:
             raise InvalidCommand("Cancelled by KeyboardInterrupt.")
 
+    _timer_start()
+
     # Create and save the user
     # For all form fields
     for field_name, field_value in form.data.items():
@@ -91,6 +105,48 @@ def init_superuser(name, email, password=''):
 
     print('Created superuser: {} <{}>'.format(user_fields['username'], user_fields['email']))
     print("Email address is assumed confirmed. Make sure it\'s correct. You can change it in the web interface.")
+    _timer_print()
+
+
+@cmdman.command
+def create_indices():
+    """
+    Create all indices used for QuasselFlask searches.
+    :return:
+    :raise Exception: SQLAlchemy exceptions???
+    """
+    from quasselflask.models import models
+    if prompt_bool(
+            'Are you sure? This will build new indices to speed up QuasselFlask searches. DEPENDING ON QUASSEL '
+            'BACKLOG SIZE, THIS CAN TAKE SEVERAL MINUTES. If indices were already built, you should run '
+            '`drop_indices` first to drop them. (y|n) Default:'):
+        print('Creating indices. This may take several minutes. Please wait...')
+        _timer_start()
+        models.qf_create_indices()
+        print('Database indices for QuasselFlask created. (Existing indices have not been changed).')
+        _timer_print()
+    else:
+        print('Cancelled by user. Database has not been modified.')
+
+
+@cmdman.command
+def reset_indices():
+    """
+    Drop all search indices made specifically for QuasselFlask. This should not affect the database objects for your
+    quasselcore installation---but use at your own risk and have backups anyway!
+    :return:
+    """
+    from quasselflask.models import models
+    if prompt_bool('Are you sure? This will delete all QuasselFlask-specific search indices and CANNOT BE UNDONE. '
+                   'Quassel database will not be deleted. You will need to run the "create_indices" '
+                   'command again to create the indices. (y|n) Default:'):
+        print('Dropping indices...')
+        _timer_start()
+        models.qf_drop_indices()
+        print('Database indices for QuasselFlask search dropped.')
+        _timer_print()
+    else:
+        print('Cancelled by user. Database has not been modified.')
 
 
 def _format_form_errors(errors: {str: [str]}) -> [str]:
@@ -122,14 +178,16 @@ def _print_form_errors(errors: {str: [str]}) -> None:
 def reset_db():
     """
     Drops the Quasselflask-specific database tables. Does not drop quassel tables (but use this at your own risk!
-    Have backups!). The connected PostgreSQL user must be owner (or member to the owner group) of the table to drop it.
+    Have backups!), and does not drop search indices. The connected PostgreSQL user must be owner (or member to the
+    owner group) of the table to drop it.
     :return:
     """
     from quasselflask.models import models
     if prompt_bool('Are you sure? This will delete all QuasselFlask users and permissions and CANNOT BE UNDONE. '
-                   'Quassel database will not be deleted. You will need to run the "init_superuser" '
-                   'command again to set up QuasselFlask tables and superuser. (y|n) Default: '):
-        models.qf_drop_all()
+                   'Quassel database will not be deleted. You will need to run the "create_superuser" '
+                   'command again to set up QuasselFlask tables and superuser. (y|n) Default:'):
+        print('Dropping tables...')
+        models.qf_drop_tables()
         print('Database tables for Quasselflask dropped.')
     else:
         print('Cancelled by user. Database has not been modified.')

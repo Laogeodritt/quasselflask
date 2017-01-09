@@ -8,6 +8,7 @@ Project: QuasselFlask
 from flask_login import AnonymousUserMixin
 from flask_user import UserMixin
 from sqlalchemy.ext.automap import automap_base
+from sqlalchemy import Index, text
 from sqlalchemy.orm import Query
 
 from quasselflask import db
@@ -35,6 +36,24 @@ def __repr_backlog(self):
                                                           self.sender.sender, self.message)
 
 Backlog.__repr__ = __repr_backlog
+
+indices = {
+    Index('qf_sender_gin_sender_idx', text("sender gin_trgm_ops"), postgresql_using='gin'),
+    Index('qf_buffer_gin_buffername_idx', text("buffername gin_trgm_ops"), postgresql_using='gin'),
+    Index('qf_backlog_time_idx', Backlog.time),
+    Index('qf_backlog_bufferid_senderid_idx', Backlog.bufferid, Backlog.senderid),
+    Index('qf_backlog_senderid_idx', Backlog.senderid),
+}
+
+for index in indices:
+    if index.name.startswith('qf_sender'):
+        Sender.__table__.append_constraint(index)
+    elif index.name.startswith('qf_buffer'):
+        Buffer.__table__.append_constraint(index)
+    elif index.name.startswith('qf_backlog'):
+        Backlog.__table__.append_constraint(index)
+    else:
+        raise ValueError('Index {} does not correspond to a known table'.format(index.name))
 
 
 class QfUser(db.Model, UserMixin):
@@ -248,7 +267,7 @@ def qf_create_all():
     db.create_all()
 
 
-def qf_drop_all():
+def qf_drop_tables():
     """
     Drops all QuasselFlask-related tables types. Does not drop Quassel tables.
 
@@ -258,3 +277,23 @@ def qf_drop_all():
     db.metadata.drop_all(bind=db.engine, tables=[QfUser.__table__, QfPermission.__table__], checkfirst=True)
     db.Enum(PermissionAccess).drop(db.engine, checkfirst=True)
     db.Enum(PermissionType).drop(db.engine, checkfirst=True)
+
+
+def qf_create_indices():
+    """
+    Create all indices used for QuasselFlask searches.
+    :return:
+    :raise Exception: SQLAlchemy exceptions???
+    """
+    # TODO qf_create_indices()
+    for index in indices:
+        index.create(bind=db.engine)
+
+
+def qf_drop_indices():
+    """
+    Drop all search indices made specifically for QuasselFlask.
+    :return:
+    """
+    for index in indices:
+        index.drop(bind=db.engine)

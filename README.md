@@ -6,13 +6,14 @@ Quasselflask runs wherever Python + Flask run (Linux, Mac OSX, Windows users, y'
 
 The features supported:
 
-(**WARNING**: This software is in early development, so only some of these features are functional. It's not ready for general use. Curious where things are? See the Features Wishlist section below, or feel free to contact me.)
+(**WARNING**: This software is in early development, so only some of these features are functional. It's not ready for general use. Curious where things are? See the GitHub Issue tracke or feel free to contact me.)
 
 * Searching quassel logs via network, channel, usermask, date/time range, keywords (boolean search)
-* User management: protects logs from public access via username/password. Optionally, limit the channels that can be searched by each user (does not integrate with quassel's users)
+* Displaying a summary of nicknames and usermasks that match the same criteria
+* User management: protects logs from public access via username/password. Optionally, limit the channels that can be searched by each user (does not integrate with quassel's users, so you must create separate accounts and set permissions accordingly)
 * Text and HTML export of results
-* Support for IRC formatting and colours
-* Support for nickname colours (hash matches Quassel)
+* Support for showing IRC formatting and colours
+* Support for nickname colours (hash method matches Quassel)
 * Context expansion of search results
 * Default CSS colour scheme available in your choice of [Solarized](http://ethanschoonover.com/solarized) Light or Dark =\] (I know some are less fond of it, but I personally love this colour palette!)
 
@@ -56,20 +57,22 @@ You can use the following in Python (Linux only?) to generate a secret key to co
 
 The third line will change randomly and is a good secret key (see also [Flask Quickstart: Sessions](http://flask.pocoo.org/docs/0.11/quickstart/#sessions)). Alternatively, you could use [Random.org's string service](www.random.org/strings) (in this case, make it at least 28 characters with uppercase/lowercase letters and numbers all enabled.)
 
-You can find out about other configuration variables by checking out [quasselflask/core.py](quasselflask/core.py) - scroll down to the `class DefaultConfig:` line. Each line underneath that one is a configuration variable you can change by copying it into your `quasselflask.cfg` file and modifying the value; the comment after the `#` is an explanation (you can remove this).
+You can find out about other configuration variables by checking out [quasselflask/base_config.py](quasselflask/base_config.py) - scroll down to the `class DefaultConfig:` line. Each line underneath that one is a configuration variable you can change by copying it into your `quasselflask.cfg` file and modifying the value; the comment after the `#` is an explanation (you can remove this). Do not use any configuration variables under `InternalConfig` unless you're sure of what you're doing!
 
 This software is still under development and the configuration is changing as I develop it, so I have not yet documented configuration more robustly.
 
 **TODO:** Document individual variables.
 
-[1] SQLite support is not possible because it does not allow concurrency (multiple applications to open the database at once). Some features used in searching and quasselflask user management may be unavailable in SQLite (haven't scrutinised features thoroughly since I wrote it against postgresql specifically).
+[1] SQLite support is not possible because it does not allow concurrency (multiple applications to open the database at once). Some database engine features used in searching and quasselflask user management may be unavailable in SQLite (haven't scrutinised features thoroughly since I wrote it against postgresql specifically).
 
 # Requirements
 
 This application requires:
 
+* An existing installation of quasselcore *running on the PostgreSQL backend*. This application does not support an SQLite backend.
+* PostgreSQL >= 9.1 - I think. A version of PostgreSQL that supports GIN/GIST trigram indices for LIKE/ILIKE operations.
 * Python 3. Tested against Python 3.5.2; should work for Python 3.x in general, but I'm not sure. (If you've discovered it doesn't work for some versions, please let me know!)
-* If you are using a Python version *earlier* than 3.4, you need to [install setuptools and pip](https://packaging.python.org/installing/#requirements-for-installing-packages)
+* If you are using a Python version *earlier* than 3.4, you need to [install setuptools and pip](https://packaging.python.org/installing/#requirements-for-installing-packages) for installation.
 * `libpq` library and the `pg_config` tool. On Debian and Ubuntu, run `sudo apt-get install libpq-dev`. On other Linux distros, try and find `libpq-dev`, `postgresql-devel` or a similar package. On Windows
 
 You don't need to install other dependencies yourself. The setup.py will do it for you!
@@ -80,8 +83,15 @@ If you're curious about dependencies, check out the [setup.py](setup.py) file, s
 
 In order to use Quasselflask, you need to prepare the database and database server. This should not affect Quassel's operation at all nor change your data. However, **you should always keep backups in case something happens**. Things can go wrong.
 
-We need to do three things: create a postgresql user with appropriate permissions; set up Quasselflask tables and initial user; and create indexes in the database that allow our searches to be faster (quassel itself doesn't search like this so it doesn't make these indices).
- 
+We need to do a couple things to prepare everything. Some things are specific to your database and must be done using your own tools (manually or using any tools you already use for postgresql if you're a sysadmin); others can be done automatically through a QuasselFlask command.
+
+Specifically, we will need to:
+
+1. Create a postgreSQL user with the appropriate permissions, so QuasselFlask can log into the server;
+2. Enable the PostgreSQL trigram extension, used for creating searchable indices;
+3. *Later*, after installing Quasselflask, create the indices in the database that speed up Quasselflask searches (quassel itself never searches using these criteria, so it doesn't make these particular indices);
+4. *Later*, after installing Quasselflask, set up the Quasselflask tables and initial user.
+
  The instructions below assume you are root on a Linux system with postgresql; **or** that you have shell access to the Linux system running postgresql, and you can use the `psql` utility with sufficient permissions to manage users and your Quassel database.
 
 If you have a control panel or something else to manage your postgresql database, then you should find out how to do the below steps using your system.
@@ -92,32 +102,44 @@ First, in a terminal, run the `psql` utility as the PostgreSQL superuser and con
 
     sudo -u postgres psql quasseldb
 
-Then type in this command to create a user specifically for Quasselflask (replace `username` and `yourpassword`):
+Then type in this command to create a user specifically for Quasselflask (replace `quasselflask` with a different username if desired; and replace `yourpasswordhere` with your password):
 
-    CREATE USER username WITH NOSUPERUSER NOCREATEDB NOCREATEROLE NOCREATEUSER NOINHERIT LOGIN NOREPLICATION ENCRYPTED PASSWORD 'yourpasswordhere';
+    CREATE USER quasselflask WITH NOSUPERUSER NOCREATEDB NOCREATEROLE NOCREATEUSER NOINHERIT LOGIN NOREPLICATION ENCRYPTED PASSWORD 'yourpasswordhere';
 
 Set up the user's permissions:
 
-    REVOKE ALL ON DATABASE quasseldb FROM quasselflask;
+    REVOKE ALL ON DATABASE quasseldb FROM username;
     REVOKE ALL ON ALL TABLES IN SCHEMA public FROM quasselflask;
     REVOKE ALL ON SCHEMA public FROM quasselflask;
     GRANT CONNECT, CREATE ON DATABASE quasseldb TO quasselflask;
     GRANT ALL ON SCHEMA public TO quasselflask;
     GRANT SELECT, REFERENCES ON ALL TABLES IN SCHEMA public TO quasselflask;
 
-The last line is for security: this prevents Quasselflask from editing Quassel's tables (e.g. in case of a compromise of Quasselflask or of the SQL user it's using). This does add a few more steps to setup; if the security concern isn't an issue, you could also use `GRANT ALL ...` for the last line.
+The last line is selected as such for security: this prevents Quasselflask from editing Quassel's tables (e.g. in case of a compromise of Quasselflask or of the SQL user it's using). This does add a few more steps to setup; if the security problem with this isn't a concern to you, you could change it to `GRANT ALL ON ALL TABLES ...` for the last line.
 
-To exit:
+Leave `psql` open for the next step.
+
+## Enable trigram indices
+
+This feature isn't enabled by default, but it helps us create indices that speed up searching considerably. This is a required step for the indices to be created later.
+
+To enable the trigram extension, in `psql`, type:
+
+    CREATE EXTENSION pg_trgm;
+
+That's it! To exit:
 
     \quit
 
 ## Creating indexes to speed up searching
 
-**TODO:** finish this section: add indices in the `backlog` table to the `senderid` and `time` columns.
+*This step has been automated and will be done by calling a Quasselflask command after installation, below. The below text explains the what and why.*
 
-This is an important step, because Quassel doesn't use the database to do deep searching, and there doesn't set up the database to be able to do this quickly. The following steps will create indices on a few columns to speed up searches&mdash;this will not change anything for Quassel's operation, but it will make your database take up a little bit more disk space.
+This is an important step, because Quassel doesn't use the database to do deep searching, and therefore doesn't set up the database to be able to do this quickly. The following steps will create indices on a few columns to speed up searches&mdash;this will not change anything for Quassel's operation, but it will make your database take up a little bit more disk space.
 
-As a point of comparison: without doing this, searches took 15-20 seconds (ridiculous!). After doing this, the same test searches took around 0.2-0.6 seconds, with some of them taking up to 4s (didn't quite understand why so long yet---to be fixed).
+As a point of comparison: without doing this, searches took 15-20 seconds (ridiculous!). After doing this, the same test searches took around 0.2-0.6 seconds.
+
+Note that this will increase the size of your database. On my test database (~600MB backlog of actual IRC backlogs), I found that the indices add about 60% of the size of the `backlog` table plus 100% of the `sender` and `buffer` tables to the total datbase size.
 
 # Installation and running
 
@@ -139,11 +161,27 @@ The following instructions assume you have the following directory structure: yo
 
 4. Create an initial Quasselflask superuser (a.k.a. admin user). This will automatically make Quasselflask tables if needed.
 
-        python -m quasselflask.run init_superuser username user@domain.com
+        python -m quasselflask.run reate_superuser username user@domain.com
     
     This will prompt you for a password. Type it in and press Enter (nothing will show up in the window).
+
+5. Creates the indices to be used by Quasselflask for searching. Since these indices are linked to the Quasselcore tables, you need to be "owner" of the tables to do this: so you will need to modify your `quasselflask.cfg` file to use the username/password of the database user used by quasselcore (if you don't want to do this, see below for an alternative).
+
+        python -m quasselflask.run create_indices
+        
+    This should automatically create the indices. Check for any error messages.
     
-5. (Optional) Now that you've created the needed tables, you can prevent your database user from creating further tables (in case of compromise of that user or of Quasselflask). See *Creating the database user* section for a reminder of the variables you have to substitute in (we're using the same example names as in that section).
+    Remember to revert your changes to `quasselflask.cfg`.
+    
+    Alternatively, you can log into `psql` again and issue these commands:
+    
+        CREATE INDEX qf_sender_gin_sender_idx ON sender USING gin (sender gin_trgm_ops);
+        CREATE INDEX qf_buffer_gin_buffername_idx ON buffer USING gin (buffername gin_trgm_ops);
+        CREATE INDEX qf_backlog_time_idx ON backlog (time);
+        CREATE INDEX qf_backlog_bufferid_senderid_idx ON backlog (bufferid, senderid);
+        CREATE INDEX qf_backlog_senderid_idx ON backlog (senderid);
+    
+6. (Optional) Now that you've created the needed database objects, you can prevent your database user from creating further tables (in case of compromise of that user or of Quasselflask). See *Creating the database user* section for a reminder of the variables you have to substitute in (we're using the same example names as in that section).
 
     First, at a terminal, start the `psql` utility again:
 
@@ -157,7 +195,7 @@ The following instructions assume you have the following directory structure: yo
     
         \quit
 
-6.  Run the web application&mdash;you have various options to choose from. The application is a fairly simple Flask application. As such, you can run it in the normal ways that you would run a Flask application:
+7.  Run the web application&mdash;you have various options to choose from. The application is a fairly simple Flask application. As such, you can run it in the normal ways that you would run a Flask application:
 
     * For testing it out or using it locally,
     * [Flask deployment options](http://flask.pocoo.org/docs/0.11/deploying/), for a publicly hosted website. (This doesn't mean the logs are public, since you still have to login with a username/password to search them.)
@@ -170,9 +208,29 @@ The general command format is:
 
     python -m quasselflask.run commandname [argument1 [argument2 [...]]
 
-The available commands are `init_db`, `init_superuser`, `reset_db`. Details are available in the application; to see the help files, run:
+The available commands are `create_superuser`, `create_indices`, `reset_db`, `reset_indices`. Details are available in the application; to see the help files, run:
 
     python -m quasselflask.run -?
+
+# Uninstallation
+
+To remove QuasselFlask from your database and return it to a quasselcore-only form, first stop the Quasselflask application (this depends on how you deployed it: see Step 7 of the Installation section).
+
+Then open a command line and activate your virtual env (see Step 1 of the Installation section).
+
+Run these commands. **WARNING:** Although these commands aren't supposed to modify quasselcore data, using these commands is at your own risk: make sure you have database backups!
+
+    python -m quasselflask.run reset_indices
+    python -m quasselflask.run reset_db
+
+Note that for `reset_indices`, you may have to temporarily change the database username/password to the one quasselcore is running on in your `quasselflask.cfg` file. See step 6 of the installation (create_indices step).
+
+If you don't want to do this, you can log into `psql` and manually issue `DROP INDEX ...` commands (same commands as in the manual alternative described in the installation, but as `DROP` instead of `CREATE` commands).
+
+(If these don't work, you may have to run `psql` and run the command `GRANT CREATE ON DATABASE quasseldb TO quasselflask`, replacing `quasseldb` with the name of your database and `quasselflask` with your database username).
+
+Once this has been done, you can remove Quasselflask from your deployment and delete the virtual environment.
+
 
 # API
 
