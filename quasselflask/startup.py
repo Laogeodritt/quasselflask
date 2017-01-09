@@ -73,6 +73,9 @@ def init_app(instance_path=None):
     from quasselflask.parsing.irclog import DisplayBacklog
     from quasselflask.parsing.form import PasswordValidator
 
+    print('QuasselFlask {}'.format(quasselflask.__version__))
+    print('Initialising...')
+
     # Flask
     app = quasselflask.app = Flask(__name__,
                                    instance_path=os.environ.get('QF_CONFIG_PATH', instance_path),
@@ -92,8 +95,11 @@ def init_app(instance_path=None):
     cmdman.help_args = ('-?', '--help')
 
     # Database
+    app.logger.info('Configuring database.')
     db = quasselflask.db = SQLAlchemy(app)
+    app.logger.info('Connecting to database and analysing quasselcore tables. This may take a while...')
     import quasselflask.models.models
+    app.logger.info('Checking QuasselFlask tables and creating if necessary...')
     quasselflask.models.models.qf_create_all()
 
     # Forms
@@ -118,7 +124,9 @@ def init_app(instance_path=None):
     # Configure other internal classes
     DisplayBacklog.set_time_format(app.config['TIME_FORMAT'])
 
+    app.logger.debug('Configuring web endpoints...')
     import quasselflask.views
+    app.logger.debug('Configuring command-line commands...')
     import quasselflask.commands
 
     return app
