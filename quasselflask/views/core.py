@@ -96,18 +96,20 @@ def search():
         return redirect(url_for('home'))
 
     # build and execute the query
-    results_cursor = build_query_backlog(db.session, sql_args).all()
+    results_cursor = build_query_backlog(db.session, sql_args,
+                                         query_options=(joinedload(Backlog.sender),
+                                                        joinedload(Backlog.buffer).joinedload(Buffer.network))).all()
 
     if sql_args['order'] == 'newest':  # we still want the display listing in chronological order
         results_cursor = reversed(results_cursor)
 
-    if (app.debug or app.testing) and get_debug_queries():
-        info = get_debug_queries()[0]
-        app.logger.debug("SQL: {}\nParameters: {}\nDuration: {:.3f}s".format(
-                info.statement, repr(info.parameters), info.duration))
-
     results_raw = list(results_cursor)
     results_display = [DisplayBacklog(result) for result in results_raw]
+
+    if (app.debug or app.testing) and get_debug_queries():
+        for info in get_debug_queries():
+            app.logger.debug("SQL: {}\nParameters: {}\nDuration: {:.3f}s\n\n".format(
+                info.statement, repr(info.parameters), info.duration))
 
     # get unique channels and users by ID
     # efficiency note for big result sets: set() type uses hashing for fast "x in s" operations, and
@@ -201,6 +203,8 @@ def _process_search_form_params() -> (dict, dict):
                      sql_args['start'].isoformat() if sql_args['start'] else '',
                      sql_args['end'].isoformat() if sql_args['end'] else '',
                      sql_args['query'].get_parsed(), '[wildcard]' if sql_args['query_wildcard'] else '[no_wildcard]')
+
+    app.logger.debug("Permissions: {}".format(', '.join(str(pbuf.bufferid) for pbuf in sql_args['permissions'])))
 
     # update after processing params
     render_args['search_query_wildcard'] = sql_args.get('query_wildcard')

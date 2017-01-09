@@ -18,7 +18,7 @@ from quasselflask.parsing.irclog import BufferType
 from quasselflask.parsing.query import BooleanQuery
 
 
-def build_query_backlog(session, args) -> sqlalchemy.orm.Query:
+def build_query_backlog(session, args, query_options=tuple()) -> sqlalchemy.orm.Query:
     """
     Builds database query (as an SQLAlchemy Query object) for an IRC backlog search, given various search parameters.
     This function does very little checking on the structure of ``args``, as it assumes the args have already been
@@ -27,10 +27,13 @@ def build_query_backlog(session, args) -> sqlalchemy.orm.Query:
     :param session: Database session (SQLAlchemy)
     :param args: Search parameters as returned by quasselflask.parsing.form.process_search_params(). Refer to that
         function for structure information.
+    :param query_options: iterable of options passed to Query.options()
     :return:
     """
     # prepare SQL query joins
     query = session.query(Backlog).join(Buffer).join(Sender)  # type: sqlalchemy.orm.query.Query
+    if query_options:
+        query = query.options(*query_options)
     query = _apply_backlog_search_filter(query, args)
 
     if args.get('order') == 'newest':
