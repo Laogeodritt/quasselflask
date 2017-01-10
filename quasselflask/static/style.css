@@ -3161,6 +3161,10 @@ html .result table.irc-users tr:first-child, .light .result table.irc-users tr:f
 html .result table.irc-users tr.irc-user-line, .light .result table.irc-users tr.irc-user-line {
   border-bottom: 1px dashed #657b83;
 }
+html .result table.irc-users tr.irc-user-line.total-line, .light .result table.irc-users tr.irc-user-line.total-line {
+  border-top: 1px solid #657b83;
+  border-bottom: none;
+}
 html table.userlist tr, .light table.userlist tr {
   border-bottom: 1px solid #93a1a1;
   /*&.superuser {
@@ -3285,6 +3289,10 @@ html .label-extra, .light .label-extra {
 .dark .result table.irc-users tr.irc-user-line {
   border-bottom: 1px dashed #839496;
 }
+.dark .result table.irc-users tr.irc-user-line.total-line {
+  border-top: 1px solid #839496;
+  border-bottom: none;
+}
 .dark table.userlist tr {
   border-bottom: 1px solid #586e75;
   /*&.superuser {
@@ -3321,6 +3329,9 @@ body {
   padding: 0;
   margin: 0;
   border: 0;
+}
+.light .accent, .dark .accent {
+  color: #268bd2;
 }
 .light header h1, .light h1, .light h2, .light h3, .light h4, .light h5, .light h6, .dark header h1, .dark h1, .dark h2, .dark h3, .dark h4, .dark h5, .dark h6 {
   color: #268bd2;
@@ -3951,6 +3962,12 @@ body {
 }
 .light .result table.irc-users td.record-count, .light .result table.irc-users th.record-count, .dark .result table.irc-users td.record-count, .dark .result table.irc-users th.record-count {
   text-align: right;
+}
+.light .result table.irc-users th.total, .dark .result table.irc-users th.total {
+  text-align: right;
+}
+.light .result table.irc-users td.total-count, .dark .result table.irc-users td.total-count {
+  font-weight: bold;
 }
 .light .userlist-container, .dark .userlist-container {
   width: 60%;

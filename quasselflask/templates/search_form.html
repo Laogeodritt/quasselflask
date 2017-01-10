@@ -22,9 +22,9 @@
     <h2>Search</h2>
     <form action="{{ url_for('search') if search_type is not defined or search_type is sameas SearchType['backlog'] else url_for('search_users') }}" data-action-backlog="{{ url_for('search') }}" data-action-usermask="{{ url_for('search_users') }}" method="get" id="form-search">
         <div class="search-query-container">
-            <input type="text" name="query" id="search-query" title="Search Query" placeholder="Search Query" {% if search_query is defined %}value="{{ search_query|e }}"{% endif %}>
+            <input type="text" name="query" id="search-query" title="Search Query" placeholder="Search Query (slow!)" {% if search_query is defined %}value="{{ search_query|e }}"{% endif %}>
             <input type="checkbox" name="query_wildcard" id="search-query-wildcard" value="1" {% if search_query_wildcard is defined and search_query_wildcard %}checked="checked"{% endif %}>
-            <label for="search-query-wildcard">Wildcards</label>
+            <label for="search-query-wildcard">Wildcards (very slow!)</label>
         </div>
         <div>
             <input type="text" name="channel" id="search-channel" placeholder="#channelName" {% if search_channel is defined %}value="{{ search_channel|e }}"{% endif %}>

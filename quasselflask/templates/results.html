@@ -14,6 +14,7 @@
 <main class="result">
     <h2>Results</h2>
     <div id="nav-irc-log" class="links-bar"><a href="#" onclick="expandAllIrcLineDetails(); return false;">Expand all</a> <a href="#" onclick="collapseAllIrcLineDetails(); return false;">Collapse all</a></div>
+    <div><strong class="accent">Total records</strong> {{ search_results_total }}{{ '+' if more_results }}</div>
     <table class="irc-log">
         {% for record in records %}
             <tr class="irc-line {{ record.type.name|safe }}">

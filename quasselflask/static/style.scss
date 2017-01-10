@@ -168,6 +168,10 @@ $nav-space-horiz: $nav-space;
     table.irc-users {
       tr:first-child { border-bottom: 1px solid $rebase0; }
       tr.irc-user-line { border-bottom: 1px dashed $rebase0; }
+      tr.irc-user-line.total-line {
+        border-top: 1px solid $rebase0;
+        border-bottom: none;
+      }
     }
   }
 
@@ -268,6 +272,8 @@ body {
     margin: 0;
     border: 0;
   }
+
+  .accent { color: $blue; }
 
   header h1, h1, h2, h3, h4, h5, h6 {
     color: $blue;
@@ -747,6 +753,8 @@ body {
         &.sender { text-align: left; }
         &.record-count { text-align: right; }
       }
+      th.total { text-align: right; }
+      td.total-count { font-weight: bold; }
     }
   }
 

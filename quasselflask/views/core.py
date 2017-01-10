@@ -5,6 +5,7 @@ Project: QuasselFlask
 """
 
 import time
+from sqlalchemy.orm import joinedload
 
 from flask import flash
 from flask import request, g, render_template, url_for, redirect
@@ -92,6 +93,7 @@ def search():
     # this also documents the POST form parameters - check this method's source along with the readme
     try:
         sql_args, render_args = _process_search_form_params()
+        sql_args['limit'] += 1  # so we know if there are more results
     except BadRequest:
         return redirect(url_for('home'))
 
@@ -100,11 +102,21 @@ def search():
                                          query_options=(joinedload(Backlog.sender),
                                                         joinedload(Backlog.buffer).joinedload(Buffer.network))).all()
 
-    if sql_args['order'] == 'newest':  # we still want the display listing in chronological order
-        results_cursor = reversed(results_cursor)
+    # reversed() if we're doing newest-first because we still want chronological order
+    if sql_args['order'] == 'newest':
+        results_raw = list(reversed(results_cursor))
+    else:
+        results_raw = list(results_cursor)
 
-    results_raw = list(results_cursor)
+    # check if we have more results available than the passed limit (note that we queried for limit+1 results)
+    render_args['more_results'] = False
+    if len(results_raw) == sql_args['limit']:  # this limit was already incremented
+        results_raw = results_raw[0:-1]  # only show up to the user-entered limit
+        render_args['more_results'] = True  # for template
+
+    # set up display
     results_display = [DisplayBacklog(result) for result in results_raw]
+    render_args['search_results_total'] = len(results_display)
 
     if (app.debug or app.testing) and get_debug_queries():
         for info in get_debug_queries():
@@ -136,6 +148,7 @@ def search_users():
     # this also documents the POST form parameters - check this method's source along with the readme
     try:
         sql_args, render_args = _process_search_form_params()
+        # not doing the +1 trick to check if more results, because of the grouping+summing that happens here
     except BadRequest:
         return redirect(url_for('home'))
 
@@ -149,6 +162,7 @@ def search_users():
 
     results_raw = list(results_cursor)
     results_display = [DisplayUserSummary(sender, count) for sender, count in results_raw]
+    render_args['search_results_total'] = sum(record.count for record in results_display)
 
     return render_template('results_users.html', records=results_display, **render_args)
 

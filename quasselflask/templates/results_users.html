@@ -25,6 +25,10 @@
                 <td class="record-count">{{ record.count }}</td>
             </tr>
         {% endfor %}
+            <tr class="irc-line irc-user-line total-line">
+                <th class="total accent" colspan="2">Total records</th>
+                <td class="record-count total-count">{{ search_results_total }}</td>
+            </tr>
     </table>
 </main>
 {% endblock %}
