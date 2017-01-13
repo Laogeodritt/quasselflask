@@ -48,18 +48,20 @@
             </li>
         {%- endif %}
         {% block navleft %}{% endblock %}
-        <li id="nav-user" class="dropdown right">
-            {% if call_or_get(current_user.is_authenticated) -%}
+        {% if call_or_get(current_user.is_authenticated) -%}
+            <li id="nav-user" class="dropdown right">
                 <a href="{{ url_for('user.profile') }}" title="User"><i class="fa fa-user-circle fa-lg fa-fw" aria-label="User menu"></i></a>
                 <ul class="dropdown-inner">
                     <li><a href="{{ url_for('user.profile') }}">{{ current_user.username }} <i class="fa fa-vcard-o fa-fw" aria-hidden="true"></i></a></li>
                     <li><a href="{{ url_for('check_permissions') }}">Permissions <i class="fa fa-eye fa-fw" aria-hidden="true"></i></a></li>
                     <li><a href="{{ url_for('user.logout') }}">Sign out <i class="fa fa-sign-out fa-fw" aria-hidden="true"></i></a></li>
-                </ul>
-            {% else %}
-                <a href="{{ url_for('user.login') }}" title="Sign in"><i class="fa fa-sign-in fa-lg fa-fw" aria-label="sign in"></i></a>
-            {%- endif %}
+            </ul>
         </li>
+        {% else %}
+            <li id="nav-user" class="right">
+                <a href="{{ url_for('user.login') }}" title="Sign in"><i class="fa fa-sign-in fa-lg fa-fw" aria-label="sign in"></i></a>
+            </li>
+        {%- endif %}
         {% if not call_or_get(current_user.is_anonymous) and call_or_get(current_user.is_superuser) -%}
             <li id="nav-admin" class="dropdown right">
                 <a href="{{ url_for('admin_users') }}" title="Admin"><i class="fa fa-at fa-lg fa-fw" aria-label="Administrator's menu"></i></a>

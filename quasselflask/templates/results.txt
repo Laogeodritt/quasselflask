@@ -1,0 +1,13 @@
+{#
+ # Text output format for results.
+ #
+ # Arguments:
+ # * expand_line_details: boolean, whether or not search results are expanded/have additional details (channel for this
+ #   output format)
+ # * records: list of results to display, type [DisplayBacklog]. (record.format_html_message() must be well-formed,
+ #      escaped HTML! Careful about escaping characters within the original log message.
+ #
+ #}{%- for record in records -%}
+{%- set brackets = record.get_nick_brackets() -%}
+[{{ record.time }}] {{ record.channel if expand_line_details }} {{ '{: >3s}'.format(record.get_icon_text()) }} {{ brackets[0] }}{{ record.nickname }}{{ brackets[1] }} {{ record.get_message() }}
+{% endfor -%}

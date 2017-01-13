@@ -3893,53 +3893,26 @@ body {
 .light .result table.irc-log .mode td, .dark .result table.irc-log .mode td {
   color: #268bd2;
 }
-.light .result table.irc-log .mode .message:before, .dark .result table.irc-log .mode .message:before {
-  content: 'Mode ';
+.light .result table.irc-log .join, .dark .result table.irc-log .join {
+  /* color set by the light/dark rebase above */
 }
-.light .result table.irc-log .join .message:before, .dark .result table.irc-log .join .message:before {
-  content: 'has joined channel ';
+.light .result table.irc-log .netsplit_join, .dark .result table.irc-log .netsplit_join {
+  /* color set by the light/dark rebase above */
 }
-.light .result table.irc-log .netsplit_join .message:before, .dark .result table.irc-log .netsplit_join .message:before {
-  content: 'has joined channel ';
+.light .result table.irc-log .part, .dark .result table.irc-log .part {
+  /* color set by the light/dark rebase above */
 }
-.light .result table.irc-log .netsplit_join .message:after, .dark .result table.irc-log .netsplit_join .message:after {
-  content: ' (netsplit ended)';
+.light .result table.irc-log .quit, .dark .result table.irc-log .quit {
+  /* color set by the light/dark rebase above */
 }
-.light .result table.irc-log .part .message:before, .dark .result table.irc-log .part .message:before {
-  content: ' has left (';
+.light .result table.irc-log .netsplit_quit, .dark .result table.irc-log .netsplit_quit {
+  /* color set by the light/dark rebase above */
 }
-.light .result table.irc-log .part .message:after, .dark .result table.irc-log .part .message:after {
-  content: ')';
-}
-.light .result table.irc-log .quit .message:before, .dark .result table.irc-log .quit .message:before {
-  content: 'has quit (';
-}
-.light .result table.irc-log .quit .message:after, .dark .result table.irc-log .quit .message:after {
-  content: ')';
-}
-.light .result table.irc-log .netsplit_quit .message:before, .dark .result table.irc-log .netsplit_quit .message:before {
-  content: 'has quit (netsplit: ';
-}
-.light .result table.irc-log .netsplit_quit .message:after, .dark .result table.irc-log .netsplit_quit .message:after {
-  content: ')';
-}
-.light .result table.irc-log .kick td, .dark .result table.irc-log .kick td {
+.light .result table.irc-log .kick td, .light .result table.irc-log .kill td, .dark .result table.irc-log .kick td, .dark .result table.irc-log .kill td {
   color: #6c71c4;
 }
-.light .result table.irc-log .kick .message:before, .dark .result table.irc-log .kick .message:before {
-  content: 'has kicked ';
-}
-.light .result table.irc-log .kill td, .dark .result table.irc-log .kill td {
-  color: #6c71c4;
-}
-.light .result table.irc-log .kill .message:before, .dark .result table.irc-log .kill .message:before {
-  content: 'has killed ';
-}
-.light .result table.irc-log .invite .message:before, .dark .result table.irc-log .invite .message:before {
-  content: 'has invited ';
-}
-.light .result table.irc-log .invite .message:after, .dark .result table.irc-log .invite .message:after {
-  content: ' to the channel';
+.light .result table.irc-log .invite, .dark .result table.irc-log .invite {
+  /* color set by the light/dark rebase above */
 }
 .light .result table.irc-log .info, .light .result table.irc-log .daychange, .light .result table.irc-log .topic, .dark .result table.irc-log .info, .dark .result table.irc-log .daychange, .dark .result table.irc-log .topic {
   /* color set by the light/dark rebase above */

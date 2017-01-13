@@ -1,0 +1,43 @@
+{#
+ # Search form with summarised usermask results displayed.
+ #
+ # Arguments:
+ # * Same arguments as search_form.html
+ # * search_results_total: total results found
+ # * records: list of results to display, type [DisplayUserSummary].
+ # * col_len_nickname: length of nickname column to render
+ # * col_len_sender: length of sender/usermask column to render
+ # * col_len_count: length of the count column to render
+ #}
+{%- set nickname_fmt = '{: <' + col_len_nickname|string + 's}' -%}
+{%- set sender_fmt = '{: <' + col_len_sender|string + 's}' -%}
+{%- set count_fmt = '{: >' + col_len_count|string + 's}' -%}
+{%- set total_fmt = '{: >' + (col_len_nickname + col_len_sender + 2)|string + 's}' -%}
+{%- set separator = '=' * (col_len_nickname + col_len_sender + col_len_count + 4 + 2) -%}
+
+{{ ' ' }}{{ nickname_fmt.format('Nickname') }}  {{ sender_fmt.format('Usermask') }}  {{ count_fmt.format('#') }}
+{{ separator }}
+{% for record in records -%}
+{{ ' ' }}{{ nickname_fmt.format(record.nickname) }}  {{ sender_fmt.format(record.sender) }}  {{ count_fmt.format(record.count|string) }}
+{% endfor -%}
+{{ separator }}
+{{ ' ' }}{{ total_fmt.format('Total results') }}  {{ count_fmt.format(search_results_total|string) }}
+
+
+SEARCH QUERY
+============
+{% if search_channel -%}
+{{ ' ' }}Channel:    {{ search_channel }}
+{% endif -%}
+{% if search_usermask -%}
+{{ ' ' }}Usermask:   {{ search_usermask }}
+{% endif -%}
+{% if search_start -%}
+{{ ' ' }}Start time: {{ search_start }}
+{% endif -%}
+{% if search_end -%}
+{{ ' ' }}End time:   {{ search_end }}
+{% endif -%}
+{% if search_query -%}
+{{ ' ' }}Query:      {{ search_query }}{% if search_query_wildcard %} [wildcards]{% endif %}
+{% endif -%}

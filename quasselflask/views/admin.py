@@ -58,8 +58,6 @@ def admin_create_user():
 
     from quasselflask.forms import CreateUserForm
 
-    logger.info(log_access())
-
     db_adapter = userman.db_adapter
 
     # Initialize form
@@ -130,7 +128,6 @@ def admin_create_user():
 @app.route('/admin/users', methods=['GET'])
 @roles_required('superuser')
 def admin_users():
-    logger.info(log_access())
     users = query_all_qf_users(db.session)
     return render_template('admin/user_list.html', users=users)
 
@@ -200,9 +197,7 @@ def admin_manage_user(userid):
 
     :param userid: User to manage
     :return:
-"""
-
-    logger.info(log_access())
+    """
 
     # get current user to manage
     user = query_qfuser(db.session, userid)
@@ -247,8 +242,6 @@ def admin_update_user(userid):
     :param userid: The user ID to modify.
     :return:
     """
-
-    logger.info(log_access())
 
     commands = frozenset(('status', 'superuser', 'email', 'confirm_email', 'confirm_token'))
     request_commands = set(request.form.keys()) & commands
@@ -387,8 +380,6 @@ def admin_permissions(userid):
     :param userid: The user ID to modify.
     :return:
     """
-
-    logger.info(log_access())
     user = query_qfuser(db.session, userid)
     try:
         perm_data = json.loads(request.form.get('permissions'))
@@ -466,8 +457,6 @@ def admin_delete_user(userid):
 
     from quasselflask import forms
 
-    logger.info(log_access())
-
     # validate
     if userid == current_user.qfuserid:
         flash("Oops! You can't delete yourself.", "error")
@@ -529,8 +518,6 @@ def admin_user_reset_password(userid):
     """
 
     from quasselflask import forms
-
-    logger.info(log_access())
 
     if userid == current_user.get_id():
         flash("Can't force reset your own password: go change it from the user profile like a normal person, "

@@ -176,6 +176,69 @@ class DisplayBacklog(DisplayRecordSenderMixin):
     def get_icon_text(self):
         return self._icon_type_map.get(self.type, '')
 
+    def get_nick_brackets(self) -> (str, str):
+        """
+        Returns appropriate brackets to surround the nick for plaintext output, depending on the backlog type.
+        :return:
+        """
+        if self.type is BacklogType.privmsg:
+            return '<', '>'
+        elif self.type is BacklogType.notice or self.type is BacklogType.server:
+            return '[', ']'
+        else:
+            return '', ''
+
+    def get_message(self):
+        """
+        Get the message as plaintext with IRC formatting bytes.
+        :return:
+        """
+        if self.type is BacklogType.privmsg:
+            return self._message
+        elif self.type is BacklogType.nick:
+            return 'is now known as ' + self._message
+        elif self.type is BacklogType.mode:
+            return ' set mode ' + self._message
+        elif self.type is BacklogType.join:
+            return 'has joined channel ' + self._message
+        elif self.type is BacklogType.part:
+            return 'has left ' + self.channel + ' (' + self._message + ')'
+        elif self.type is BacklogType.quit:
+            return 'has quit (' + self._message + ')'
+        elif self.type is BacklogType.kick:
+            message_parts = self._message.split(' ', 1)
+            message_parts.append('')  # in case no reason - unused otherwise
+            return 'has kicked ' + message_parts[0] + 'from ' + self.channel + ' (' + message_parts[1] + ')'
+        elif self.type is BacklogType.kill:
+            message_parts = self._message.split(' ', 1)
+            message_parts.append('')  # in case no reason - unused otherwise
+            return 'has killed ' + message_parts[0] + ' (' + message_parts[1] + ')'
+        elif self.type is BacklogType.invite:
+            return 'has invited ' + self._message + ' to ' + self.channel
+        elif self.type is BacklogType.netsplit_join or self.type is BacklogType.netsplit_quit:
+            msg_format = 'Netsplit between {server[0]} and {server[1]} {netsplit_word}. '\
+                     'Users {user_word}: {users}'
+            args = {}
+            if self.type is BacklogType.netsplit_join:
+                args['netsplit_word'] = 'occurred'
+                args['user_word'] = 'joined'
+            else:
+                args['netsplit_word'] = 'ended'
+                args['user_word'] = 'joined'
+            message_parts = self._message.split('#:#')
+            args['server'] = message_parts[-1].split(' ')
+            args['users'] = ' '.join(message_parts[:-1])
+            return msg_format.format(**args)
+        else:
+            return self._message
+
+    def get_plain_message(self):
+        """
+        Get the message as plaintext with IRC formatting removed.
+        :return:
+        """
+        return self._format_re.sub('', self.get_message())
+
     def format_html_message(self):
         """
         Convert IRC formatting into HTML.
@@ -183,7 +246,7 @@ class DisplayBacklog(DisplayRecordSenderMixin):
         """
         irc_chars = DisplayBacklog._format_chars
 
-        safe_msg = escape(self._message)
+        safe_msg = escape(self.get_message())
         in_msg_tokens = DisplayBacklog._format_re.split(safe_msg)  # simple tokenize!
         out_msg_tokens = []
 

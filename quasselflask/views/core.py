@@ -5,13 +5,15 @@ Project: QuasselFlask
 """
 
 import time
+
+from flask import Response
 from sqlalchemy.orm import joinedload
 
 from flask import flash
 from flask import request, g, render_template, url_for, redirect
 from flask_sqlalchemy import get_debug_queries
 from flask_user import login_required, current_user
-from werkzeug.exceptions import BadRequest
+from werkzeug.exceptions import BadRequest, NotFound
 
 import quasselflask
 from quasselflask import app, db, userman
@@ -80,6 +82,12 @@ def globals_init():
     g.display_version = quasselflask.__version__
 
 
+@app.before_request
+def request_log_access():
+    if request.endpoint != 'static':
+        logger.info(log_access())
+
+
 @app.route('/')
 @login_required
 def home():
@@ -123,22 +131,55 @@ def search():
             app.logger.debug("SQL: {}\nParameters: {}\nDuration: {:.3f}s\n\n".format(
                 info.statement, repr(info.parameters), info.duration))
 
-    # get unique channels and users by ID
-    # efficiency note for big result sets: set() type uses hashing for fast "x in s" operations, and
-    # set.add() won't add redundant entries - so this yields sets of unique channels/users.
-    result_users = set()
-    result_channels = set()
-    for result in results_raw:
-        result_users.add(result.senderid)
-        result_channels.add(result.bufferid)
+    render_args['expand_line_details'] = _is_expand_line_details(sql_args, results_raw)
 
-    # determine some display settings based on the type of query made
-    has_single_channel = (len(result_channels) == 1)
-    is_user_search = bool(sql_args.get('usermasks'))
-    is_keyword_search = bool(sql_args.get('query'))
-    render_args['expand_line_details'] = not has_single_channel or is_user_search or is_keyword_search
-
+    # TODO: add ghostbin in menu
     return render_template('results.html', records=results_display, **render_args)
+
+
+@app.route('/search/logs/<output>')
+@login_required
+def search_formatted(output):
+    allowed_outputs = {'text', 'paste'}
+    if output not in allowed_outputs:
+        raise NotFound()
+
+    # process the args passed in from the query string in the request
+    # this also documents the POST form parameters - check this method's source along with the readme
+    try:
+        sql_args, _ = _process_search_form_params()
+    except BadRequest:
+        return Response('400 Bad Request', status=400, mimetype='text/plain')
+
+    # build and execute the query
+    results_cursor = build_query_backlog(db.session, sql_args,
+                                         query_options=(joinedload(Backlog.sender),
+                                                        joinedload(Backlog.buffer).joinedload(Buffer.network))).all()
+
+    # reversed() if we're doing newest-first because we still want chronological order
+    if sql_args['order'] == 'newest':
+        results_raw = list(reversed(results_cursor))
+    else:
+        results_raw = list(results_cursor)
+
+    # set up display
+    results_display = [DisplayBacklog(result) for result in results_raw]
+    expand_line_details = _is_expand_line_details(sql_args, results_raw)
+    results_text = render_template('results.txt', records=results_display, expand_line_details=expand_line_details)
+
+    if output == 'text':
+        return Response(results_text, mimetype='text/plain', status=200)
+    elif output == 'paste':
+        raise NotImplementedError('pastebinning not yet supported')  # TODO: pastebinning
+
+    err_str = log_action_error('search_formatted',
+                               "Bug: `allowed_outputs` check doesn't match actual output type handling code!",
+                               ('output', output))
+    logger.error(err_str)
+    if not app.debug:
+        raise NotFound()
+    else:
+        raise ValueError(err_str)  # allow debugger
 
 
 @app.route('/search/users')
@@ -164,7 +205,46 @@ def search_users():
     results_display = [DisplayUserSummary(sender, count) for sender, count in results_raw]
     render_args['search_results_total'] = sum(record.count for record in results_display)
 
+    # TODO: add ghostbin in menu
     return render_template('results_users.html', records=results_display, **render_args)
+
+
+@app.route('/search/users/<output>')
+@login_required
+def search_users_formatted(output):
+    allowed_outputs = {'text', 'paste'}
+    if output not in allowed_outputs:
+        raise NotFound()
+
+    # process the args passed in from the query string in the request
+    try:
+        sql_args, render_args = _process_search_form_params()
+    except BadRequest:
+        return Response('400 Bad Request', status=400, mimetype='text/plain')
+
+    # build and execute the query
+    results_cursor = build_query_usermask(db.session, sql_args).all()
+    results_raw = list(results_cursor)
+    results_display = [DisplayUserSummary(sender, count) for sender, count in results_raw]
+    render_args['search_results_total'] = sum(record.count for record in results_display)
+    render_args['col_len_nickname'] = max(len(record.nickname) for record in results_display)
+    render_args['col_len_sender'] = max(len(record.sender) for record in results_display)
+    render_args['col_len_count'] = max(len(str(record.count)) for record in results_display)
+    results_text = render_template('results_users.txt', records=results_display, **render_args)
+
+    if output == 'text':
+        return Response(results_text, mimetype='text/plain', status=200)
+    elif output == 'paste':
+        raise NotImplementedError('pastebinning not yet supported')
+
+    err_str = log_action_error('search_formatted',
+                               "Bug: `allowed_outputs` check doesn't match actual output type handling code!",
+                               ('output', output))
+    logger.error(err_str)
+    if not app.debug:
+        raise NotFound()
+    else:
+        raise ValueError(err_str)  # allow debugger
 
 
 def _process_search_form_params() -> (dict, dict):
@@ -228,6 +308,33 @@ def _process_search_form_params() -> (dict, dict):
     return sql_args, render_args
 
 
+def _is_expand_line_details(sql_args: dict, results: [Backlog]) -> bool:
+    """
+    Check the query and results to see if the backlog results should be expanded by default.
+
+    Default expansion should happen when results may preserve discussion sequence (e.g. a usermask or keyword search),
+    or contain results from multiple channels.
+
+    :param sql_args:
+    :param results:  raw results from the query
+    :return:
+    """
+    # get unique channels and users by ID
+    # efficiency note for big result sets: set() type uses hashing for fast "x in s" operations, and
+    # set.add() won't add redundant entries - so this yields sets of unique channels/users.
+    result_users = set()
+    result_channels = set()
+    for result in results:
+        result_users.add(result.senderid)
+        result_channels.add(result.bufferid)
+
+    # determine some display settings based on the type of query made
+    has_single_channel = (len(result_channels) == 1)
+    is_user_search = bool(sql_args.get('usermasks'))
+    is_keyword_search = bool(sql_args.get('query'))
+    return (not has_single_channel) or is_user_search or is_keyword_search
+
+
 @app.route('/user/permissions', methods=['GET'])
 @login_required
 def check_permissions():
@@ -264,8 +371,6 @@ def user_update():
 
     :return:
     """
-
-    logger.info(log_access())
 
     commands = frozenset(('email', 'themeid'))
     request_commands = set(request.form.keys()) & commands

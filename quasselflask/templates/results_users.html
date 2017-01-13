@@ -32,3 +32,9 @@
     </table>
 </main>
 {% endblock %}
+
+{% block navleft %}
+    <li id="nav-text">
+        <a href="{{ url_for('search_users_formatted', output='text', **request.args) }}" title="Export as Text"><i class="fa fa-file-text-o fa-lg fa-fw" aria-label="export as text"></i></a>
+    </li>
+{% endblock %}

@@ -700,38 +700,27 @@ body {
       }
       .mode {
         td { color: $blue; }
-        .message:before { content: 'Mode '; }
       }
       .join {
-        .message:before { content: 'has joined channel '; }
+        /* color set by the light/dark rebase above */
       }
       .netsplit_join {
-        .message:before { content: 'has joined channel '; }
-        .message:after { content: ' (netsplit ended)'; }
+        /* color set by the light/dark rebase above */
       }
       .part {
-        .message:before { content: ' has left ('; }
-        .message:after { content: ')'; }
+        /* color set by the light/dark rebase above */
       }
       .quit {
-        .message:before { content: 'has quit ('; }
-        .message:after { content: ')'; }
+        /* color set by the light/dark rebase above */
       }
       .netsplit_quit {
-        .message:before { content: 'has quit (netsplit: '; }
-        .message:after { content: ')'; }
+        /* color set by the light/dark rebase above */
       }
-      .kick {
+      .kick, .kill {
         td { color: $violet; }
-        .message:before { content: 'has kicked '; }
-      }
-      .kill {
-        td { color: $violet; }
-        .message:before { content: 'has killed '; }
       }
       .invite {
-        .message:before { content: 'has invited '; }
-        .message:after { content: ' to the channel'; }
+        /* color set by the light/dark rebase above */
       }
       .info, .daychange, .topic {
         /* color set by the light/dark rebase above */

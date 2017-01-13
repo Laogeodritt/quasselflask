@@ -249,6 +249,18 @@ class QfPermission(db.Model):
 
 
 class QfAnonymousUserMixin(AnonymousUserMixin):
+    qfuserid = -1
+    username = 'Anonymous'
+    password = ''
+    reset_password_token = ''
+    email = ''
+    confirmed_at = None
+    active = True
+    superuser = False
+    themeid = 0
+    access = PermissionAccess.deny
+    permissions = tuple()
+
     @property
     def is_superuser(self):
         return False
