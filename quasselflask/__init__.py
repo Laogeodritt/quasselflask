@@ -13,12 +13,11 @@ import flask_user
 import quasselflask.startup
 from quasselflask.startup import init_app
 
-__version_info__ = ('0', '6', '0')
-__version__ = '.'.join(__version_info__)
+__version__ = '0.7.0'
 __author__ = 'Marc-Alexandre Chan <laogeodritt@arenthil.net>'
 __maintainer__ = 'Marc-Alexandre Chan <laogeodritt@arenthil.net>'
 __license__ = 'GPLv3'
-__copyright__ = 'Copyright (c) 2016 Marc-Alexandre Chan and contributors'
+__copyright__ = 'Copyright (c) 2016-2017 Marc-Alexandre Chan and contributors'
 
 # These will be populated by init_app()
 app = quasselflask.startup.DummyObject('app')  # type: flask.Flask

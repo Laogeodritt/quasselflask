@@ -8,12 +8,12 @@ The features supported:
 
 (**WARNING**: This software is in early development, so only some of these features are functional. It's not ready for general use. Curious where things are? See the GitHub Issue tracke or feel free to contact me.)
 
-* Searching quassel logs via network, channel, usermask, date/time range, keywords (boolean search)
-* Displaying a summary of nicknames and usermasks that match the same criteria
-* User management: protects logs from public access via username/password. Optionally, limit the channels that can be searched by each user (does not integrate with quassel's users, so you must create separate accounts and set permissions accordingly)
-* Text and HTML export of results
+* Search quassel logs via network, channel, usermask, date/time range, keywords (boolean search)
+* Display a summary of nicknames and usermasks for a given search
+* User management: protect logs from public access via username/password. Optionally, limit the channels that can be searched by each user (does not integrate with quassel's users - manual association)
 * Support for showing IRC formatting and colours
 * Support for nickname colours (hash method matches Quassel)
+* Text export of results with auto-pastebin for sharing
 * Context expansion of search results
 * Default CSS colour scheme available in your choice of [Solarized](http://ethanschoonover.com/solarized) Light or Dark =\] (I know some are less fond of it, but I personally love this colour palette!)
 
@@ -37,7 +37,7 @@ The default location is in `$PREFIX/var/quasselflask-instance` (where `$PREFIX` 
 
 If you want to change the location: when you run Quasselflask, you can set the `QF_CONFIG_PATH` environment variable to the directory containing your `quasselflask.cfg` file. This goes for command-line maintenance commands and running it using the test server as much as deploying it via WSGI in Apache, etc. See *Installation and running*, below.
 
-Here is a basic example configuration file that is enough to get you up and running (**TODO: update this**):
+Here is a basic example configuration file that is enough to get you up and running (**TODO: update this** - for now scroll down for a link to `base_config.py` for more up-to-date info):
 
     SQLALCHEMY_DATABASE_URI = 'postgresql://sqluser:password@hostname-or-IP-address/databasename'
     SITE_NAME = "John's IRC Logs"
