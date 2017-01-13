@@ -32,12 +32,8 @@
 <nav>
     <h1 id="site-title" class="nav-title"><a href="{{  url_for('home') }}">{{ config['SITE_NAME']|e }}</a></h1>
     <ul>
-        <li id="nav-search" class="dropdown">
+        <li id="nav-search">
             <a href="{{ url_for('home') }}" title="Log Search"><i class="fa fa-lg fa-fw fa-search" aria-label="log search"></i></a>
-            <ul class="dropdown-inner">
-                <li><a href="{{ url_for('home') }}" title="Log Search"><i class="fa fa-fw fa-search" aria-hidden="true"></i> Backlog search</a></li>
-                <li class="disabled"><i class="fa fa-fw fa-user-secret" aria-hidden="true"></i> Usermask search</li>
-            </ul>
         </li>
         {% if config.QF_ALLOW_TEST_PAGES -%}
             <li class="dropdown">
