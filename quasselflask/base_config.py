@@ -57,6 +57,11 @@ class DefaultConfig:
 
     QF_ALLOW_TEST_PAGES = False  # Used for testing only
 
+    QF_LOGGING_ENABLE = True  # True|False - whether to enable app logging (separate from webserver)
+    QF_LOGGING_FILENAME = 'quasselflask.log'  # filename - this goes in your instance path
+    QF_LOGGING_MAX_BYTES = 10*1024*1024  # maximum size (bytes) for a log file. 0 to disable.
+    QF_LOGGING_MAX_BACKUPS = 4  # number of backup files to keep when log files reach max size
+
 
 class InternalConfig:
     """

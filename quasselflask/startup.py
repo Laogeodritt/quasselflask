@@ -73,9 +73,6 @@ def init_app(instance_path=None):
     from quasselflask.parsing.irclog import DisplayBacklog
     from quasselflask.parsing.form import PasswordValidator
 
-    print('QuasselFlask {}'.format(quasselflask.__version__))
-    print('Initialising...')
-
     # Flask
     app = quasselflask.app = Flask(__name__,
                                    instance_path=os.environ.get('QF_CONFIG_PATH', instance_path),
@@ -89,6 +86,10 @@ def init_app(instance_path=None):
         raise EnvironmentError("QuasselFlask SECRET_KEY parameter not set or empty in configuration")
 
     app.config['USER_APP_NAME'] = app.config['SITE_NAME']  # used by Flask-User email templates
+
+    init_logging()
+    app.logger.info('QuasselFlask {}'.format(quasselflask.__version__))
+    app.logger.info('Initialising...')
 
     # Flask-Script
     cmdman = quasselflask.cmdman = Manager(app)
@@ -130,3 +131,31 @@ def init_app(instance_path=None):
     import quasselflask.commands
 
     return app
+
+
+def init_logging():
+    """
+    Initialise logging. Does nothing in debug mode (assumption that developer is checking their console or redirecting
+    output to file when running in debug mode).
+    :return:
+    """
+    from quasselflask import app
+    if app.config.get('QF_LOGGING_ENABLE', False):
+        from os import path
+        import logging
+        from logging.handlers import RotatingFileHandler
+        log_filename = app.config.get('QF_LOGGING_FILENAME', 'quasselflask.log')
+        log_filepath = path.join(app.instance_path, log_filename)
+        max_size = app.config.get('QF_LOGGING_MAX_BYTES', 10*1024*1024)
+        max_backups = app.config.get('QF_LOGGING_MAX_BACKUPS', 4)
+
+        file_handler = RotatingFileHandler(log_filepath, maxBytes=max_size, backupCount=max_backups, encoding='utf-8')
+        file_handler.setLevel(logging.INFO)
+        file_handler.setFormatter(logging.Formatter(
+            '%(asctime)s %(levelname)s: %(message)s'
+        ))
+        app.logger.addHandler(file_handler)
+
+        # For access logs
+        wz_logger = logging.getLogger('werkzeug')
+        wz_logger.addHandler(file_handler)
