@@ -2,7 +2,7 @@ from setuptools import setup
 
 setup(
     name='quasselflask',
-    version='0.7.0',
+    version='0.8.0rc1',
     packages=['quasselflask'],
     url='https://github.com/Laogeodritt/quasselflask',
     license='GPLv3',
