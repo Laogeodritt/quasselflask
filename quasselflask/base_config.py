@@ -19,7 +19,7 @@ class DefaultConfig:
     SITE_NAME = 'SiteName'
     RESULTS_NUM_DEFAULT = 100  # Default number of results per query set in the search form
     RESULTS_NUM_MAX = 1000  # Maximum number of results per query
-    TIME_FORMAT = '{:%Y-%m-%d %H:%M:%S}'  # Time format to show in IRC lots, should be Python .format() compatible
+    TIME_FORMAT = '{:%Y-%m-%d %H:%M:%S}'  # Time format to show in IRC logs, should be Python .format() compatible
     SECRET_KEY = ''  # IMPORTANT: Set this for security! See documentation
 
     QF_PASSWORD_MIN = 12  # Minimum password length for Quasselflask users
@@ -62,6 +62,8 @@ class DefaultConfig:
     QF_LOGGING_MAX_BYTES = 10*1024*1024  # maximum size (bytes) for a log file. 0 to disable.
     QF_LOGGING_MAX_BACKUPS = 4  # number of backup files to keep when log files reach max size
 
+    QF_GHOSTBIN_HOST = 'ghostbin.com'  # URL to a ghostbin website
+
 
 class InternalConfig:
     """
@@ -98,3 +100,5 @@ class InternalConfig:
 
     USER_LOGIN_URL = '/user/login'
     USER_LOGOUT_URL = '/user/logout'
+
+    QF_GHOSTBIN_USER_AGENT = 'QuasselFlask/{version}'

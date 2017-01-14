@@ -7,7 +7,7 @@ setup(
     url='https://github.com/Laogeodritt/quasselflask',
     license='GPLv3',
     author='Marc-Alexandre Chan',
-    author_email='marcalexc@arenthil.net',
+    author_email='laogeodritt@arenthil.net',
     setup_requires=['Flask>=0.10',
                     'Flask-User>=0.6.8,<0.7',
                     'Flask-SQLAlchemy>=1.0',
@@ -17,6 +17,7 @@ setup(
                     'psycopg2',  # PostgreSQL
                     'crcmod>=1.7',
                     'itsdangerous',
+                    'pyghostlid>=0.2',
                     ],
     include_package_data=True,
     zip_safe=False,

@@ -3348,15 +3348,15 @@ body {
   margin-bottom: 1.5em;
   padding: 1.0em 1.5em 1.5em 1.5em;
 }
-.light section#error, .light footer#error, .light aside#error, .light article#error, .light .dijitComboBoxError, .light .dijitComboBoxError div, .light .dijitComboBoxError input, .dark section#error, .dark footer#error, .dark aside#error, .dark article#error, .dark .dijitComboBoxError, .dark .dijitComboBoxError div, .dark .dijitComboBoxError input {
+.light section.error, .light footer.error, .light aside.error, .light article.error, .light .dijitComboBoxError, .light .dijitComboBoxError div, .light .dijitComboBoxError input, .dark section.error, .dark footer.error, .dark aside.error, .dark article.error, .dark .dijitComboBoxError, .dark .dijitComboBoxError div, .dark .dijitComboBoxError input {
   color: #586e75;
   background-color: #ee9e9c;
 }
-.light section#warning, .light footer#warning, .light aside#warning, .light article#warning, .dark section#warning, .dark footer#warning, .dark aside#warning, .dark article#warning {
+.light section.warning, .light footer.warning, .light aside.warning, .light article.warning, .dark section.warning, .dark footer.warning, .dark aside.warning, .dark article.warning {
   color: #586e75;
   background-color: #ffce36;
 }
-.light section#notice, .light footer#notice, .light aside#notice, .light article#notice, .dark section#notice, .dark footer#notice, .dark aside#notice, .dark article#notice {
+.light section.notice, .light footer.notice, .light aside.notice, .light article.notice, .dark section.notice, .dark footer.notice, .dark aside.notice, .dark article.notice {
   color: #586e75;
   background-color: #71dad2;
 }
@@ -3391,6 +3391,7 @@ body {
   padding: 0;
 }
 .light nav ul li, .dark nav ul li {
+  cursor: default;
   list-style: none;
   display: inline-block;
   margin: 0 0.25em;

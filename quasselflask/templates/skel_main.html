@@ -51,8 +51,8 @@
                     <li><a href="{{ url_for('user.profile') }}">{{ current_user.username }} <i class="fa fa-vcard-o fa-fw" aria-hidden="true"></i></a></li>
                     <li><a href="{{ url_for('check_permissions') }}">Permissions <i class="fa fa-eye fa-fw" aria-hidden="true"></i></a></li>
                     <li><a href="{{ url_for('user.logout') }}">Sign out <i class="fa fa-sign-out fa-fw" aria-hidden="true"></i></a></li>
-            </ul>
-        </li>
+                </ul>
+            </li>
         {% else %}
             <li id="nav-user" class="right">
                 <a href="{{ url_for('user.login') }}" title="Sign in"><i class="fa fa-sign-in fa-lg fa-fw" aria-label="sign in"></i></a>
@@ -71,20 +71,20 @@
 </nav>
 
 {# One-time system messages called Flash messages #}
-{% if error is defined %}<section id="error"><strong>Error</strong> {{ error|e }}</section>{% endif %}
-{% if warning is defined %}<section id="warning"><strong>Warning</strong> {{ warning|e }}</section>{% endif %}
-{% if notice is defined %}<section id="notice">{{ notice|e }}</section>{% endif %}
+{% if error is defined %}<section class="error"><strong>Error</strong> {{ error|e }}</section>{% endif %}
+{% if warning is defined %}<section class="warning"><strong>Warning</strong> {{ warning|e }}</section>{% endif %}
+{% if notice is defined %}<section class="notice">{{ notice|e }}</section>{% endif %}
 
 {% block flash_messages %}
 {%- with messages = get_flashed_messages(with_categories=true) -%}
 {% if messages %}
 {% for category, message in messages %}
     {% if category=='error' or category=='danger' %}
-        <section id="error"><strong>Error</strong> {{ message|safe }}</section>
+        <section class="error"><strong>Error</strong> {{ message|safe }}</section>
     {% elif category=='warning' %}
-        <section id="warning"><strong>Warning</strong> {{ message|safe }}</section>
+        <section class="warning"><strong>Warning</strong> {{ message|safe }}</section>
     {% else %}
-        <section id="notice">{{ message|safe }}</section>
+        <section class="notice">{{ message|safe }}</section>
     {% endif %}
 {% endfor %}
 {% endif %}

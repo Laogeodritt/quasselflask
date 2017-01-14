@@ -6,18 +6,16 @@ Project: QuasselFlask
 
 import time
 
-from flask import Response
-from sqlalchemy.orm import joinedload
-
-from flask import flash
-from flask import request, g, render_template, url_for, redirect
+from flask import Response, flash, request, g, render_template, url_for, redirect
 from flask_sqlalchemy import get_debug_queries
 from flask_user import login_required, current_user
+from sqlalchemy.orm import joinedload
 from werkzeug.exceptions import BadRequest, NotFound
 
 import quasselflask
 from quasselflask import app, db, userman
-from quasselflask.email_adapter import send_confirm_email_email
+from quasselflask.adapters import ghostlid
+from quasselflask.adapters.email_adapter import send_confirm_email_email
 from quasselflask.models.query import *
 from quasselflask.parsing.form import process_search_params, SearchType
 from quasselflask.parsing.irclog import DisplayBacklog, DisplayUserSummary
@@ -133,17 +131,14 @@ def search():
 
     render_args['expand_line_details'] = _is_expand_line_details(sql_args, results_raw)
 
-    # TODO: add ghostbin in menu
     return render_template('results.html', records=results_display, **render_args)
 
 
-@app.route('/search/logs/<output>')
-@login_required
-def search_formatted(output):
-    allowed_outputs = {'text', 'paste'}
-    if output not in allowed_outputs:
-        raise NotFound()
-
+def _do_search_text() -> str:
+    """
+    Execute a search and return results as text. This is shared between endpoints.
+    :return:
+    """
     # process the args passed in from the query string in the request
     # this also documents the POST form parameters - check this method's source along with the readme
     try:
@@ -166,20 +161,24 @@ def search_formatted(output):
     results_display = [DisplayBacklog(result) for result in results_raw]
     expand_line_details = _is_expand_line_details(sql_args, results_raw)
     results_text = render_template('results.txt', records=results_display, expand_line_details=expand_line_details)
+    return results_text
 
-    if output == 'text':
-        return Response(results_text, mimetype='text/plain', status=200)
-    elif output == 'paste':
-        raise NotImplementedError('pastebinning not yet supported')  # TODO: pastebinning
 
-    err_str = log_action_error('search_formatted',
-                               "Bug: `allowed_outputs` check doesn't match actual output type handling code!",
-                               ('output', output))
-    logger.error(err_str)
-    if not app.debug:
-        raise NotFound()
-    else:
-        raise ValueError(err_str)  # allow debugger
+@app.route('/search/logs/text')
+@login_required
+def search_text():
+    return Response(_do_search_text(), mimetype='text/plain', status=200)
+
+
+@app.route('/search/logs/paste/<duration>', methods=['POST'])
+@login_required
+def search_paste(duration):
+    if not duration or len(duration) > 6:
+        raise BadRequest('Invalid duration value.')
+
+    results_text = _do_search_text()
+    url = ghostlid.paste(results_text, expire=duration)
+    return Response(url, mimetype='text/plain', status=200)
 
 
 @app.route('/search/users')
@@ -205,17 +204,10 @@ def search_users():
     results_display = [DisplayUserSummary(sender, count) for sender, count in results_raw]
     render_args['search_results_total'] = sum(record.count for record in results_display)
 
-    # TODO: add ghostbin in menu
     return render_template('results_users.html', records=results_display, **render_args)
 
 
-@app.route('/search/users/<output>')
-@login_required
-def search_users_formatted(output):
-    allowed_outputs = {'text', 'paste'}
-    if output not in allowed_outputs:
-        raise NotFound()
-
+def _do_search_users_text():
     # process the args passed in from the query string in the request
     try:
         sql_args, render_args = _process_search_form_params()
@@ -231,20 +223,24 @@ def search_users_formatted(output):
     render_args['col_len_sender'] = max(len(record.sender) for record in results_display)
     render_args['col_len_count'] = max(len(str(record.count)) for record in results_display)
     results_text = render_template('results_users.txt', records=results_display, **render_args)
+    return results_text
 
-    if output == 'text':
-        return Response(results_text, mimetype='text/plain', status=200)
-    elif output == 'paste':
-        raise NotImplementedError('pastebinning not yet supported')
 
-    err_str = log_action_error('search_formatted',
-                               "Bug: `allowed_outputs` check doesn't match actual output type handling code!",
-                               ('output', output))
-    logger.error(err_str)
-    if not app.debug:
-        raise NotFound()
-    else:
-        raise ValueError(err_str)  # allow debugger
+@app.route('/search/users/text')
+@login_required
+def search_users_text():
+    return Response(_do_search_users_text(), mimetype='text/plain', status=200)
+
+
+@app.route('/search/users/paste/<duration>', methods=['POST'])
+@login_required
+def search_users_paste(duration):
+    if not duration or len(duration) > 6:
+        raise BadRequest('Invalid duration value.')
+
+    results_text = _do_search_text()
+    url = ghostlid.paste(results_text, expire=duration)
+    return Response(url, mimetype='text/plain', status=200)
 
 
 def _process_search_form_params() -> (dict, dict):

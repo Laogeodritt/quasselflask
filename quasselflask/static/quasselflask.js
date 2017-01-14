@@ -41,6 +41,95 @@ $(document).ready(function() {
 });
 
 /********************************
+ * GHOSTBIN MENU HANDLING (POST)
+ ********************************/
+
+$(document).ready(function() {
+    var $nav_paste = $('#nav-paste');
+    var token = $nav_paste.find('input[name=csrf_token]').val();
+    var pasteInProgress = false;
+    $nav_paste.on('click', '.nav-paste-link', function(event) {
+        event.preventDefault();
+        if(pasteInProgress) {
+            return; // already should be a flash message informing user that it's loading
+        }
+        pasteInProgress = true;
+        var $this = $(this);
+        var $loadingFlash = addFlash(
+                '<i class="fa fa-spinner fa-lg fa-pulse"></i> Uploading results to paste service...',
+                'notice',
+                'flash-loading'
+        );
+        $.post({
+            url: $this.prop('href'),
+            data: {
+                csrf_token: token
+            },
+            dataType: 'text',
+            success: function(data) {
+                removeFlash($loadingFlash);
+                addFlash('<strong>Paste uploaded!</strong> Share with this URL: ' + data, 'notice');
+                pasteInProgress = false;
+            },
+            error: function(jqXHR, status, err) {
+                removeFlash($loadingFlash);
+                var message;
+                switch(status) {
+                case 'timeout':
+                    message = 'The server took too long to respond.';
+                    break;
+                case 'error':
+                    message = 'An error was returned by the server: ' + jqXHR.status + ' ' + err;
+                    break;
+                case 'abort':
+                    message = 'The operation was aborted by the client.';
+                    break;
+                case 'parsererror':
+                    message = 'An error occurred while processing the response from the server.';
+                    break;
+                default:
+                    message = 'An unknown error occurred.';
+                    break;
+                }
+                pasteInProgress = false;
+                addFlash('<strong>Error:</strong> ' + message, 'error')
+            }
+        });
+    });
+});
+
+/********************************
+ * GENERIC FUNCTIONS
+ ********************************/
+
+/**
+ * Add a flash to the top of the page.
+ * @param text HTML contents to insert
+ * @param class_ "error|warning|info"
+ * @param id HTML ID of the flash container
+ * @return jQuery object corresponding to the flash container
+ */
+function addFlash(text, class_, id) {
+    var $flash = $('<section>')
+            .addClass(class_)
+            .prop('id', id)
+            .html(text)
+            .hide()
+            .prependTo($('body'))
+            .show(ANIMATE_SLIDE_TIME, "swing");
+    return $flash;
+}
+
+/**
+ * Convenience function to animate and then remove a flash.
+ */
+function removeFlash(flashObject) {
+    $(flashObject).hide(ANIMATE_SLIDE_TIME, 'swing', function() {
+        $(this).remove();
+    });
+}
+
+/********************************
  * IRC Backlog Details Expansion
  ********************************/
 

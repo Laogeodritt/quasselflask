@@ -35,6 +35,16 @@
 
 {% block navleft %}
     <li id="nav-text">
-        <a href="{{ url_for('search_users_formatted', output='text', **request.args) }}" title="Export as Text"><i class="fa fa-file-text-o fa-lg fa-fw" aria-label="export as text"></i></a>
+        <a href="{{ url_for('search_users_text', **request.args) }}" title="Export as Text"><i class="fa fa-file-text-o fa-lg fa-fw" aria-label="export results as text"></i></a>
+    </li>
+    <li id="nav-paste" class="dropdown">
+        <i class="fa fa-share-alt fa-lg fa-fw" aria-label="Upload and share results via ghost bin" title="Share via Ghostbin"></i>
+        <ul class="dropdown-inner">
+            <li><a href="{{ url_for('search_users_paste', duration='10m', **request.args) }}" class="nav-paste-link" aria-label="Submit paste that expires in 10 minutes">10 minutes</a></li>
+            <li><a href="{{ url_for('search_users_paste', duration='1h', **request.args) }}" class="nav-paste-link" aria-label="Submit paste that expires in one hour">1 hour</a></li>
+            <li><a href="{{ url_for('search_users_paste', duration='1d', **request.args) }}" class="nav-paste-link" aria-label="Submit paste that expires in 1 day">1 day</a></li>
+            <li><a href="{{ url_for('search_users_paste', duration='7d', **request.args) }}" class="nav-paste-link" aria-label="Submit paste that expires in 1 week">1 week</a></li>
+        </ul>
+        <input type="hidden" name="csrf_token" value="{{ csrf_token() }}">
     </li>
 {% endblock %}

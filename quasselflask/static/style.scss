@@ -292,17 +292,17 @@ body {
     padding: 1.0em 1.5em 1.5em 1.5em;
   }
 
-  section#error, .dijitComboBoxError, .dijitComboBoxError div, .dijitComboBoxError input {
+  section.error, .dijitComboBoxError, .dijitComboBoxError div, .dijitComboBoxError input {
     color: $base01;
     background-color: lighten($red, 25%);
   }
 
-  section#warning {
+  section.warning {
     color: $base01;
     background-color: lighten($yellow, 25%);
   }
 
-  section#notice {
+  section.notice {
     color: $base01;
     background-color: lighten($cyan, 25%);
   }
@@ -343,6 +343,7 @@ body {
       padding: 0;
 
       li {
+        cursor: default;
         list-style: none;
         display: inline-block;
         margin: 0 $nav-space-horiz/2;

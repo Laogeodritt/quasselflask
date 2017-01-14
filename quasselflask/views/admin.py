@@ -15,11 +15,11 @@ from itsdangerous import BadSignature
 from werkzeug.exceptions import BadRequest
 
 from quasselflask import app, userman, db, forms
-from quasselflask.email_adapter import send_new_user_set_password_email
+from quasselflask.adapters.email_adapter import send_new_user_set_password_email
 from quasselflask.models.query import *
 from quasselflask.models.types import *
 from quasselflask.parsing.convert_json import convert_permissions_lists, convert_user_permissions
-from quasselflask.util import random_string, safe_redirect, get_next_url, repr_user_input, log_access, log_action, \
+from quasselflask.util import random_string, safe_redirect, get_next_url, repr_user_input, log_action, \
     log_action_error
 
 
