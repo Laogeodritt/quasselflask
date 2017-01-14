@@ -140,7 +140,7 @@ $(document).ready(function() {
     // requires only one event in memory, which is more efficient
     $('table.irc-log').on('click', 'tr.irc-line', function(event)
     {
-        toggleIrcLineDetails(event.delegateTarget);
+        toggleIrcLineDetails(this);
     });
 
     // Search form functionality
