@@ -103,6 +103,8 @@ def search():
     except BadRequest:
         return redirect(url_for('home'))
 
+    render_args['search_type'] = SearchType.backlog
+
     # build and execute the query
     results_cursor = build_query_backlog(db.session, sql_args,
                                          query_options=(joinedload(Backlog.sender),
@@ -191,6 +193,8 @@ def search_users():
         # not doing the +1 trick to check if more results, because of the grouping+summing that happens here
     except BadRequest:
         return redirect(url_for('home'))
+
+    render_args['search_type'] = SearchType.usermask
 
     # build and execute the query
     results_cursor = build_query_usermask(db.session, sql_args).all()
@@ -327,7 +331,7 @@ def _is_expand_line_details(sql_args: dict, results: [Backlog]) -> bool:
     # determine some display settings based on the type of query made
     has_single_channel = (len(result_channels) == 1)
     is_user_search = bool(sql_args.get('usermasks'))
-    is_keyword_search = bool(sql_args.get('query'))
+    is_keyword_search = bool(sql_args.get('query').postfix)
     return (not has_single_channel) or is_user_search or is_keyword_search
 
 

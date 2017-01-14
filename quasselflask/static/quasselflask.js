@@ -57,7 +57,7 @@ $(document).ready(function() {
         var $this = $(this);
         var $loadingFlash = addFlash(
                 '<i class="fa fa-spinner fa-lg fa-pulse"></i> Uploading results to paste service...',
-                'notice',
+                null,
                 'flash-loading'
         );
         $.post({
@@ -157,7 +157,8 @@ $(document).ready(function() {
         }
     });
     $searchForm.submit(function() {
-
+        // remove the 'type' parameter
+        $(this).find(':input[name=type]').attr('disabled', 'disabled');
     })
 });
 
