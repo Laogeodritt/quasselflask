@@ -25,7 +25,7 @@ A lot of its power is derived from a need, in medium to large IRC communities, f
 
 This application is meant for *personal* use. Please do not use it for the purpose of making your logs available to the public at large ("public logging").
 
-Many channels do not allow public logging. Even if it is not expressly disallowed, public logging is generally looked down upon, as it fails to respect user privacy (even for public channels&mdash;in the same way that you might not want your conversations in public to be recorded and made available to everyone).
+Many channels do not allow public logging. Even if it is not expressly disallowed, public logging is generally looked down upon, as it fails to respect user privacy (even for public channels&mdash;in the same way that you might not want your conversations in public to be recorded and made available to everyone, even if you're OK having them in public).
 
 **If someone is making your channel's logs public using Quasselflask**: Please be aware that I am only the developer of this software, and it is freely available for anyone to use. *I do not provide hosting services*: this means I don't know *who* is using it and *how*, nor can I do anything about it. If you have concerns about a specific server running this software, I recommend you contact the owner or administrator of that server (or their hosting company).
 
@@ -35,7 +35,7 @@ You need to create a configuration file called `quasselflask.cfg` in the Flask i
 
 The default location is in `$PREFIX/var/quasselflask-instance` (where `$PREFIX` is the location of your virtualenv if you're using that, or probably `/usr` if you installed it system-wide - see *Installation and running*, below).
 
-If you want to change the location: when you run Quasselflask, you can set the `QF_CONFIG_PATH` environment variable to the directory containing your `quasselflask.cfg` file. This goes for command-line maintenance commands and running it using the test server as much as deploying it via WSGI in Apache, etc. See *Installation and running*, below.
+If you want to change the location: when you run Quasselflask, you can set the `QF_CONFIG_PATH` environment variable to the directory containing your `quasselflask.cfg` file. This goes for command-line maintenance commands and running it using the test server as much as deploying it via WSGI in Apache, etc.
 
 Here is a basic example configuration file that is enough to get you up and running (**TODO: update this** - for now scroll down for a link to `base_config.py` for more up-to-date info):
 
@@ -69,11 +69,15 @@ This software is still under development and the configuration is changing as I 
 
 This application requires:
 
-* An existing installation of quasselcore *running on the PostgreSQL backend*. This application does not support an SQLite backend.
-* PostgreSQL >= 9.1 - I think. A version of PostgreSQL that supports GIN/GIST trigram indices for LIKE/ILIKE operations.
-* Python 3. Tested against Python 3.5.2; should work for Python 3.x in general, but I'm not sure. (If you've discovered it doesn't work for some versions, please let me know!)
-* If you are using a Python version *earlier* than 3.4, you need to [install setuptools and pip](https://packaging.python.org/installing/#requirements-for-installing-packages) for installation.
-* `libpq` library and the `pg_config` tool. On Debian and Ubuntu, run `sudo apt-get install libpq-dev`. On other Linux distros, try and find `libpq-dev`, `postgresql-devel` or a similar package. On Windows
+* quasselcore - must be running on the PostgreSQL backend (SQLite backend not supported).
+* PostgreSQL >= 9.1 (I think - a version that supports  GIN/GIST trigram indices for LIKE/ILIKE).
+* Python 3.x - tested against 3.5.2 only. (If you've discovered it doesn't work for some versions, please let me know!)
+  * If using Python <= 3.4, also install [ setuptools and pip](https://packaging.python.org/installing/#requirements-for-installing-packages).
+* `libpq` library for the `pg_config` tool.
+  * Debian, Ubuntu, etc.: run `sudo apt-get install libpq-dev`
+  * Other Linux: Try and find a package called `libpq-dev`, `postgresql-devel` or similar.
+  * Windows: Should not be needed.
+* `libffi-dev` for some headers required by Python packages (Linux only?).
 
 You don't need to install other dependencies yourself. The setup.py will do it for you!
 
@@ -141,13 +145,15 @@ As a point of comparison: without doing this, searches took 15-20 seconds (ridic
 
 Note that this will increase the size of your database. On my test database (~600MB backlog of actual IRC backlogs), I found that the indices add about 60% of the size of the `backlog` table plus 100% of the `sender` and `buffer` tables to the total datbase size.
 
-# Installation and running
+# Installing quasselflask
 
 We recommend using a virtualenv to set up Quasselflask. This is a standard Python tool and I will assume you know how to use it; if you are new to Python, you can read the [Flask docs on virtualenv and installing Flask](http://flask.pocoo.org/docs/0.11/installation/) to get a basic introduction.
 
 You do not need to install dependencies manually. Quasselflask comes ready as a package, so you can simply run the `setup.py` file. Assuming you created your virtualenv in the directory `./venv` and you downloaded Quasselflask to `./quasselflask`, you need to do the following in a terminal window:
 
-The following instructions assume you have the following directory structure: your current directory contains directory `venv` containing your virtualenv, and `quasselflask` containing a copy of Quasselflask (cloned from github or untarred).
+The following instructions assume you have the following directory structure: your current directory contains subdirectory `venv` containing your virtualenv, and `quasselflask` containing a copy of Quasselflask (cloned from github or untarred).
+
+**Reminder**: If you use a custom config file location, remember to set the `QF_CONFIG_PATH` environment variable. How to do so depends on your choice of shell.
 
 1. Activate the virtualenv in a terminal window. For the rest of these instructions, you will run all commands in the same window that you activated the virtualenv in.
 
@@ -161,7 +167,7 @@ The following instructions assume you have the following directory structure: yo
 
 4. Create an initial Quasselflask superuser (a.k.a. admin user). This will automatically make Quasselflask tables if needed.
 
-        python -m quasselflask.run reate_superuser username user@domain.com
+        python -m quasselflask.run create_superuser username user@domain.com
     
     This will prompt you for a password. Type it in and press Enter (nothing will show up in the window).
 
@@ -195,10 +201,25 @@ The following instructions assume you have the following directory structure: yo
     
         \quit
 
-7.  Run the web application&mdash;you have various options to choose from. The application is a fairly simple Flask application. As such, you can run it in the normal ways that you would run a Flask application:
+# Running quasselflask
 
-    * For testing it out or using it locally,
-    * [Flask deployment options](http://flask.pocoo.org/docs/0.11/deploying/), for a publicly hosted website. (This doesn't mean the logs are public, since you still have to login with a username/password to search them.)
+## Development mode
+
+If you just want to run the application to test it out, to use it locally, or while developing for `quasselflask`, you can use Flask's built-in browser.
+
+First, **a reminder** that if you use a custom location for the config file, set the `QF_CONFIG_PATH` environment variable correctly first.
+
+1. Activate your virtualenv, if applicable (see the Installation section, header and step 1).
+2. Run:
+
+        python -m quasselflask.run runserver
+
+
+## Production/deployment
+
+If you want this to be publicly hosted, you probably want a higher-performance and more secure web server to handle the incoming requests, like nginx or Apache. Flask has good documentation for various [popular deployment options](http://flask.pocoo.org/docs/0.11/deploying/) for you to consult. ("Publicly hosted" doesn't mean the logs are public, since you still have to login with a username/password to search them.)
+
+A sample WSGI file, `quasselflask.example.wsgi`, is provided to help you set it up; it supports a custom config file location and the use of virtualenv. You need to modify `virtualenv_dir` to specify the location of the virtualenv you're using for quasselflask, and `config_dir` for the location of the config files (if you don't want to use these features, set the value to an empty string `''`).
 
 # Management commands
 

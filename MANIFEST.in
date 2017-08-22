@@ -1,5 +1,5 @@
-recursive-include templates *
-recursive-include static *
+recursive-include quasselflask/templates *
+recursive-include quasselflask/static *
 
 global-exclude *.pyo
 global-exclude *.pyc

@@ -1,9 +1,9 @@
-from setuptools import setup
+from setuptools import setup, find_packages
 
 setup(
     name='quasselflask',
     version='0.8.0rc1',
-    packages=['quasselflask'],
+    packages=find_packages(),
     url='https://github.com/Laogeodritt/quasselflask',
     license='GPLv3',
     author='Marc-Alexandre Chan',
